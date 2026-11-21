@@ -1,0 +1,32 @@
+# Deploy lab: one-off pods for the "configured" cases. Lab only.
+# no-settings: the image with no setting at all (a missing ConfigMap/Secret reference).
+apiVersion: v1
+kind: Pod
+metadata: {name: cfg-no-settings, namespace: trailhead-lab}
+spec:
+  restartPolicy: Never
+  containers:
+    - {name: app, image: "trailhead/order-integration:today", imagePullPolicy: Never}
+---
+# dev-profile: every production setting present, plus SPRING_PROFILES_ACTIVE=dev (the README's development command)
+apiVersion: v1
+kind: Pod
+metadata: {name: cfg-dev-profile, namespace: trailhead-lab}
+spec:
+  restartPolicy: Never
+  containers:
+    - name: app
+      image: "trailhead/order-integration:today"
+      imagePullPolicy: Never
+      env: [{name: SPRING_PROFILES_ACTIVE, value: dev}]
+      envFrom:
+        - configMapRef: {name: order-integration-settings}
+        - secretRef: {name: order-integration-env}
+      volumeMounts:
+        - {name: files, mountPath: /etc/trailhead/files}
+        - {name: partners, mountPath: /etc/trailhead/partners}
+        - {name: secret-store, mountPath: /etc/trailhead/secret-store}
+  volumes:
+    - {name: files, secret: {secretName: order-integration-files}}
+    - {name: partners, configMap: {name: partner-configuration}}
+    - {name: secret-store, secret: {secretName: order-integration-secret-store}}

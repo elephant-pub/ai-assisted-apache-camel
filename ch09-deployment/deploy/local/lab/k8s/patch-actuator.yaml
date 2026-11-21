@@ -1,0 +1,13 @@
+# Deploy lab: the actuator on its own port (by environment only, no code change), to see what a probe would see
+spec:
+  template:
+    spec:
+      containers:
+        - name: order-integration
+          env:
+            - {name: MANAGEMENT_SERVER_PORT, value: "9090"}
+            - {name: MANAGEMENT_SERVER_SSL_ENABLED, value: "false"}
+            - {name: MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE, value: health}
+            - {name: MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS, value: always}
+            - {name: MANAGEMENT_ENDPOINT_HEALTH_SHOW_COMPONENTS, value: always}
+            - {name: MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED, value: "true"}

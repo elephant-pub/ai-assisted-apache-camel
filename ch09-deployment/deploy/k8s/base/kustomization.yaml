@@ -1,0 +1,21 @@
+# Design 006 base: what every environment deploys. Rendered with `kubectl kustomize` (locally:
+# deploy/local/kube.sh kustomize <dir>, P-14); no other tool.
+# No namespace: the person deploying (or an overlay) sets it. Not in the base, created per environment by the person
+# deploying (§3.9; keys in deploy/README.md): ConfigMap order-integration-settings, Secrets order-integration-secrets,
+# order-integration-files and order-integration-partner-api-keys (the Secret Store).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - serviceaccount.yaml
+  - services.yaml
+  - networkpolicy.yaml
+  - statefulset.yaml
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: trailhead-order-integration
+# D9, C4: the released Partner Configuration. The content hash in the name makes a changed file a new pod template,
+# so deploying it restarts the pod and UC-007 registration runs. Never disable the hash.
+configMapGenerator:
+  - name: order-integration-partners
+    files:
+      - partner-configuration.json

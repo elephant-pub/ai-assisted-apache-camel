@@ -1,0 +1,12 @@
+- route:
+    id: peakmart-orders
+    from:
+      uri: kafka:marketplace.orders
+      parameters:
+        consumerGroup: order-intake
+        autoOffsetReset: first
+      steps:
+        - to:
+            uri: file:work/orders?moveDone=.done&fileExist=Overwrite
+        - to:
+            uri: kafka-stream:orders.accepted

@@ -1,0 +1,48 @@
+== config
+user=10001:10001 entrypoint=["java","-XX:MaxRAMPercentage=50","-XX:+ExitOnOutOfMemoryError","-jar","/app/application.jar"] cmd=null workdir=/app size=411928623 arch=arm64
+PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+JAVA_HOME=/opt/java/openjdk
+LANG=en_US.UTF-8
+LANGUAGE=en_US:en
+LC_ALL=en_US.UTF-8
+JAVA_VERSION=jdk-25.0.5+8
+
+== base layers
+ENTRYPOINT ["java" "-XX:MaxRAMPercentage=50" "-XX:+ExitOnOutOfMemoryError" "-jar" "/app/application.jar"]
+USER 10001:10001
+WORKDIR /app
+RUN /bin/sh -c chmod a-w /app # buildkit
+COPY /builder/extracted/application/ /app/ # buildkit
+COPY /builder/extracted/snapshot-dependencies/ /app/ # buildkit
+COPY /builder/extracted/spring-boot-loader/ /app/ # buildkit
+COPY /builder/extracted/dependencies/ /app/ # buildkit
+ENTRYPOINT ["/__cacert_entrypoint.sh"]
+COPY --chmod=755 entrypoint.sh /__cacert_entrypoint.sh # buildkit
+RUN /bin/sh -c set -eux;     echo "Verifying install ...";     echo "java --version"; java --version;     echo "Complete." # buildkit
+RUN /bin/sh -c set -eux;     ARCH="$(dpkg --print-architecture)";     case "${ARCH}" in        amd64)          ESUM='6fac98f0c8202efc3135a9e9e42aa61963ec42d1c5c
+ENV JAVA_VERSION=jdk-25.0.5+8
+RUN /bin/sh -c set -eux;     apt-get update;     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends         fontconfig         ca-certifi
+ENV LANG=en_US.UTF-8 LANGUAGE=en_US:en LC_ALL=en_US.UTF-8
+ENV PATH=/opt/java/openjdk/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ENV JAVA_HOME=/opt/java/openjdk
+/bin/sh -c #(nop)  CMD ["/bin/bash"]
+/bin/sh -c #(nop) ADD file:aeac09a5d64b4f3ea9f6270bab8e042832a855d9ab77269736eef18fda7dc7bb in / 
+/bin/sh -c #(nop)  LABEL org.opencontainers.image.version=24.04
+== inside
+openjdk version "25.0.5" 2026-10-20 LTS
+OpenJDK Runtime Environment Temurin-25.0.5+8 (build 25.0.5+8-LTS)
+OpenJDK 64-Bit Server VM Temurin-25.0.5+8 (build 25.0.5+8-LTS, mixed mode, sharing)
+id: uid=10001 gid=10001 groups=10001
+PRETTY_NAME="Ubuntu 24.04.5 LTS"
+NAME="Ubuntu"
+deployments:
+ls: cannot access '/deployments': No such file or directory
+classes:
+libs: 0
+find: ‘/deployments’: No such file or directory
+test or fault classes: 0
+config dir: none
+tool: bash
+tool: apt-get
+tool: jfr
+writable by the user: /tmp /run/lock /var/tmp 

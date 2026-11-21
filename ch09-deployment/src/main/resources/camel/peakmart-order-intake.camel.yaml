@@ -1,0 +1,492 @@
+# Flow peakmart-order-intake (design §3): read Peakmart Order Events, skip other types, set aside unreadable ones,
+# and durably receive each new Peakmart Order Number exactly once. The Kafka offset is committed manually as the
+# last step of peakmart-order-intake, so a record whose processing failed is consumed again (design review item 2).
+- routeConfiguration:
+    id: peakmart-intake-error-handling
+    description: An unavailable database or Kafka waits with the offset uncommitted; any other failure sets the event aside
+    # Design 005 H4 (§3.5). All three clauses match java.lang.Exception; Camel takes the first whose onWhen holds.
+    # Class and kind only in the logs, never a message or a stack trace (an UnexpectedErrorException's cause can quote data).
+    onException:
+      # I2, I3: not handled, so breakOnFirstError seeks back and the record is consumed again once the system is back
+      - onException:
+          id: on-intake-waits
+          exception:
+            - java.lang.Exception
+          onWhen:
+            id: when-intake-waits
+            expression:
+              simple:
+                expression: "${bean:failureKinds?method=waits(${exception})} == true"
+          handled:
+            constant:
+              expression: "false"
+          redeliveryPolicy:
+            maximumRedeliveries: 3
+            redeliveryDelay: "1000"
+            useExponentialBackOff: true
+            backOffMultiplier: 2
+            logStackTrace: false
+            logExhausted: false
+            logExhaustedMessageBody: false
+            logExhaustedMessageHistory: false
+      # I4, I6, I7: handled where the failure occurred. The clause commits the offset itself; handled stops the failing
+      # route and every caller route (the exchange is marked handled by the error handler; the stop makes it explicit), so
+      # neither commit-kafka-offset nor a receipt step runs after it: one commit per record.
+      - onException:
+          id: on-intake-cannot-take-in
+          exception:
+            - java.lang.Exception
+          onWhen:
+            id: when-intake-not-setting-aside
+            expression:
+              simple:
+                expression: "${routeId} != 'peakmart-event-set-aside'"
+          handled:
+            constant:
+              expression: "true"
+          # Design 005 H4: 2 redeliveries before the event is set aside. A number, as the 4.22.2 YAML DSL schema types it
+          # (design 006 D11; finding W1-F2, developer decision: was the property peakmart.set-aside-redeliveries=2)
+          redeliveryPolicy:
+            maximumRedeliveries: 2
+            redeliveryDelay: "1000"
+            logStackTrace: false
+            # A failure of the set-aside itself must not log the earlier exception's cause (it may quote data)
+            logNewException: false
+            logExhausted: false
+            logExhaustedMessageBody: false
+            logExhaustedMessageHistory: false
+          steps:
+            - setProperty:
+                id: set-reason-cannot-be-taken-in
+                name: cannot-read-reason
+                expression:
+                  simple:
+                    expression: "cannot be taken in: ${bean:failureKinds?method=describe(${exception})}"
+            - filter:
+                id: filter-unexpected-error-at-intake
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.cannot-read-reason} startsWith 'cannot be taken in: unexpected error: '"
+                steps:
+                  - log:
+                      id: log-intake-unexpected-error
+                      loggingLevel: ERROR
+                      message: "Order event cannot be taken in after an unexpected error kafkaPosition=${exchangeProperty.kafka-position} correlationId=${exchangeProperty.correlation-id}"
+            - to:
+                id: to-set-aside-cannot-be-taken-in
+                uri: direct:peakmart-event-set-aside
+            - script:
+                id: commit-kafka-offset-after-set-aside
+                expression:
+                  simple:
+                    expression: "${header.CamelKafkaManualCommit.commit()}"
+            - stop:
+                id: stop-after-set-aside
+      # §3.5 (set-aside fails), I9: a failure of peakmart-event-set-aside itself is not handled; the offset stays
+      - onException:
+          id: on-intake-set-aside-failure
+          exception:
+            - java.lang.Exception
+          handled:
+            constant:
+              expression: "false"
+          redeliveryPolicy:
+            maximumRedeliveries: 0
+            logStackTrace: false
+            logExhausted: false
+            logExhaustedMessageBody: false
+            logExhaustedMessageHistory: false
+
+- route:
+    id: peakmart-order-intake
+    description: Take each record from the Peakmart order topic and commit its offset after it was handled
+    routeConfigurationId: peakmart-intake-error-handling
+    from:
+      id: from-peakmart-orders-topic
+      uri: kafka:{{peakmart.topic}}
+      parameters:
+        brokers: "{{kafka.brokers}}"
+        groupId: "{{peakmart.group-id}}"
+        # Design 006 D10: static member; a restarted pod takes its partitions back at once
+        groupInstanceId: "{{peakmart.group-instance-id}}"
+        autoOffsetReset: "{{peakmart.auto-offset-reset}}"
+        breakOnFirstError: true
+        autoCommitEnable: false
+        allowManualCommit: true
+      steps:
+        - setProperty:
+            id: set-correlation-id
+            name: correlation-id
+            expression:
+              simple:
+                expression: "${uuid}"
+        - setProperty:
+            id: set-kafka-position
+            name: kafka-position
+            expression:
+              simple:
+                expression: "${header.CamelKafkaPartition}-${header.CamelKafkaOffset}"
+        - setProperty:
+            id: set-received-at
+            name: received-at
+            expression:
+              simple:
+                expression: "${date-with-timezone:now:UTC:yyyy-MM-dd'T'HH:mm:ss.SSS'Z'}"
+        # Validation of 005 (Q-2): its own route, because inside doTry onException does not trigger (Camel 4.22, doTry
+        # EIP). An UnexpectedErrorException that catch-not-json lets pass is handled at this to:, by
+        # on-intake-cannot-take-in ("cannot be taken in: unexpected error: …", the read redelivered).
+        - to:
+            id: to-peakmart-event-read-json
+            uri: direct:peakmart-event-read-json
+        - choice:
+            id: choice-event-kind
+            when:
+              - id: when-too-large
+                expression:
+                  simple:
+                    expression: "${body?.length()} > {{peakmart.max-record-chars}}"
+                steps:
+                  - setProperty:
+                      id: set-reason-too-large
+                      name: cannot-read-reason
+                      expression:
+                        constant:
+                          expression: too large
+                  # Kept for the Integration Team up to the limit; the record is never parsed
+                  - setBody:
+                      id: set-body-truncated
+                      expression:
+                        simple:
+                          expression: "${body.substring(0, {{peakmart.max-record-chars}})}"
+                  - setProperty:
+                      id: set-not-json-too-large
+                      name: not-json
+                      expression:
+                        constant:
+                          expression: "true"
+                  - to:
+                      id: to-set-aside-too-large
+                      uri: direct:peakmart-event-set-aside
+              - id: when-not-json
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.not-json} == 'true' || ${body} == null || ${body} regex '\\s*'"
+                steps:
+                  - setProperty:
+                      id: set-reason-not-json
+                      name: cannot-read-reason
+                      expression:
+                        constant:
+                          expression: not JSON
+                  - to:
+                      id: to-set-aside-not-json
+                      uri: direct:peakmart-event-set-aside
+              - id: when-order-placed
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.event-type} == 'order.placed'"
+                steps:
+                  - to:
+                      id: to-peakmart-event-read
+                      uri: direct:peakmart-event-read
+            otherwise:
+              id: otherwise-other-event-type
+              steps:
+                - log:
+                    id: log-event-skipped
+                    loggingLevel: DEBUG
+                    message: "Order event of another type skipped kafkaPosition=${exchangeProperty.kafka-position}"
+        # Last step: reached only when no exception escaped the steps above (design review item 2)
+        - script:
+            id: commit-kafka-offset
+            expression:
+              simple:
+                expression: "${header.CamelKafkaManualCommit.commit()}"
+
+- route:
+    id: peakmart-event-read
+    description: Read an order.placed event as a Peakmart Order, or set it aside when it cannot be read
+    routeConfigurationId: peakmart-intake-error-handling
+    from:
+      id: from-peakmart-event-read
+      uri: direct:peakmart-event-read
+      steps:
+        - doTry:
+            id: try-validate-order-placed
+            steps:
+              - setProperty:
+                  id: set-event-id
+                  name: event-id
+                  expression:
+                    jsonpath:
+                      expression: "$.event_id"
+                      suppressExceptions: true
+              - setProperty:
+                  id: set-order-ref
+                  name: order-ref
+                  expression:
+                    jsonpath:
+                      expression: "$.order_ref"
+                      suppressExceptions: true
+              - setProperty:
+                  id: set-buyer-email
+                  name: buyer-email
+                  expression:
+                    jsonpath:
+                      expression: "$.buyer.email"
+                      suppressExceptions: true
+              - to:
+                  id: to-validate-order-placed
+                  uri: json-validator:classpath:schemas/peakmart-order-placed.schema.json
+            doCatch:
+              - id: catch-order-placed-invalid
+                exception:
+                  - org.apache.camel.component.jsonvalidator.JsonValidationException
+                steps:
+                  - setProperty:
+                      id: set-reason-from-validation
+                      name: cannot-read-reason
+                      expression:
+                        method:
+                          ref: cannotReadReason
+                          method: of(${exception})
+                  - setProperty:
+                      id: set-not-readable
+                      name: readable
+                      expression:
+                        constant:
+                          expression: "false"
+                  - to:
+                      id: to-set-aside-invalid
+                      uri: direct:peakmart-event-set-aside
+        - choice:
+            id: choice-readable
+            when:
+              - id: when-already-set-aside
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.readable} == 'false'"
+                steps:
+                  - log:
+                      id: log-already-set-aside
+                      loggingLevel: DEBUG
+                      message: "Order event already set aside kafkaPosition=${exchangeProperty.kafka-position}"
+              # Guard: an order_ref/event_id longer than its Order Database column or holding control characters (U+0000
+              # is rejected by PostgreSQL) could never be stored; the retried insert would block the topic for good
+              - id: when-unstorable
+                expression:
+                  groovy:
+                    expression: |
+                      def control = java.util.regex.Pattern.compile('[\\x00-\\x1F\\x7F]')
+                      def ref = exchange.getProperty('order-ref', String)
+                      def id = exchange.getProperty('event-id', String)
+                      ref.length() > 30 || id.length() > 100 || control.matcher(ref).find() || control.matcher(id).find()
+                steps:
+                  - setProperty:
+                      id: set-reason-unstorable
+                      name: cannot-read-reason
+                      expression:
+                        groovy:
+                          expression: |
+                            def control = java.util.regex.Pattern.compile('[\\x00-\\x1F\\x7F]')
+                            def ref = exchange.getProperty('order-ref', String)
+                            def id = exchange.getProperty('event-id', String)
+                            if (ref.length() > 30) { return '$.order_ref: maxLength' }
+                            if (control.matcher(ref).find()) { return '$.order_ref: pattern' }
+                            id.length() > 100 ? '$.event_id: maxLength' : '$.event_id: pattern'
+                  - to:
+                      id: to-set-aside-unstorable
+                      uri: direct:peakmart-event-set-aside
+              # Explicit check: format assertions of the JSON Schema 2020-12 validator are not guaranteed (BR-009)
+              - id: when-buyer-email-not-an-email
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.buyer-email} != null && ${exchangeProperty.buyer-email} !regex '{{peakmart.email-pattern}}'"
+                steps:
+                  - setProperty:
+                      id: set-reason-email-format
+                      name: cannot-read-reason
+                      expression:
+                        constant:
+                          expression: "$.buyer.email: format"
+                  - to:
+                      id: to-set-aside-email
+                      uri: direct:peakmart-event-set-aside
+            otherwise:
+              id: otherwise-readable
+              steps:
+                - setProperty:
+                    id: set-order-number
+                    name: order-number
+                    expression:
+                      simple:
+                        expression: "${exchangeProperty.order-ref}"
+                - transform:
+                    id: kaoto-datamapper-5c1e9a27
+                    description: "DataMapper peakmart-order-placed -> canonical Order (docs/messages/mappings/peakmart-order-placed-to-order.md)"
+                    expression:
+                      groovy:
+                        expression: |
+                          import groovy.json.JsonSlurper
+                          import groovy.json.JsonOutput
+
+                          def src = new JsonSlurper().parseText(request.getBody(String))
+                          def present = { v -> v != null && v.toString() != '' }
+                          def shipTo = src.ship_to ?: [:]
+
+                          def address = [:]
+                          if (present(shipTo.full_name)) { address.recipientName = shipTo.full_name }
+                          def street = [shipTo.address1, shipTo.address2].findAll { present(it) }.join(', ')
+                          if (present(street)) { address.streetLine = street }
+                          if (present(shipTo.city)) { address.city = shipTo.city }
+                          if (present(shipTo.state)) { address.stateRegion = shipTo.state }
+                          if (present(shipTo.zip)) { address.postalCode = shipTo.zip }
+                          if (present(shipTo.country_code)) { address.country = shipTo.country_code }
+
+                          def order = [:]
+                          order.orderNumber = src.order_ref
+                          order.channel = 'peakmart'
+                          order.eventId = src.event_id
+                          order.orderedAt = src.occurred_at
+                          order.receivedAt = exchange.getProperty('received-at', String)
+                          order.correlationId = exchange.getProperty('correlation-id', String)
+                          if (src.buyer?.email != null) { order.customerEmail = src.buyer.email }
+                          order.shippingAddress = address
+                          order.lines = (src.items ?: []).withIndex().collect { item, index ->
+                            [lineNumber: index + 1,
+                             sku       : item.sku,
+                             quantity  : item.qty,
+                             unitPrice : [amount: item.price_usd, currency: 'USD']]
+                          }
+                          JsonOutput.toJson(order)
+                - to:
+                    id: to-peakmart-order-receive
+                    uri: direct:peakmart-order-receive
+
+- route:
+    id: peakmart-event-set-aside
+    description: Store an Order Event that cannot be read so the Integration Team can examine it
+    routeConfigurationId: peakmart-intake-error-handling
+    from:
+      id: from-peakmart-event-set-aside
+      uri: direct:peakmart-event-set-aside
+      steps:
+        - setProperty:
+            id: set-set-aside-key
+            name: set-aside-key
+            expression:
+              groovy:
+                expression: |
+                  def id = exchange.getProperty('event-id')
+                  boolean usable = exchange.getProperty('not-json') != 'true' && id instanceof String && !id.isEmpty() && id.length() <= 100 && !(id =~ /[\x00-\x1F\x7F]/)
+                  usable ? id : 'kafka-' + exchange.getProperty('kafka-position', String)
+        - setProperty:
+            id: set-set-aside-order-number
+            name: set-aside-order-number
+            expression:
+              groovy:
+                expression: |
+                  def ref = exchange.getProperty('order-ref')
+                  (exchange.getProperty('not-json') != 'true' && ref instanceof String && !ref.isEmpty() && ref.length() <= 30 && !(ref =~ /[\x00-\x1F\x7F]/)) ? ref : null
+        - setProperty:
+            id: set-event-content
+            name: event-content
+            expression:
+              groovy:
+                # PostgreSQL text cannot hold U+0000; keep it visible as the escape \u0000 instead
+                expression: "(request.getBody(String) ?: '').replace('\\u0000', '\\\\u0000')"
+        - to:
+            id: to-set-aside-insert
+            uri: sql:classpath:sql/set-aside-insert.sql
+            parameters:
+              dataSource: "#dataSource"
+        - log:
+            id: log-event-set-aside
+            loggingLevel: WARN
+            message: "Order event set aside eventId=${exchangeProperty.set-aside-key} orderNumber=${exchangeProperty.set-aside-order-number} reason=${exchangeProperty.cannot-read-reason} correlationId=${exchangeProperty.correlation-id}"
+
+- route:
+    id: peakmart-order-receive
+    description: Receive a new Peakmart Order Number once, waiting to be checked, or skip it as a Duplicate
+    routeConfigurationId: peakmart-intake-error-handling
+    from:
+      id: from-peakmart-order-receive
+      uri: direct:peakmart-order-receive
+      steps:
+        - to:
+            id: to-receipt-insert
+            uri: sql:classpath:sql/receipt-insert.sql
+            parameters:
+              dataSource: "#dataSource"
+        - choice:
+            id: choice-duplicate
+            when:
+              - id: when-duplicate
+                expression:
+                  simple:
+                    expression: "${header.CamelSqlUpdateCount} == 0"
+                steps:
+                  - log:
+                      id: log-duplicate-skipped
+                      loggingLevel: INFO
+                      message: "Duplicate Peakmart order skipped orderNumber=${exchangeProperty.order-number} eventId=${exchangeProperty.event-id} correlationId=${exchangeProperty.correlation-id}"
+            otherwise:
+              id: otherwise-received
+              steps:
+                - log:
+                    id: log-order-received
+                    loggingLevel: INFO
+                    message: "Peakmart order received orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+
+- route:
+    id: peakmart-event-read-json
+    description: Read one record as JSON (event-type, json-object) or mark it not JSON; an unexpected error goes back to the caller
+    routeConfigurationId: peakmart-intake-error-handling
+    from:
+      id: from-peakmart-event-read-json
+      uri: direct:peakmart-event-read-json
+      steps:
+        - doTry:
+            id: try-read-as-json
+            steps:
+              # Size limit at the ingress, before the first parser (security checklist rule 4)
+              - filter:
+                  id: filter-record-size
+                  expression:
+                    simple:
+                      expression: "${body?.length()} <= {{peakmart.max-record-chars}}"
+                  steps:
+                    - setProperty:
+                        id: set-event-type
+                        name: event-type
+                        expression:
+                          jsonpath:
+                            expression: "$.event_type"
+                            suppressExceptions: true
+                    # Readability test: suppressExceptions on event_type could hide a parse error (design §3 route 1)
+                    - setProperty:
+                        id: set-json-object
+                        name: json-object
+                        expression:
+                          jsonpath:
+                            expression: "$"
+                            suppressExceptions: false
+                            resultType: java.util.Map
+            doCatch:
+              - id: catch-not-json
+                exception:
+                  - java.lang.Exception
+                # Validation of 005 (Q-2): an Error contained by errorContainment (H1) is not "not JSON"; it leaves this
+                # route and is handled at to-peakmart-event-read-json by on-intake-cannot-take-in
+                onWhen:
+                  id: when-not-json-not-unexpected
+                  expression:
+                    simple:
+                      expression: "${exception} !is 'com.trailheadgear.orderintegration.UnexpectedErrorException'"
+                steps:
+                  - setProperty:
+                      id: set-not-json
+                      name: not-json
+                      expression:
+                        constant:
+                          expression: "true"

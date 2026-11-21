@@ -1,0 +1,196 @@
+before: POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+before: order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:45:12Z]]   <none>   <none>
+11:46:49 == 300 accepted and 200 rejected events published PM-620000..PM-620499
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+awk: syntax error at source line 1
+ context is
+	{printf "%s=%dMiB ", NR >>>  == <<< 
+awk: illegal statement at source line 1
+awk: illegal statement at source line 1
+11:49:32 error: Metrics API not available | cgroup  | restarts=0 last=/
+11:49:38 error: Metrics API not available | cgroup  | restarts=0 last=/
+11:49:43 error: Metrics API not available | cgroup  | restarts=0 last=/
+peak memory (top): not measured
+peak memory (cgroup memory.peak of the running container): not measured
+after: POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+after: order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:45:12Z]]   <none>   <none>
+receipts=500 distinct=500 recorded=300 rejected=200
+set aside=0
+statuses: 422=345 
+before: POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+before: order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:45:12Z]]   <none>   <none>
+11:46:49 == 300 accepted and 200 rejected events published PM-620000..PM-620499
+11:49:32 error: Metrics API not available | cgroup  | restarts=0 last=/
+11:49:38 error: Metrics API not available | cgroup  | restarts=0 last=/
+11:49:43 error: Metrics API not available | cgroup  | restarts=0 last=/
+peak memory (top): not measured
+peak memory (cgroup memory.peak of the running container): not measured
+after: POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+after: order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:45:12Z]]   <none>   <none>
+receipts=500 distinct=500 recorded=300 rejected=200
+set aside=0
+statuses: 422=345 
+
+after the run (kube.sh exec order-integration-0 -- cat memory.current memory.peak memory.max, bytes; container started 17:45:12Z, before the burst):
+467451904
+469590016
+1073741824

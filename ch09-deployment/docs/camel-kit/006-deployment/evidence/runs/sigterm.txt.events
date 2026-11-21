@@ -1,0 +1,6 @@
+peakmart receipts before: 1
+06:10:59 == 200 events published PM-1200..
+06:11:02 == delete pod order-integration-bdfd7696-4rn46 (SIGTERM, grace 30 s)
+06:11:05 == pod order-integration-bdfd7696-4rn46 gone
+06:11:59 == replacement running
+statuses: 404=3 000=16 200=141 

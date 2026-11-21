@@ -1,0 +1,13 @@
+{
+  "kind": "peakmart-order-waiting",
+  "raisedAt": "2026-11-03T11:15:00Z",
+  "orders": [
+    {
+      "orderNumber": "PM-50120",
+      "channel": "peakmart",
+      "waitingFor": "check",
+      "since": "2026-11-03T09:15:00Z",
+      "waitingMinutes": 120
+    }
+  ]
+}

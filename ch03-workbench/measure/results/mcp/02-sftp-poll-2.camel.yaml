@@ -1,0 +1,21 @@
+- route:
+    id: supplier-invoices-sftp
+    from:
+      uri: sftp
+      parameters:
+        host: sftp.supplier.example
+        directoryName: /outbound/invoices
+        username: trailhead
+        privateKeyFile: /secrets/id_ed25519
+        knownHostsFile: /secrets/known_hosts
+        strictHostKeyChecking: "yes"
+        antInclude: "*.csv"
+        delete: true
+        delay: 300000
+      steps:
+        - log:
+            message: "Downloaded supplier invoice ${header.CamelFileName}"
+        - to:
+            uri: file
+            parameters:
+              directoryName: work/invoices

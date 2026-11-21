@@ -1,0 +1,14 @@
+{
+  "orderNumber": "TG-1061",
+  "rejectionReasons": [
+    {
+      "orderCheck": "quantity",
+      "lineNumber": 2,
+      "text": "Order Line 2: the quantity 25 is more than 20. Order at most 20 of one Product per Order Line."
+    },
+    {
+      "orderCheck": "destination-country",
+      "text": "Shipping Address: the country DE is not served. Ship to the US (US) or Canada (CA)."
+    }
+  ]
+}

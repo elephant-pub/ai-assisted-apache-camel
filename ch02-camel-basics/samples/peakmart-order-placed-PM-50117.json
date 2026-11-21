@@ -1,0 +1,20 @@
+{
+  "event_type": "order.placed",
+  "event_id": "8d2f6c1e-4b7a-4f0e-9a51-3c2e7b9d0f14",
+  "occurred_at": "2026-11-02T09:14:31Z",
+  "order_ref": "PM-50117",
+  "buyer": { "email": "jordan.reyes@example.com" },
+  "ship_to": {
+    "full_name": "Jordan Reyes",
+    "address1": "2240 Pearl Street",
+    "address2": "Apt 4",
+    "city": "Boulder",
+    "state": "CO",
+    "zip": "80302",
+    "country_code": "US"
+  },
+  "items": [
+    { "sku": "TENT-2P", "qty": 1, "price_usd": "229.00" },
+    { "sku": "STAKE-AL8", "qty": 2, "price_usd": "12.50" }
+  ]
+}

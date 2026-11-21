@@ -1,0 +1,7 @@
+reference/08-http-call.camel.yaml             gave up connecting after 2.1
+results/mcp/08-http-call-1.camel.yaml         gave up connecting after 2.1
+results/mcp/08-http-call-2.camel.yaml         gave up connecting after no failure within 20 s
+results/mcp/08-http-call-3.camel.yaml         gave up connecting after 2.1
+results/memory/08-http-call-1.camel.yaml      gave up connecting after no failure within 20 s
+results/memory/08-http-call-2.camel.yaml      gave up connecting after no failure within 20 s
+results/memory/08-http-call-3.camel.yaml      gave up connecting after no failure within 20 s

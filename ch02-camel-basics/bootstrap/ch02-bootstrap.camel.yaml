@@ -1,0 +1,29 @@
+# Dependency-discovery route used only to create the Spring Boot scaffold with `camel export`.
+# It is not loaded by the active application.
+- route:
+    id: bootstrap-file
+    from:
+      uri: file:target/bootstrap-inbox
+      steps:
+        - unmarshal:
+            json: {}
+        - to:
+            uri: direct:bootstrap
+
+- route:
+    id: bootstrap-http
+    from:
+      uri: platform-http:/bootstrap
+      steps:
+        - to:
+            uri: direct:bootstrap
+
+- route:
+    id: bootstrap-output
+    from:
+      uri: direct:bootstrap
+      steps:
+        - marshal:
+            csv: {}
+        - to:
+            uri: file:target/bootstrap-warehouse

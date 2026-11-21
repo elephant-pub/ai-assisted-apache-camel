@@ -1,0 +1,40 @@
+2026-11-16T17:36:00.854Z  INFO 1 --- [ - ShutdownTask] o.a.c.component.kafka.KafkaFetchRecords  : A pause request was issued and the consumer thread will pause after current processing has finished
+2026-11-16T17:36:00.861Z  INFO 1 --- [ - ShutdownTask] o.a.camel.component.kafka.KafkaConsumer  : Stopping Kafka consumer on topic: peakmart.orders.v2
+2026-11-16T17:36:00.861Z  INFO 1 --- [ - ShutdownTask] o.a.c.component.kafka.KafkaFetchRecords  : Waiting up to 30000 milliseconds for the processing to finish
+2026-11-16T17:36:01.388Z  INFO 1 --- [mart.orders.v2]] o.a.c.component.kafka.KafkaFetchRecords  : Pausing the consumer as a response to a pause request
+2026-11-16T17:36:01.388Z  INFO 1 --- [mart.orders.v2]] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer instanceId=order-integration-0, clientId=consumer-trailhead-order-integration-order-integration-0, groupId=trailhead-order-integration] Revoke previously assigned partitions [peakmart.orders.v2-0, peakmart.orders.v2-1]
+2026-11-16T17:36:01.389Z  INFO 1 --- [mart.orders.v2]] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer instanceId=order-integration-0, clientId=consumer-trailhead-order-integration-order-integration-0, groupId=trailhead-order-integration] The pause flag in partitions [peakmart.orders.v2-0, peakmart.orders.v2-1] will be removed due to revocation.
+2026-11-16T17:36:01.390Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer instanceId=order-integration-0, clientId=consumer-trailhead-order-integration-order-integration-0, groupId=trailhead-order-integration] Resetting generation and member id due to: consumer pro-actively leaving the group
+2026-11-16T17:36:01.390Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer instanceId=order-integration-0, clientId=consumer-trailhead-order-integration-order-integration-0, groupId=trailhead-order-integration] Request joining group due to: consumer pro-actively leaving the group
+2026-11-16T17:36:01.390Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.i.ClassicKafkaConsumer         : [Consumer instanceId=order-integration-0, clientId=consumer-trailhead-order-integration-order-integration-0, groupId=trailhead-order-integration] Unsubscribed all topics or patterns and assigned partitions
+2026-11-16T17:36:01.390Z  INFO 1 --- [mart.orders.v2]] o.a.c.component.kafka.KafkaFetchRecords  : Terminating KafkaConsumer thread peakmart.orders.v2-Thread 0 receiving from topic(s) peakmart.orders.v2
+2026-11-16T17:36:01.394Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer instanceId=order-integration-0, clientId=consumer-trailhead-order-integration-order-integration-0, groupId=trailhead-order-integration] Resetting generation and member id due to: consumer pro-actively leaving the group
+2026-11-16T17:36:01.394Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer instanceId=order-integration-0, clientId=consumer-trailhead-order-integration-order-integration-0, groupId=trailhead-order-integration] Request joining group due to: consumer pro-actively leaving the group
+2026-11-16T17:36:01.861Z  INFO 1 --- [mart.orders.v2]] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2026-11-16T17:36:01.861Z  INFO 1 --- [mart.orders.v2]] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2026-11-16T17:36:01.862Z  INFO 1 --- [mart.orders.v2]] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+2026-11-16T17:36:01.862Z  INFO 1 --- [mart.orders.v2]] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2026-11-16T17:36:01.869Z  INFO 1 --- [mart.orders.v2]] o.a.kafka.common.utils.AppInfoParser     : App info kafka.consumer for consumer-trailhead-order-integration-order-integration-0 unregistered
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   : Routes stopped (total:19 rest-dsl:1)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-orders-rest-route (rest-openapi://classpath:contract/api/partner-orders.openapi.yaml)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-order-read (direct://partner-order-read)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-order-answer (direct://partner-order-answer)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-order-check (direct://partner-order-check)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-order-receive (direct://partner-order-receive)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-order-submit (direct://submitPartnerOrder)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped order-record (direct://order-record)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped order-reject (direct://order-reject)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped product-lookup (direct://product-lookup)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped order-check (direct://order-check)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-order-check-poll (sql://classpath:sql/waiting-select.sql)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped pick-list-delivery (sql://classpath:sql/pick-list-select.sql)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped order-desk-notification-send (sql://classpath:sql/notification-select.sql)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-rejection-email-send (sql://classpath:sql/rejection-email-select.sql)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-event-read-json (direct://peakmart-event-read-json)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-order-receive (direct://peakmart-order-receive)
+2026-11-16T17:36:01.882Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-event-set-aside (direct://peakmart-event-set-aside)
+2026-11-16T17:36:01.883Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-event-read (direct://peakmart-event-read)
+2026-11-16T17:36:01.883Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-order-intake (kafka://peakmart.orders.v2)
+2026-11-16T17:36:01.887Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   : Apache Camel 4.22.2 (trailhead-order-integration) shutdown in 1s193ms (uptime:4m8s)
+2026-11-16T17:36:01.898Z  INFO 1 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-11-16T17:36:01.907Z  INFO 1 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

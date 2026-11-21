@@ -1,0 +1,14 @@
+# ./mvnw verify per fault on a clean copy; "failed" lists the test classes with a failure or error.
+# exit is 0 throughout because the runs use -Dmaven.test.failure.ignore=true.
+
+baseline {"exit": 0, "failed": [], "seconds": 189}
+F1-email-pattern {"exit": 0, "failed": ["EmailPatternTest", "Tc001PartnerOrderToWarehouseIT", "Tc002PeakmartRedeliveryShippedOnceIT", "Tc005PickListOnceAfterRestartIT"], "seconds": 172}
+F2-street-join {"exit": 0, "failed": ["Tc002PeakmartRedeliveryShippedOnceIT"], "seconds": 166}
+F3-price-rule {"exit": 0, "failed": ["OrderChecksPartnerTest", "Tc001PartnerOrderToWarehouseIT", "Tc002PeakmartRedeliveryShippedOnceIT", "Tc005PickListOnceAfterRestartIT"], "seconds": 117}
+F4-total-weight {"exit": 0, "failed": ["Tc001PartnerOrderToWarehouseIT", "Tc002PeakmartRedeliveryShippedOnceIT", "Tc005PickListOnceAfterRestartIT"], "seconds": 141}
+F5-processed-check {"exit": 0, "failed": [], "seconds": 186}
+F6-reason-order {"exit": 0, "failed": [], "seconds": 203}
+F7-commit-first {"exit": 0, "failed": ["Tc001PartnerOrderToWarehouseIT", "Tc002PeakmartRedeliveryShippedOnceIT", "Tc003PeakmartOrderRejectedIT", "Tc004SetAsideOrderEventReachesWarehouseIT", "Tc005PickListOnceAfterRestartIT"], "seconds": 133}   # environment: Cannot create Kafka topic, before any step
+F7-commit-first {"exit": 0, "failed": ["Tc001PartnerOrderToWarehouseIT", "Tc002PeakmartRedeliveryShippedOnceIT", "Tc003PeakmartOrderRejectedIT", "Tc004SetAsideOrderEventReachesWarehouseIT", "Tc005PickListOnceAfterRestartIT"], "seconds": 134}   # environment: Cannot create Kafka topic, before any step
+F8-dependency-pin {"exit": 0, "failed": ["Tc001PartnerOrderToWarehouseIT", "Tc002PeakmartRedeliveryShippedOnceIT", "Tc003PeakmartOrderRejectedIT", "Tc004SetAsideOrderEventReachesWarehouseIT", "Tc005PickListOnceAfterRestartIT"], "seconds": 387}
+F7-commit-first {"exit": 0, "failed": [], "seconds": 197}

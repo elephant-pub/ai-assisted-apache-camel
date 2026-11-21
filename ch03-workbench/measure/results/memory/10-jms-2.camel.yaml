@@ -1,0 +1,11 @@
+- route:
+    id: warehouse-confirmations
+    from:
+      uri: jms:queue:warehouse.confirmations
+      parameters:
+        connectionFactory: "#bean:artemisConnectionFactory"
+        concurrentConsumers: 5
+        transacted: true
+      steps:
+        - to:
+            uri: direct:confirmation

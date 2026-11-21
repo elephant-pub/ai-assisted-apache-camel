@@ -1,0 +1,19 @@
+{
+  "kind": "not-sent-to-warehouse",
+  "raisedAt": "2026-11-02T15:10:00Z",
+  "orders": [
+    {
+      "orderNumber": "TG-1060",
+      "channel": "partner",
+      "since": "2026-11-02T14:40:00Z",
+      "waitingMinutes": 30,
+      "recipientName": "Lee Martin"
+    },
+    {
+      "orderNumber": "PM-50117",
+      "channel": "peakmart",
+      "since": "2026-11-02T14:39:00Z",
+      "waitingMinutes": 31
+    }
+  ]
+}

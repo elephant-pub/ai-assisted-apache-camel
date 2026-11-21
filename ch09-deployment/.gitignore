@@ -1,0 +1,9 @@
+prototype/target/
+prototype/target-*
+prototype/stubs/product-catalog/target*
+.camel-jbang/
+**/.camel-jbang/
+target/
+faults/work/
+faults/results-*.json
+__pycache__/

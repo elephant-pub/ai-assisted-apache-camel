@@ -1,0 +1,134 @@
+# Flow partner-rejection-email (design 003 §3, FR-006, UC-001 BR-005): deliver every pending Rejection Email to the
+# Order Contact of the Partner, once per Rejected Partner Order, retrying on the next poll until the mail server takes
+# it, also after a restart. The same pattern as order-desk-notification (002); its own route because the selection,
+# the subject and the sender differ. The notification row is marked sent only after the SMTP server accepted it.
+- routeConfiguration:
+    id: partner-rejection-email-error-handling
+    description: A Rejection Email that could not be sent stays pending and is tried again on the next poll
+    onException:
+      - onException:
+          id: on-partner-rejection-email-failure
+          exception:
+            - java.lang.Exception
+          # Not handled on purpose: a handled failure would run onConsume and mark an unsent email as sent.
+          # Design 005 H6: this clause counts the attempt once, with its time and reason (notification-failed.sql);
+          # also for an UnexpectedErrorException (H1)
+          handled:
+            constant:
+              expression: "false"
+          redeliveryPolicy:
+            maximumRedeliveries: 0
+            # An UnexpectedErrorException's cause holds the Error message; an SMTP message can quote the address
+            logStackTrace: false
+            logNewException: false
+            logExhausted: false
+            logExhaustedMessageBody: false
+            logExhaustedMessageHistory: false
+          steps:
+            # The kind only (class name, reply code), never a message or an address
+            - setProperty:
+                id: set-rejection-email-last-failure
+                name: last-failure
+                expression:
+                  simple:
+                    expression: "${bean:failureKinds?method=describe(${exception})}"
+            # A failure to write the reason must not hide the original failure: the email stays unsent either way
+            - doTry:
+                id: try-rejection-email-failed
+                steps:
+                  - to:
+                      id: to-rejection-email-failed
+                      uri: sql:classpath:sql/notification-failed.sql
+                      parameters:
+                        dataSource: "#dataSource"
+                doCatch:
+                  - id: catch-rejection-email-failed-failure
+                    exception:
+                      - java.lang.Exception
+                    steps:
+                      - log:
+                          id: log-rejection-email-failed-failure
+                          loggingLevel: WARN
+                          message: "Rejection email failed attempt not recorded orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id} cause=${exception.class.simpleName}"
+            - log:
+                id: log-partner-rejection-email-not-sent
+                loggingLevel: WARN
+                message: "Rejection email not sent, tried again on the next poll orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id} cause=${exchangeProperty.last-failure}"
+
+- route:
+    id: partner-rejection-email-send
+    description: Deliver each pending Rejection Email as a plain-text email to the Partner's Order Contact
+    routeConfigurationId: partner-rejection-email-error-handling
+    from:
+      id: from-rejection-email-outbox
+      uri: sql:classpath:sql/rejection-email-select.sql
+      parameters:
+        dataSource: "#dataSource"
+        delay: "{{notification.poll-delay-ms}}"
+        # RAW(...) keeps the '+' literal; LEAST(..., 1000) keeps attempts inside its CHECK (design 002 D4)
+        # Design 005 H6: success clears last_failure; a failed attempt is counted by the error clause
+        # (notification-failed.sql), so there is no onConsumeFailed and an attempt is counted once
+        onConsume: "RAW(UPDATE notification SET sent_at = now(), attempts = LEAST(attempts + 1, 1000), last_failure = NULL WHERE id = :#notification_id)"
+      steps:
+        # The row for notification-failed.sql: the error clause no longer sees the consumer's row
+        - setProperty:
+            id: set-rejection-email-notification-id
+            name: notification-id
+            expression:
+              simple:
+                expression: "${body[notification_id]}"
+        - setProperty:
+            id: set-rejection-email-order-number
+            name: order-number
+            expression:
+              simple:
+                expression: "${body[order_number]}"
+        - setProperty:
+            id: set-rejection-email-correlation-id
+            name: correlation-id
+            expression:
+              simple:
+                expression: "${body[correlation_id]}"
+        # Camel mail turns message headers into mail headers: nothing from the row or the consumer may reach the email
+        - removeHeaders:
+            id: remove-headers-before-rejection-email
+            pattern: "*"
+        # The Order Contact registered for the Partner at rejection time, never an address from the order; never logged
+        - setHeader:
+            id: set-header-rejection-email-to
+            name: To
+            expression:
+              simple:
+                expression: "${body[recipient_email]}"
+        - setHeader:
+            id: set-header-rejection-email-subject
+            name: Subject
+            expression:
+              simple:
+                expression: "Order ${exchangeProperty.order-number} rejected"
+        # Only the order number and the reasons (C-023)
+        - setBody:
+            id: set-body-rejection-email-text
+            expression:
+              simple:
+                expression: |-
+                  Order number: ${exchangeProperty.order-number}
+                  ${body[reason_lines]}
+        # Credentials are component options (camel.component.smtp.*), never part of this URI
+        - to:
+            id: to-partner-order-contact
+            uri: smtp://{{smtp.host}}:{{smtp.port}}
+            parameters:
+              from: "{{partner.mail-sender}}"
+              useHeaderRecipients: true
+              useHeaderSubject: true
+              contentType: "text/plain; charset=UTF-8"
+              connectionTimeout: "{{smtp.timeout-ms}}"
+              mail.smtp.timeout: "{{smtp.timeout-ms}}"
+              mail.smtp.writetimeout: "{{smtp.timeout-ms}}"
+              mail.smtp.starttls.enable: "{{smtp.starttls}}"
+              mail.smtp.starttls.required: "{{smtp.starttls}}"
+        - log:
+            id: log-rejection-email-sent
+            loggingLevel: INFO
+            message: "Rejection email sent orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"

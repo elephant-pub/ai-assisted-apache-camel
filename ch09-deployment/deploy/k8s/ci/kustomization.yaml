@@ -1,0 +1,44 @@
+# Design 006 §3.15 jobs 3 and 4: the release (../base) with CI settings, plus the lab's systems, for the kind cluster
+# inside the CI runner. Rendered with `kubectl kustomize deploy/k8s/ci` (locally deploy/local/kube.sh kustomize, P-14)
+# and validated by kubeconform (T5).
+# No Secret here: deploy/ci/smoke.sh creates every Secret with random values per run (systems.yaml lists them).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - namespace.yaml
+  - systems.yaml
+  - ../base
+# The integration's resources go to trailhead-ci. unsetOnly: the systems keep their own namespace,
+# trailhead-ci-systems (a plain `namespace:` field would move them too).
+transformers:
+  - |-
+    apiVersion: builtin
+    kind: NamespaceTransformer
+    metadata:
+      name: integration-namespace
+      namespace: trailhead-ci
+    unsetOnly: true
+configMapGenerator:
+  - name: order-integration-settings
+    envs:
+      - settings.env
+    options:
+      disableNameSuffixHash: true
+images:
+  - name: order-integration
+    newName: trailhead/order-integration
+    newTag: ci   # built in the runner and loaded with `kind load docker-image`; never pushed
+patches:
+  - target: {kind: StatefulSet, name: order-integration}
+    patch: |-
+      - op: add
+        path: /spec/template/spec/containers/0/imagePullPolicy
+        value: IfNotPresent
+      # CI only, never in the base or the release (T4): the stand-in mail server's certificate is signed by the
+      # per-run CI CA, which the JVM does not know. The truststore holds that CA only; it is a file of the Secret
+      # order-integration-files that smoke.sh creates. The real mail server is OQ-076's.
+      - op: add
+        path: /spec/template/spec/containers/0/env/-
+        value:
+          name: JAVA_TOOL_OPTIONS
+          value: -Djavax.net.ssl.trustStore=/etc/trailhead/files/truststore.p12 -Djavax.net.ssl.trustStoreType=PKCS12 -Djavax.net.ssl.trustStorePassword=changeit

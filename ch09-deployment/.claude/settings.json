@@ -1,0 +1,49 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Bash(mvn *)",
+      "Bash(./mvnw *)",
+      "mcp__camel__*",
+      "mcp__camel-knowledge__*",
+      "mcp__citrus__*"
+    ],
+    "deny": [
+      "Read(~/.kube/**)",
+      "Read(~/.ssh/**)",
+      "Read(~/.docker/**)",
+      "Read(~/.aws/**)",
+      "Read(~/.config/**)",
+      "Read(~/.gnupg/**)",
+      "Edit(~/**)",
+      "Bash(kubectl *)",
+      "Bash(helm *)",
+      "Bash(kind delete *)",
+      "Bash(doctl *)",
+      "Bash(aws *)",
+      "Bash(gcloud *)",
+      "Bash(az *)",
+      "Bash(gh *)",
+      "Bash(git push *)",
+      "Bash(docker rm *)",
+      "Bash(docker rmi *)",
+      "Bash(docker stop *)",
+      "Bash(docker kill *)",
+      "Bash(docker system *)",
+      "Bash(docker volume *)",
+      "Bash(docker image prune *)",
+      "Bash(docker run *)",
+      "Bash(docker exec *)",
+      "Bash(docker cp *)",
+      "Bash(docker login *)",
+      "Bash(docker push *)",
+      "Bash(docker tag *)",
+      "Bash(kind get kubeconfig*)",
+      "Bash(kind export *)",
+      "Edit(.claude/**)",
+      "Edit(/.claude/**)",
+      "Write(.claude/**)",
+      "Write(/.claude/**)"
+    ]
+  }
+}

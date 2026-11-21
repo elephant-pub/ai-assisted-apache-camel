@@ -1,0 +1,33 @@
+12:02:31 == applied lab overlay + patch-fault-006.yaml
+12:02:38 == ready
+POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T18:02:32Z]]   <none>   <none>
+statuses: 
+12:02:31 == applied lab overlay + patch-fault-006.yaml
+12:02:38 == ready
+POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T18:02:32Z]]   <none>   <none>
+statuses: 
+18:02:40 20 events published PM-650000..PM-650019
+2026-11-16T18:03:05.933Z  INFO 1 --- [           main] c.t.orderintegration.fault.FaultHook     : Fault hook active points=to-validate-order-placed:oom:1
+2026-11-16T18:03:07.455Z  INFO 1 --- [           main] c.t.orderintegration.CamelApplication    : Started CamelApplication in 3.469 seconds (process running for 3.693)
+2026-11-16T18:03:07.756Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer instanceId=order-integration-0, clientId=consumer-trailhead-order-integration-order-integration-0, groupId=trailhead-order
+2026-11-16T18:03:07.759Z  INFO 1 --- [mart.orders.v2]] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer instanceId=order-integration-0, clientId=consumer-trailhead-order-integration-order-integration-0, groupId=trailhead-order
+2026-11-16T18:03:07.803Z  WARN 1 --- [mart.orders.v2]] c.t.orderintegration.fault.FaultHook     : Fault hook fires node=to-validate-order-placed kind=oom
+2026-11-16T18:03:07.804Z ERROR 1 --- [mart.orders.v2]] c.t.orderintegration.ErrorContainment    : Fatal error routeId=peakmart-event-read nodeId=to-validate-order-placed error=java.lang.OutOfMemoryError — the process stops
+POD                   READY   RESTARTS   STATE                                                                                                                                                                                      LAST    EXIT
+order-integration-0   false   2          map[waiting:map[message:back-off 20s restarting failed container=order-integration pod=order-integration-0_trailhead-lab(3d7e725a-a11b-4f58-b811-dab53de76323) reason:CrashLoopBackOff]]   Error   70
+12:03:22 == applied the lab overlay
+12:04:22 == pod still on the old revision after 60 s: delete it (runbook step)
+12:04:29 == ready
+POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T18:04:23Z]]   <none>   <none>
+statuses: 
+12:03:22 == applied the lab overlay
+12:04:22 == pod still on the old revision after 60 s: delete it (runbook step)
+12:04:29 == ready
+POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T18:04:23Z]]   <none>   <none>
+statuses: 
+after the rollback: receipts=20 recorded=20 distinct=20, first receipt 4.7 s after the release container start (18:04:23Z)
+set aside=0

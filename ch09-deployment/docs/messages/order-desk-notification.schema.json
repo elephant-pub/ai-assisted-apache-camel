@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Order Desk Notification",
+  "description": "The content of the plain-text Order Desk Notification to the Order Desk mailbox for a Rejected Peakmart Order (UC-002 A4, BR-004). Trailhead Gear owns it. It allows no other field, so that no Customer name, email address or Shipping Address can get into it (C-023). The subject is `Peakmart order <Order Number> rejected`, in English (FR-031); how the text is laid out is not part of the model.",
+  "type": "object",
+  "required": ["orderNumber", "rejectionReasons"],
+  "additionalProperties": false,
+  "properties": {
+    "orderNumber": { "type": "string", "minLength": 1, "description": "Order Number of the Rejected Peakmart Order." },
+    "rejectionReasons": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Every Rejection Reason, in the order of the Order Checks (UC-003 A3).",
+      "items": { "$ref": "rejection-reason.schema.json" }
+    }
+  }
+}

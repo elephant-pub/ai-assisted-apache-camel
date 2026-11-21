@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Peakmart Order Event order.placed",
+  "description": "An Order Event of type `order.placed` as Peakmart publishes it on its topic `peakmart.orders.v2` (UC-002). Peakmart owns this format and may add fields without notice (C-006), so extra fields are allowed. The schema says what can be read as a Peakmart Order (UC-002 A2); the Order Checks are not part of it (UC-003 BR-010).",
+  "type": "object",
+  "required": ["event_type", "event_id", "occurred_at", "order_ref", "ship_to", "items"],
+  "properties": {
+    "event_type": {
+      "const": "order.placed",
+      "description": "Type of the Order Event. Events of any other type are skipped before they are read, UC-002 BR-001."
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Event id of the Order Event, a UUID in the sample. Not the Duplicate key: the same Order may arrive under a new event id, UC-002 BR-002."
+    },
+    "occurred_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time of the event, with its offset; the sample uses UTC (`Z`). Taken as the time the Customer placed the Order (UC-002 BR-008)."
+    },
+    "order_ref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Order Number. `PM-` and digits is an Order Check, UC-003 BR-002. Checked against the Orders already received, UC-002 BR-002."
+    },
+    "buyer": {
+      "type": "object",
+      "description": "The Customer.",
+      "properties": {
+        "email": { "type": "string", "format": "email", "description": "Email address of the Customer; an Order Event whose email is not an email address cannot be read and is set aside (UC-002 BR-009). Personal data (C-021)." }
+      }
+    },
+    "ship_to": {
+      "type": "object",
+      "description": "Shipping Address. Its parts are not required here: a missing part is a Rejection Reason, UC-003 BR-007. Personal data (C-021).",
+      "properties": {
+        "full_name": { "type": "string", "description": "Recipient name." },
+        "address1": { "type": "string", "description": "First address line." },
+        "address2": { "type": "string", "description": "Second address line, when there is one." },
+        "city": { "type": "string", "description": "City." },
+        "state": { "type": "string", "description": "State or province." },
+        "zip": { "type": "string", "description": "Postal code." },
+        "country_code": { "type": "string", "description": "Country code; the US or Canada is an Order Check, UC-003 BR-008." }
+      }
+    },
+    "items": {
+      "type": "array",
+      "description": "Order Lines. Their number, 1 to 30, is an Order Check, UC-003 BR-005.",
+      "items": {
+        "type": "object",
+        "required": ["sku", "qty", "price_usd"],
+        "properties": {
+          "sku": { "type": "string", "minLength": 1, "description": "SKU of the Product. Checked against the Product Catalog, UC-003 BR-009." },
+          "qty": { "type": "integer", "description": "Number of items. 1 to 20 is an Order Check, UC-003 BR-006." },
+          "price_usd": { "type": "string", "pattern": "^\\d+\\.\\d{2}$", "description": "Peakmart Price of one item, a string in US dollars with two decimals (C-006)." }
+        }
+      }
+    }
+  }
+}

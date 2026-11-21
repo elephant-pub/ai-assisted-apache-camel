@@ -1,0 +1,16 @@
+- route:
+    id: pick-list-to-warehouse-sftp
+    from:
+      uri: direct:pick-list
+      steps:
+        - to:
+            uri: sftp:warehouse.trailhead.example//inbound/picklists
+            parameters:
+              username: trailhead
+              password: "{{warehouse.password}}"
+              # Write to a temporary name first, then rename once the upload is complete
+              tempPrefix: .inprogress-
+              # Fail if a file with the target name already exists
+              fileExist: Fail
+              # Reject unknown or changed host keys
+              strictHostKeyChecking: "yes"

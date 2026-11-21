@@ -1,0 +1,17 @@
+- route:
+    id: rejection-mail
+    from:
+      uri: direct:rejection-mail
+      steps:
+        - setHeader:
+            name: To
+            simple: "${header.partnerEmail}"
+        - to:
+            uri: smtp:smtp.trailhead.example:587
+            parameters:
+              username: orders@trailhead.example
+              password: "{{mail.password}}"
+              from: orders@trailhead.example
+              subject: Order rejected
+              mail.smtp.starttls.enable: true
+              mail.smtp.starttls.required: true

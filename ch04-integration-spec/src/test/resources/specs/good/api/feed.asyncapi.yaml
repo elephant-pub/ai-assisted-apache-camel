@@ -1,0 +1,15 @@
+asyncapi: 3.0.0
+info: { title: Feed, version: 1.0.0 }
+channels:
+  orders:
+    address: shop.orders
+    messages:
+      orderPlaced: { $ref: '#/components/messages/orderPlaced' }
+operations:
+  receiveOrder:
+    action: receive
+    channel: { $ref: '#/channels/orders' }
+components:
+  messages:
+    orderPlaced:
+      payload: { $ref: '../messages/source.schema.json' }

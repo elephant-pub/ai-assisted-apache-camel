@@ -1,0 +1,25 @@
+{
+  "orderNumber": "TG-1060",
+  "orders": [
+    {
+      "channel": "partner",
+      "partnerId": "summit-outfitters",
+      "receivedAt": "2026-11-02T14:05:13Z",
+      "orderState": "rejected",
+      "history": [
+        {
+          "orderState": "received",
+          "at": "2026-11-02T14:05:13Z"
+        },
+        {
+          "orderState": "recorded",
+          "at": "2026-11-02T14:05:14Z"
+        },
+        {
+          "orderState": "sent-to-warehouse",
+          "at": "2026-11-02T14:07:02Z"
+        }
+      ]
+    }
+  ]
+}

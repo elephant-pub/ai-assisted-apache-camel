@@ -1,0 +1,187 @@
+# The same four routes as OrderRoutes.java, in Camel's canonical YAML DSL.
+# Run them instead of the Java routes with the "yaml" Spring profile.
+
+# 1. Captured Peakmart JSON; a local file stands in for Kafka until Chapter 5.
+- route:
+    id: peakmart-capture
+    from:
+      uri: "{{trailhead.peakmart.inbox}}"
+      steps:
+        - convertBodyTo:
+            type: java.lang.String
+        - setProperty:
+            name: capturedEvent
+            expression:
+              simple:
+                expression: "${body}"
+        - doTry:
+            steps:
+              - unmarshal:
+                  json:
+                    unmarshalType: com.trailheadgear.integration.PeakmartOrderEvent
+              - setHeader:
+                  name: eventType
+                  expression:
+                    simple:
+                      expression: "${body.eventType}"
+              - setHeader:
+                  name: eventId
+                  expression:
+                    simple:
+                      expression: "${body.eventId}"
+              - validate:
+                  expression:
+                    simple:
+                      expression: "${header.eventType} != null"
+              - filter:
+                  expression:
+                    simple:
+                      expression: "${header.eventType} == 'order.placed'"
+                  steps:
+                    - bean:
+                        ref: orderMappers
+                        method: fromPeakmart
+            doCatch:
+              - exception:
+                  - java.lang.Exception
+                steps:
+                  - setBody:
+                      expression:
+                        exchangeProperty:
+                          expression: capturedEvent
+                  - setHeader:
+                      name: CamelFileName
+                      expression:
+                        simple:
+                          expression: "SET-ASIDE-${header.CamelFileNameOnly}"
+                  - log:
+                      message: "Set aside captured event ${header.CamelFileNameOnly}"
+                      loggingLevel: WARN
+                  - to:
+                      uri: "{{trailhead.orders.set-aside}}"
+                  - stop: {}
+        - choice:
+            when:
+              - expression:
+                  simple:
+                    expression: "${header.eventType} != 'order.placed'"
+                steps:
+                  - log:
+                      message: "Skipped Peakmart event ${header.eventId} of type ${header.eventType}"
+                  - stop: {}
+        - to:
+            uri: direct:intake
+
+# 2. Partner orders over real HTTP.
+- route:
+    id: order-api
+    from:
+      uri: platform-http:/api/orders
+      parameters:
+        httpMethodRestrict: POST
+      steps:
+        - unmarshal:
+            json:
+              unmarshalType: com.trailheadgear.integration.PartnerOrder
+        - bean:
+            ref: orderMappers
+            method: fromPartner
+        - to:
+            uri: direct:intake
+        - choice:
+            when:
+              - expression:
+                  simple:
+                    expression: "${header.decision} == 'rejected'"
+                steps:
+                  - setHeader:
+                      name: CamelHttpResponseCode
+                      expression:
+                        constant:
+                          expression: "422"
+            otherwise:
+              steps:
+                - bean:
+                    ref: orderAnswers
+                    method: accepted
+                - marshal:
+                    json: {}
+        - setHeader:
+            name: Content-Type
+            expression:
+              constant:
+                expression: application/json
+
+# 3. Shared checks and outcome choice.
+- route:
+    id: order-intake
+    from:
+      uri: direct:intake
+      steps:
+        - setHeader:
+            name: orderNumber
+            expression:
+              simple:
+                expression: "${body.orderNumber}"
+        - setHeader:
+            name: problems
+            expression:
+              method:
+                ref: orderChecks
+                method: problems
+        - choice:
+            when:
+              - expression:
+                  simple:
+                    expression: "${header.problems.size} > 0"
+                steps:
+                  - setHeader:
+                      name: decision
+                      expression:
+                        constant:
+                          expression: rejected
+                  - setHeader:
+                      name: CamelFileName
+                      expression:
+                        simple:
+                          expression: "REJECTED-${header.orderNumber}.json"
+                  - log:
+                      message: "Rejected ${header.orderNumber}: ${header.problems}"
+                      loggingLevel: WARN
+                  - bean:
+                      ref: orderAnswers
+                      method: rejected
+                  - marshal:
+                      json: {}
+                  - to:
+                      uri: "{{trailhead.orders.rejected}}"
+            otherwise:
+              steps:
+                - setHeader:
+                    name: decision
+                    expression:
+                      constant:
+                        expression: accepted
+                - log:
+                    message: "Accepted ${header.orderNumber}"
+                - to:
+                    uri: direct:pick-list
+
+# 4. Local warehouse CSV; Chapter 6 changes the delivery adapter to SFTP.
+- route:
+    id: warehouse-pick-list
+    from:
+      uri: direct:pick-list
+      steps:
+        - setHeader:
+            name: CamelFileName
+            expression:
+              simple:
+                expression: "PL-${header.orderNumber}.csv"
+        - bean:
+            ref: pickListRows
+            method: fromOrder
+        - marshal:
+            csv: {}
+        - to:
+            uri: "{{trailhead.warehouse.outbox}}"

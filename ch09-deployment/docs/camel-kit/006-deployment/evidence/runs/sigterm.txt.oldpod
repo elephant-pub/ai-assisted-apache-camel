@@ -1,0 +1,844 @@
+Picked up JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/etc/trailhead/files/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStoreType=PKCS12
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-11-16T12:09:21.078Z  INFO 1 --- [           main] c.t.orderintegration.CamelApplication    : Starting CamelApplication v0.1.0 using Java 21.0.13 with PID 1 (/deployments/application.jar started by default in /deployments)
+2026-11-16T12:09:21.086Z  INFO 1 --- [           main] c.t.orderintegration.CamelApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-11-16T12:09:23.236Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8443 (https)
+2026-11-16T12:09:23.252Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-16T12:09:23.252Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-11-16T12:09:23.316Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 1927 ms
+2026-11-16T12:09:24.010Z  INFO 1 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://postgres.trailhead-lab.svc:5432/orders?sslmode=verify-full&sslrootcert=/etc/trailhead/files/db-ca.crt (PostgreSQL 16.15)
+2026-11-16T12:09:24.241Z  INFO 1 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 3 migrations (execution time 00:00.131s)
+2026-11-16T12:09:24.338Z  INFO 1 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": 3
+2026-11-16T12:09:24.348Z  INFO 1 --- [           main] o.f.core.internal.command.DbMigrate      : Schema "public" is up to date. No migration necessary.
+2026-11-16T12:09:24.485Z  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-16T12:09:24.534Z  INFO 1 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5e763c07
+2026-11-16T12:09:24.536Z  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-16T12:09:24.577Z  INFO 1 --- [           main] c.t.o.PartnerRegistration                : Partner Configuration registered partners=1
+2026-11-16T12:09:24.660Z  INFO 1 --- [           main] o.s.v.b.OptionalValidatorFactoryBean     : Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2026-11-16T12:09:25.318Z  INFO 1 --- [           main] o.a.c.m.DefaultConfigurationConfigurer   : Adding custom InterceptStrategy with id: errorContainment and implementation: com.trailheadgear.orderintegration.ErrorContainment@57bfca3a
+2026-11-16T12:09:25.501Z  WARN 1 --- [           main] b.s.CamelSecurityPolicyAutoConfiguration : SECURITY WARNING: [secret] Secret property is configured with plain-text value. Consider using {{vault:...}}, ${env:...}, or {{...}} property placeholders [camel.component.smtp.username]
+2026-11-16T12:09:25.502Z  WARN 1 --- [           main] b.s.CamelSecurityPolicyAutoConfiguration : SECURITY WARNING: [secret] Secret property is configured with plain-text value. Consider using {{vault:...}}, ${env:...}, or {{...}} property placeholders [camel.component.smtp.password]
+2026-11-16T12:09:25.825Z  INFO 1 --- [           main] o.a.t.util.net.NioEndpoint.certificate   : Connector [https-jsse-nio-8443], TLS virtual host [_default_], certificate type [UNDEFINED] configured from keystore [Set directly - location unknown] using alias [tomcat] with trust store [/etc/trailhead/files/truststore.p12]
+2026-11-16T12:09:25.895Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8443 (https) with context path '/'
+2026-11-16T12:09:26.075Z  INFO 1 --- [nio-8443-exec-5] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-16T12:09:26.076Z  INFO 1 --- [nio-8443-exec-5] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-16T12:09:26.077Z  INFO 1 --- [nio-8443-exec-5] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-11-16T12:09:26.454Z  INFO 1 --- [           main] o.a.c.support.LifecycleStrategySupport   : Autowired property: dataSource on component: sql as exactly one instance of type: javax.sql.DataSource (com.zaxxer.hikari.HikariDataSource) found in the registry
+2026-11-16T12:09:27.003Z  WARN 1 --- [           main] o.a.c.component.file.remote.FtpUtils     : SftpComponent doesn't support absolute paths, "/inbound/picklists" will be converted to "inbound/picklists". After Camel 2.16, absolute paths will be invalid.
+2026-11-16T12:09:27.784Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   : Apache Camel 4.22.2 (trailhead-order-integration) is starting
+2026-11-16T12:09:27.914Z  INFO 1 --- [           main] c.s.b.CamelSpringBootApplicationListener : Starting CamelMainRunController to ensure the main thread keeps running
+2026-11-16T12:09:27.916Z  INFO 1 --- [inRunController] org.apache.camel.main.MainSupport        : Apache Camel (Main) 4.22.2 is starting
+2026-11-16T12:09:27.923Z  INFO 1 --- [           main] o.a.camel.component.kafka.KafkaConsumer  : Starting Kafka consumer on topic: peakmart.orders.v2 with breakOnFirstError: true
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   : Routes startup (total:19 rest-dsl:1)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-rejection-email-send (sql://classpath:sql/rejection-email-select.sql)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-order-intake (kafka://peakmart.orders.v2)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-event-read (direct://peakmart-event-read)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-event-set-aside (direct://peakmart-event-set-aside)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-order-receive (direct://peakmart-order-receive)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-event-read-json (direct://peakmart-event-read-json)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-order-check-poll (sql://classpath:sql/waiting-select.sql)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started order-check (direct://order-check)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started product-lookup (direct://product-lookup)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started order-reject (direct://order-reject)
+2026-11-16T12:09:27.972Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started order-record (direct://order-record)
+2026-11-16T12:09:27.973Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started pick-list-delivery (sql://classpath:sql/pick-list-select.sql)
+2026-11-16T12:09:27.973Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started order-desk-notification-send (sql://classpath:sql/notification-select.sql)
+2026-11-16T12:09:27.973Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-order-submit (direct://submitPartnerOrder)
+2026-11-16T12:09:27.973Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-order-receive (direct://partner-order-receive)
+2026-11-16T12:09:27.973Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-order-check (direct://partner-order-check)
+2026-11-16T12:09:27.973Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-order-answer (direct://partner-order-answer)
+2026-11-16T12:09:27.973Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-order-read (direct://partner-order-read)
+2026-11-16T12:09:27.973Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-orders-rest-route (rest-openapi://classpath:contract/api/partner-orders.openapi.yaml)
+2026-11-16T12:09:27.973Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   : Apache Camel 4.22.2 (trailhead-order-integration) started in 188ms (build:0ms init:0ms start:188ms)
+2026-11-16T12:09:27.974Z  INFO 1 --- [           main] o.a.c.component.kafka.KafkaComponent     : Starting 1 pending Kafka consumers as CamelContext is fully started
+2026-11-16T12:09:27.977Z  INFO 1 --- [           main] c.t.orderintegration.CamelApplication    : Started CamelApplication in 7.849 seconds (process running for 8.356)
+2026-11-16T12:09:27.982Z  INFO 1 --- [ KafkaReconnect] o.a.c.component.kafka.KafkaFetchRecords  : Connecting Kafka consumer thread ID peakmart.orders.v2-Thread 0 with poll timeout of 5000 ms
+2026-11-16T12:09:28.016Z  INFO 1 --- [ KafkaReconnect] o.a.kafka.common.config.AbstractConfig   : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.offset.reset = earliest
+	bootstrap.servers = [kafka:9092]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-trailhead-order-integration-1
+	client.rack = 
+	config.providers = []
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	enable.metrics.push = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = trailhead-order-integration
+	group.instance.id = null
+	group.protocol = classic
+	group.remote.assignor = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metadata.recovery.rebootstrap.trigger.ms = 300000
+	metadata.recovery.strategy = rebootstrap
+	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [org.apache.kafka.clients.consumer.RangeAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.assertion.algorithm = RS256
+	sasl.oauthbearer.assertion.claim.aud = null
+	sasl.oauthbearer.assertion.claim.exp.seconds = 300
+	sasl.oauthbearer.assertion.claim.iss = null
+	sasl.oauthbearer.assertion.claim.jti.include = false
+	sasl.oauthbearer.assertion.claim.nbf.seconds = 60
+	sasl.oauthbearer.assertion.claim.sub = null
+	sasl.oauthbearer.assertion.file = null
+	sasl.oauthbearer.assertion.private.key.file = null
+	sasl.oauthbearer.assertion.private.key.passphrase = null
+	sasl.oauthbearer.assertion.template.file = null
+	sasl.oauthbearer.client.credentials.client.id = null
+	sasl.oauthbearer.client.credentials.client.secret = null
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = []
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.header.urlencode = false
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.jwt.retriever.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtRetriever
+	sasl.oauthbearer.jwt.validator.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator
+	sasl.oauthbearer.scope = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	share.acknowledgement.mode = implicit
+	share.acquire.mode = BATCH_OPTIMIZED
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = []
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+
+2026-11-16T12:09:28.083Z  INFO 1 --- [ KafkaReconnect] o.a.k.c.t.i.KafkaMetricsCollector        : initializing Kafka metrics collector
+2026-11-16T12:09:28.201Z  INFO 1 --- [ KafkaReconnect] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 4.2.1
+2026-11-16T12:09:28.201Z  INFO 1 --- [ KafkaReconnect] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 92f61c44867f39dc
+2026-11-16T12:09:28.201Z  INFO 1 --- [ KafkaReconnect] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1794830968200
+2026-11-16T12:09:28.205Z  INFO 1 --- [ KafkaReconnect] o.a.c.c.k.c.s.c.AssignmentAdapterHelper  : Using NO-OP resume strategy
+2026-11-16T12:09:28.205Z  INFO 1 --- [ KafkaReconnect] o.a.c.component.kafka.KafkaFetchRecords  : Searching for a custom subscribe adapter on the registry
+2026-11-16T12:09:28.209Z  INFO 1 --- [ KafkaReconnect] o.a.c.c.k.c.s.s.DefaultSubscribeAdapter  : Subscribing to topic(s) peakmart.orders.v2
+2026-11-16T12:09:28.209Z  INFO 1 --- [ KafkaReconnect] o.a.k.c.c.i.ClassicKafkaConsumer         : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Subscribed to topic(s): peakmart.orders.v2
+2026-11-16T12:09:28.758Z  INFO 1 --- [mart.orders.v2]] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Cluster ID: 5L6g3nShT-eMCtK--X86sw
+2026-11-16T12:09:28.806Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Discovered group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T12:09:28.815Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] (Re-)joining group
+2026-11-16T12:09:28.847Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Request joining group due to: need to re-join with the given member-id: consumer-trailhead-order-integration-1-1a976957-904e-40a0-af0c-7e49f602a8bf
+2026-11-16T12:09:28.847Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] (Re-)joining group
+2026-11-16T12:09:28.860Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Successfully joined group with generation Generation{generationId=8, memberId='consumer-trailhead-order-integration-1-1a976957-904e-40a0-af0c-7e49f602a8bf', protocol='range'}
+2026-11-16T12:09:28.875Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Finished assignment for group at generation 8: {consumer-trailhead-order-integration-1-1a976957-904e-40a0-af0c-7e49f602a8bf=Assignment(partitions=[peakmart.orders.v2-0, peakmart.orders.v2-1])}
+2026-11-16T12:09:28.887Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Successfully synced group in generation Generation{generationId=8, memberId='consumer-trailhead-order-integration-1-1a976957-904e-40a0-af0c-7e49f602a8bf', protocol='range'}
+2026-11-16T12:09:28.887Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Notifying assignor about the new Assignment(partitions=[peakmart.orders.v2-0, peakmart.orders.v2-1])
+2026-11-16T12:09:28.889Z  INFO 1 --- [mart.orders.v2]] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Adding newly assigned partitions: [peakmart.orders.v2-0, peakmart.orders.v2-1]
+2026-11-16T12:09:28.904Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Found no committed offset for partition peakmart.orders.v2-1
+2026-11-16T12:09:28.908Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerUtils        : Setting offset for partition peakmart.orders.v2-0 to the committed offset FetchPosition{offset=1, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[kafka:9092 (id: 1 rack: null isFenced: false)], epoch=0}}
+2026-11-16T12:09:28.937Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Resetting offset for partition peakmart.orders.v2-1 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[kafka:9092 (id: 1 rack: null isFenced: false)], epoch=0}}.
+2026-11-16T12:09:29.111Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2014 correlationId=5628B4458048E07-000000000000000E
+2026-11-16T12:09:29.187Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2015 correlationId=5628B4458048E07-000000000000000F
+2026-11-16T12:09:29.245Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2016 correlationId=5628B4458048E07-0000000000000010
+2026-11-16T12:09:29.304Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2017 correlationId=5628B4458048E07-0000000000000011
+2026-11-16T12:09:29.385Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2018 correlationId=5628B4458048E07-0000000000000012
+2026-11-16T12:09:29.474Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2019 correlationId=5628B4458048E07-0000000000000013
+2026-11-16T12:09:29.510Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2054 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000000
+2026-11-16T12:09:29.543Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2020 correlationId=5628B4458048E07-0000000000000014
+2026-11-16T12:09:29.598Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2021 correlationId=5628B4458048E07-0000000000000015
+2026-11-16T12:09:29.659Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2022 correlationId=5628B4458048E07-0000000000000016
+2026-11-16T12:09:29.751Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2023 correlationId=5628B4458048E07-0000000000000017
+2026-11-16T12:09:29.809Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2024 correlationId=5628B4458048E07-0000000000000018
+2026-11-16T12:09:29.865Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2055 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000001
+2026-11-16T12:09:29.878Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2025 correlationId=5628B4458048E07-0000000000000019
+2026-11-16T12:09:29.956Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2026 correlationId=5628B4458048E07-000000000000001A
+2026-11-16T12:09:30.139Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2027 correlationId=5628B4458048E07-000000000000001B
+2026-11-16T12:09:30.167Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2056 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000002
+2026-11-16T12:09:30.194Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2028 correlationId=5628B4458048E07-000000000000001C
+2026-11-16T12:09:30.553Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2057 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000003
+2026-11-16T12:09:30.859Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2058 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000004
+2026-11-16T12:09:31.236Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2059 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000005
+2026-11-16T12:09:31.530Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2060 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000006
+2026-11-16T12:09:31.817Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2061 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000007
+2026-11-16T12:09:32.121Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2062 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000008
+2026-11-16T12:09:32.408Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2063 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000009
+2026-11-16T12:09:32.700Z  INFO 1 --- [atalog-lookup-1] partner-order-check                      : Partner order rejected orderNumber=TG-2064 reasons=1 correlationId=1F04BEC4658FF9C-000000000000000A
+2026-11-16T12:09:32.994Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2065 reasons=1 correlationId=1F04BEC4658FF9C-000000000000000B
+2026-11-16T12:09:33.277Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2066 reasons=1 correlationId=1F04BEC4658FF9C-000000000000000C
+2026-11-16T12:09:33.589Z  INFO 1 --- [atalog-lookup-1] partner-order-check                      : Partner order rejected orderNumber=TG-2067 reasons=1 correlationId=1F04BEC4658FF9C-000000000000000D
+2026-11-16T12:09:33.870Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2068 reasons=1 correlationId=1F04BEC4658FF9C-000000000000000E
+2026-11-16T12:09:34.153Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2069 reasons=1 correlationId=1F04BEC4658FF9C-000000000000000F
+2026-11-16T12:09:34.440Z  INFO 1 --- [atalog-lookup-1] partner-order-check                      : Partner order rejected orderNumber=TG-2070 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000010
+2026-11-16T12:09:34.723Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2071 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000011
+2026-11-16T12:09:35.010Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2072 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000012
+2026-11-16T12:09:35.254Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2054 correlationId=1F04BEC4658FF9C-0000000000000000
+2026-11-16T12:09:35.308Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2073 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000013
+2026-11-16T12:09:35.314Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2055 correlationId=1F04BEC4658FF9C-0000000000000001
+2026-11-16T12:09:35.369Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2056 correlationId=1F04BEC4658FF9C-0000000000000002
+2026-11-16T12:09:35.420Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2057 correlationId=1F04BEC4658FF9C-0000000000000003
+2026-11-16T12:09:35.477Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2058 correlationId=1F04BEC4658FF9C-0000000000000004
+2026-11-16T12:09:35.556Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2059 correlationId=1F04BEC4658FF9C-0000000000000005
+2026-11-16T12:09:35.607Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2074 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000014
+2026-11-16T12:09:35.618Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2060 correlationId=1F04BEC4658FF9C-0000000000000006
+2026-11-16T12:09:35.674Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2061 correlationId=1F04BEC4658FF9C-0000000000000007
+2026-11-16T12:09:35.743Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2062 correlationId=1F04BEC4658FF9C-0000000000000008
+2026-11-16T12:09:35.803Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2063 correlationId=1F04BEC4658FF9C-0000000000000009
+2026-11-16T12:09:35.864Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2064 correlationId=1F04BEC4658FF9C-000000000000000A
+2026-11-16T12:09:35.900Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2075 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000015
+2026-11-16T12:09:35.917Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2065 correlationId=1F04BEC4658FF9C-000000000000000B
+2026-11-16T12:09:35.972Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2066 correlationId=1F04BEC4658FF9C-000000000000000C
+2026-11-16T12:09:36.037Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2067 correlationId=1F04BEC4658FF9C-000000000000000D
+2026-11-16T12:09:36.095Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2068 correlationId=1F04BEC4658FF9C-000000000000000E
+2026-11-16T12:09:36.150Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2069 correlationId=1F04BEC4658FF9C-000000000000000F
+2026-11-16T12:09:36.199Z  INFO 1 --- [atalog-lookup-1] partner-order-check                      : Partner order rejected orderNumber=TG-2076 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000016
+2026-11-16T12:09:36.208Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2070 correlationId=1F04BEC4658FF9C-0000000000000010
+2026-11-16T12:09:36.260Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2071 correlationId=1F04BEC4658FF9C-0000000000000011
+2026-11-16T12:09:36.316Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2072 correlationId=1F04BEC4658FF9C-0000000000000012
+2026-11-16T12:09:36.510Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2077 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000017
+2026-11-16T12:09:36.852Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2078 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000018
+2026-11-16T12:09:37.167Z  INFO 1 --- [atalog-lookup-1] partner-order-check                      : Partner order rejected orderNumber=TG-2079 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000019
+2026-11-16T12:09:37.515Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2080 reasons=1 correlationId=1F04BEC4658FF9C-000000000000001A
+2026-11-16T12:09:37.840Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2081 reasons=1 correlationId=1F04BEC4658FF9C-000000000000001B
+2026-11-16T12:09:38.166Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2082 reasons=1 correlationId=1F04BEC4658FF9C-000000000000001C
+2026-11-16T12:09:38.485Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2083 reasons=1 correlationId=1F04BEC4658FF9C-000000000000001D
+2026-11-16T12:09:38.806Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2084 reasons=1 correlationId=1F04BEC4658FF9C-000000000000001E
+2026-11-16T12:09:39.137Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2085 reasons=1 correlationId=1F04BEC4658FF9C-000000000000001F
+2026-11-16T12:09:39.449Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2086 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000020
+2026-11-16T12:09:39.821Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2087 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000021
+2026-11-16T12:09:40.116Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2088 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000022
+2026-11-16T12:09:40.409Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2089 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000023
+2026-11-16T12:09:40.700Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2090 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000024
+2026-11-16T12:09:40.984Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2091 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000025
+2026-11-16T12:09:41.264Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2092 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000026
+2026-11-16T12:09:41.372Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2073 correlationId=1F04BEC4658FF9C-0000000000000013
+2026-11-16T12:09:41.421Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2074 correlationId=1F04BEC4658FF9C-0000000000000014
+2026-11-16T12:09:41.474Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2075 correlationId=1F04BEC4658FF9C-0000000000000015
+2026-11-16T12:09:41.526Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2076 correlationId=1F04BEC4658FF9C-0000000000000016
+2026-11-16T12:09:41.546Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2093 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000027
+2026-11-16T12:09:41.577Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2077 correlationId=1F04BEC4658FF9C-0000000000000017
+2026-11-16T12:09:41.631Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2078 correlationId=1F04BEC4658FF9C-0000000000000018
+2026-11-16T12:09:41.683Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2079 correlationId=1F04BEC4658FF9C-0000000000000019
+2026-11-16T12:09:41.737Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2080 correlationId=1F04BEC4658FF9C-000000000000001A
+2026-11-16T12:09:41.793Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2081 correlationId=1F04BEC4658FF9C-000000000000001B
+2026-11-16T12:09:41.829Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2094 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000028
+2026-11-16T12:09:41.845Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2082 correlationId=1F04BEC4658FF9C-000000000000001C
+2026-11-16T12:09:41.897Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2083 correlationId=1F04BEC4658FF9C-000000000000001D
+2026-11-16T12:09:41.958Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2084 correlationId=1F04BEC4658FF9C-000000000000001E
+2026-11-16T12:09:42.010Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2085 correlationId=1F04BEC4658FF9C-000000000000001F
+2026-11-16T12:09:42.060Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2086 correlationId=1F04BEC4658FF9C-0000000000000020
+2026-11-16T12:09:42.110Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2087 correlationId=1F04BEC4658FF9C-0000000000000021
+2026-11-16T12:09:42.118Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2095 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000029
+2026-11-16T12:09:42.162Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2088 correlationId=1F04BEC4658FF9C-0000000000000022
+2026-11-16T12:09:42.215Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2089 correlationId=1F04BEC4658FF9C-0000000000000023
+2026-11-16T12:09:42.264Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2090 correlationId=1F04BEC4658FF9C-0000000000000024
+2026-11-16T12:09:42.318Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2091 correlationId=1F04BEC4658FF9C-0000000000000025
+2026-11-16T12:09:42.370Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2092 correlationId=1F04BEC4658FF9C-0000000000000026
+2026-11-16T12:09:42.401Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2096 reasons=1 correlationId=1F04BEC4658FF9C-000000000000002A
+2026-11-16T12:09:42.689Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2097 reasons=1 correlationId=1F04BEC4658FF9C-000000000000002B
+2026-11-16T12:09:42.971Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2098 reasons=1 correlationId=1F04BEC4658FF9C-000000000000002C
+2026-11-16T12:09:43.259Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2099 reasons=1 correlationId=1F04BEC4658FF9C-000000000000002D
+2026-11-16T12:09:43.541Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2100 reasons=1 correlationId=1F04BEC4658FF9C-000000000000002E
+2026-11-16T12:09:43.825Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2101 reasons=1 correlationId=1F04BEC4658FF9C-000000000000002F
+2026-11-16T12:09:44.105Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2102 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000030
+2026-11-16T12:09:44.435Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2103 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000031
+2026-11-16T12:09:44.750Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2104 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000032
+2026-11-16T12:09:45.036Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2105 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000033
+2026-11-16T12:09:45.330Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2106 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000034
+2026-11-16T12:09:45.621Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2107 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000035
+2026-11-16T12:09:45.906Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2108 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000036
+2026-11-16T12:09:46.185Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2109 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000037
+2026-11-16T12:09:46.471Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2110 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000038
+2026-11-16T12:09:46.750Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2111 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000039
+2026-11-16T12:09:47.035Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2112 reasons=1 correlationId=1F04BEC4658FF9C-000000000000003A
+2026-11-16T12:09:47.312Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2113 reasons=1 correlationId=1F04BEC4658FF9C-000000000000003B
+2026-11-16T12:09:47.424Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2093 correlationId=1F04BEC4658FF9C-0000000000000027
+2026-11-16T12:09:47.474Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2094 correlationId=1F04BEC4658FF9C-0000000000000028
+2026-11-16T12:09:47.524Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2095 correlationId=1F04BEC4658FF9C-0000000000000029
+2026-11-16T12:09:47.574Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2096 correlationId=1F04BEC4658FF9C-000000000000002A
+2026-11-16T12:09:47.592Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2114 reasons=1 correlationId=1F04BEC4658FF9C-000000000000003C
+2026-11-16T12:09:47.624Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2097 correlationId=1F04BEC4658FF9C-000000000000002B
+2026-11-16T12:09:47.674Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2098 correlationId=1F04BEC4658FF9C-000000000000002C
+2026-11-16T12:09:47.724Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2099 correlationId=1F04BEC4658FF9C-000000000000002D
+2026-11-16T12:09:47.774Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2100 correlationId=1F04BEC4658FF9C-000000000000002E
+2026-11-16T12:09:47.825Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2101 correlationId=1F04BEC4658FF9C-000000000000002F
+2026-11-16T12:09:47.873Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2115 reasons=1 correlationId=1F04BEC4658FF9C-000000000000003D
+2026-11-16T12:09:47.891Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2102 correlationId=1F04BEC4658FF9C-0000000000000030
+2026-11-16T12:09:47.944Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2103 correlationId=1F04BEC4658FF9C-0000000000000031
+2026-11-16T12:09:48.004Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2104 correlationId=1F04BEC4658FF9C-0000000000000032
+2026-11-16T12:09:48.056Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2105 correlationId=1F04BEC4658FF9C-0000000000000033
+2026-11-16T12:09:48.110Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2106 correlationId=1F04BEC4658FF9C-0000000000000034
+2026-11-16T12:09:48.149Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2116 reasons=1 correlationId=1F04BEC4658FF9C-000000000000003E
+2026-11-16T12:09:48.160Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2107 correlationId=1F04BEC4658FF9C-0000000000000035
+2026-11-16T12:09:48.209Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2108 correlationId=1F04BEC4658FF9C-0000000000000036
+2026-11-16T12:09:48.258Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2109 correlationId=1F04BEC4658FF9C-0000000000000037
+2026-11-16T12:09:48.308Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2110 correlationId=1F04BEC4658FF9C-0000000000000038
+2026-11-16T12:09:48.356Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2111 correlationId=1F04BEC4658FF9C-0000000000000039
+2026-11-16T12:09:48.405Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2112 correlationId=1F04BEC4658FF9C-000000000000003A
+2026-11-16T12:09:48.433Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2117 reasons=1 correlationId=1F04BEC4658FF9C-000000000000003F
+2026-11-16T12:09:48.456Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2113 correlationId=1F04BEC4658FF9C-000000000000003B
+2026-11-16T12:09:48.713Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2118 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000040
+2026-11-16T12:09:48.992Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2119 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000041
+2026-11-16T12:09:49.271Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2120 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000042
+2026-11-16T12:09:49.557Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2121 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000043
+2026-11-16T12:09:49.860Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2122 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000044
+2026-11-16T12:09:50.145Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2123 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000045
+2026-11-16T12:09:50.423Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2124 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000046
+2026-11-16T12:09:50.730Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2125 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000047
+2026-11-16T12:09:51.048Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2126 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000048
+2026-11-16T12:09:51.350Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2127 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000049
+2026-11-16T12:09:51.672Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2128 reasons=1 correlationId=1F04BEC4658FF9C-000000000000004A
+2026-11-16T12:09:51.953Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2129 reasons=1 correlationId=1F04BEC4658FF9C-000000000000004B
+2026-11-16T12:09:52.231Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2130 reasons=1 correlationId=1F04BEC4658FF9C-000000000000004C
+2026-11-16T12:09:52.516Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2131 reasons=1 correlationId=1F04BEC4658FF9C-000000000000004D
+2026-11-16T12:09:52.794Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2132 reasons=1 correlationId=1F04BEC4658FF9C-000000000000004E
+2026-11-16T12:09:53.078Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2133 reasons=1 correlationId=1F04BEC4658FF9C-000000000000004F
+2026-11-16T12:09:53.355Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2134 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000050
+2026-11-16T12:09:53.515Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2114 correlationId=1F04BEC4658FF9C-000000000000003C
+2026-11-16T12:09:53.565Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2115 correlationId=1F04BEC4658FF9C-000000000000003D
+2026-11-16T12:09:53.616Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2116 correlationId=1F04BEC4658FF9C-000000000000003E
+2026-11-16T12:09:53.633Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2135 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000051
+2026-11-16T12:09:53.665Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2117 correlationId=1F04BEC4658FF9C-000000000000003F
+2026-11-16T12:09:53.715Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2118 correlationId=1F04BEC4658FF9C-0000000000000040
+2026-11-16T12:09:53.764Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2119 correlationId=1F04BEC4658FF9C-0000000000000041
+2026-11-16T12:09:53.814Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2120 correlationId=1F04BEC4658FF9C-0000000000000042
+2026-11-16T12:09:53.864Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2121 correlationId=1F04BEC4658FF9C-0000000000000043
+2026-11-16T12:09:53.915Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2122 correlationId=1F04BEC4658FF9C-0000000000000044
+2026-11-16T12:09:53.918Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2136 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000052
+2026-11-16T12:09:53.968Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2123 correlationId=1F04BEC4658FF9C-0000000000000045
+2026-11-16T12:09:54.018Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2124 correlationId=1F04BEC4658FF9C-0000000000000046
+2026-11-16T12:09:54.066Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2125 correlationId=1F04BEC4658FF9C-0000000000000047
+2026-11-16T12:09:54.115Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2126 correlationId=1F04BEC4658FF9C-0000000000000048
+2026-11-16T12:09:54.164Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2127 correlationId=1F04BEC4658FF9C-0000000000000049
+2026-11-16T12:09:54.195Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2137 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000053
+2026-11-16T12:09:54.212Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2128 correlationId=1F04BEC4658FF9C-000000000000004A
+2026-11-16T12:09:54.261Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2129 correlationId=1F04BEC4658FF9C-000000000000004B
+2026-11-16T12:09:54.309Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2130 correlationId=1F04BEC4658FF9C-000000000000004C
+2026-11-16T12:09:54.358Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2131 correlationId=1F04BEC4658FF9C-000000000000004D
+2026-11-16T12:09:54.409Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2132 correlationId=1F04BEC4658FF9C-000000000000004E
+2026-11-16T12:09:54.464Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2133 correlationId=1F04BEC4658FF9C-000000000000004F
+2026-11-16T12:09:54.477Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2138 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000054
+2026-11-16T12:09:54.515Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2134 correlationId=1F04BEC4658FF9C-0000000000000050
+2026-11-16T12:09:54.756Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2139 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000055
+2026-11-16T12:09:55.035Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2140 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000056
+2026-11-16T12:09:55.314Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2141 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000057
+2026-11-16T12:09:55.590Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2142 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000058
+2026-11-16T12:09:55.876Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2143 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000059
+2026-11-16T12:09:56.159Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2144 reasons=1 correlationId=1F04BEC4658FF9C-000000000000005A
+2026-11-16T12:09:56.435Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2145 reasons=1 correlationId=1F04BEC4658FF9C-000000000000005B
+2026-11-16T12:09:56.709Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2146 reasons=1 correlationId=1F04BEC4658FF9C-000000000000005C
+2026-11-16T12:09:56.986Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2147 reasons=1 correlationId=1F04BEC4658FF9C-000000000000005D
+2026-11-16T12:09:57.276Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2148 reasons=1 correlationId=1F04BEC4658FF9C-000000000000005E
+2026-11-16T12:09:57.562Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2149 reasons=1 correlationId=1F04BEC4658FF9C-000000000000005F
+2026-11-16T12:09:57.850Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2150 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000060
+2026-11-16T12:09:58.144Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2151 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000061
+2026-11-16T12:09:58.431Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2152 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000062
+2026-11-16T12:09:58.757Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2153 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000063
+2026-11-16T12:09:59.050Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2154 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000064
+2026-11-16T12:09:59.338Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2155 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000065
+2026-11-16T12:09:59.586Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2135 correlationId=1F04BEC4658FF9C-0000000000000051
+2026-11-16T12:09:59.633Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2156 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000066
+2026-11-16T12:09:59.645Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2136 correlationId=1F04BEC4658FF9C-0000000000000052
+2026-11-16T12:09:59.697Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2137 correlationId=1F04BEC4658FF9C-0000000000000053
+2026-11-16T12:09:59.748Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2138 correlationId=1F04BEC4658FF9C-0000000000000054
+2026-11-16T12:09:59.809Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2139 correlationId=1F04BEC4658FF9C-0000000000000055
+2026-11-16T12:09:59.864Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2140 correlationId=1F04BEC4658FF9C-0000000000000056
+2026-11-16T12:09:59.918Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2141 correlationId=1F04BEC4658FF9C-0000000000000057
+2026-11-16T12:09:59.946Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2157 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000067
+2026-11-16T12:09:59.975Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2142 correlationId=1F04BEC4658FF9C-0000000000000058
+2026-11-16T12:10:00.035Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2143 correlationId=1F04BEC4658FF9C-0000000000000059
+2026-11-16T12:10:00.089Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2144 correlationId=1F04BEC4658FF9C-000000000000005A
+2026-11-16T12:10:00.145Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2145 correlationId=1F04BEC4658FF9C-000000000000005B
+2026-11-16T12:10:00.199Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2146 correlationId=1F04BEC4658FF9C-000000000000005C
+2026-11-16T12:10:00.240Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2158 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000068
+2026-11-16T12:10:00.256Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2147 correlationId=1F04BEC4658FF9C-000000000000005D
+2026-11-16T12:10:00.318Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2148 correlationId=1F04BEC4658FF9C-000000000000005E
+2026-11-16T12:10:00.373Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2149 correlationId=1F04BEC4658FF9C-000000000000005F
+2026-11-16T12:10:00.439Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2150 correlationId=1F04BEC4658FF9C-0000000000000060
+2026-11-16T12:10:00.499Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2151 correlationId=1F04BEC4658FF9C-0000000000000061
+2026-11-16T12:10:00.532Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2159 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000069
+2026-11-16T12:10:00.558Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2152 correlationId=1F04BEC4658FF9C-0000000000000062
+2026-11-16T12:10:00.623Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2153 correlationId=1F04BEC4658FF9C-0000000000000063
+2026-11-16T12:10:00.677Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2154 correlationId=1F04BEC4658FF9C-0000000000000064
+2026-11-16T12:10:00.732Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2155 correlationId=1F04BEC4658FF9C-0000000000000065
+2026-11-16T12:10:00.815Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2160 reasons=1 correlationId=1F04BEC4658FF9C-000000000000006A
+2026-11-16T12:10:01.104Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2161 reasons=1 correlationId=1F04BEC4658FF9C-000000000000006B
+2026-11-16T12:10:01.396Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2162 reasons=1 correlationId=1F04BEC4658FF9C-000000000000006C
+2026-11-16T12:10:01.679Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2163 reasons=1 correlationId=1F04BEC4658FF9C-000000000000006D
+2026-11-16T12:10:01.969Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2164 reasons=1 correlationId=1F04BEC4658FF9C-000000000000006E
+2026-11-16T12:10:02.262Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2165 reasons=1 correlationId=1F04BEC4658FF9C-000000000000006F
+2026-11-16T12:10:02.816Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2166 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000070
+2026-11-16T12:10:03.097Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2167 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000071
+2026-11-16T12:10:03.620Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2168 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000072
+2026-11-16T12:10:03.901Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2169 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000073
+2026-11-16T12:10:04.196Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2170 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000074
+2026-11-16T12:10:04.481Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2171 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000075
+2026-11-16T12:10:04.782Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2172 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000076
+2026-11-16T12:10:05.359Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2173 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000077
+2026-11-16T12:10:05.634Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2174 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000078
+2026-11-16T12:10:05.787Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2156 correlationId=1F04BEC4658FF9C-0000000000000066
+2026-11-16T12:10:05.837Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2157 correlationId=1F04BEC4658FF9C-0000000000000067
+2026-11-16T12:10:05.888Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2158 correlationId=1F04BEC4658FF9C-0000000000000068
+2026-11-16T12:10:05.913Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2175 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000079
+2026-11-16T12:10:05.940Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2159 correlationId=1F04BEC4658FF9C-0000000000000069
+2026-11-16T12:10:05.989Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2160 correlationId=1F04BEC4658FF9C-000000000000006A
+2026-11-16T12:10:06.038Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2161 correlationId=1F04BEC4658FF9C-000000000000006B
+2026-11-16T12:10:06.087Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2162 correlationId=1F04BEC4658FF9C-000000000000006C
+2026-11-16T12:10:06.134Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2163 correlationId=1F04BEC4658FF9C-000000000000006D
+2026-11-16T12:10:06.182Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2164 correlationId=1F04BEC4658FF9C-000000000000006E
+2026-11-16T12:10:06.188Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2176 reasons=1 correlationId=1F04BEC4658FF9C-000000000000007A
+2026-11-16T12:10:06.229Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2165 correlationId=1F04BEC4658FF9C-000000000000006F
+2026-11-16T12:10:06.280Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2166 correlationId=1F04BEC4658FF9C-0000000000000070
+2026-11-16T12:10:06.331Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2167 correlationId=1F04BEC4658FF9C-0000000000000071
+2026-11-16T12:10:06.379Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2168 correlationId=1F04BEC4658FF9C-0000000000000072
+2026-11-16T12:10:06.428Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2169 correlationId=1F04BEC4658FF9C-0000000000000073
+2026-11-16T12:10:06.467Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2177 reasons=1 correlationId=1F04BEC4658FF9C-000000000000007B
+2026-11-16T12:10:06.477Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2170 correlationId=1F04BEC4658FF9C-0000000000000074
+2026-11-16T12:10:06.527Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2171 correlationId=1F04BEC4658FF9C-0000000000000075
+2026-11-16T12:10:06.576Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2172 correlationId=1F04BEC4658FF9C-0000000000000076
+2026-11-16T12:10:06.624Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2173 correlationId=1F04BEC4658FF9C-0000000000000077
+2026-11-16T12:10:06.671Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2174 correlationId=1F04BEC4658FF9C-0000000000000078
+2026-11-16T12:10:06.742Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2178 reasons=1 correlationId=1F04BEC4658FF9C-000000000000007C
+2026-11-16T12:10:07.022Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2179 reasons=1 correlationId=1F04BEC4658FF9C-000000000000007D
+2026-11-16T12:10:07.297Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2180 reasons=1 correlationId=1F04BEC4658FF9C-000000000000007E
+2026-11-16T12:10:07.581Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2181 reasons=1 correlationId=1F04BEC4658FF9C-000000000000007F
+2026-11-16T12:10:07.857Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2182 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000080
+2026-11-16T12:10:08.141Z  INFO 1 --- [atalog-lookup-6] partner-order-check                      : Partner order rejected orderNumber=TG-2183 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000081
+2026-11-16T12:10:08.419Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2184 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000082
+2026-11-16T12:10:08.703Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2185 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000083
+2026-11-16T12:10:08.978Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2186 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000084
+2026-11-16T12:10:09.254Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2187 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000085
+2026-11-16T12:10:09.536Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2188 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000086
+2026-11-16T12:10:09.815Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2189 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000087
+2026-11-16T12:10:10.094Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2190 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000088
+2026-11-16T12:10:10.371Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2191 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000089
+2026-11-16T12:10:10.643Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2192 reasons=1 correlationId=1F04BEC4658FF9C-000000000000008A
+2026-11-16T12:10:10.917Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2193 reasons=1 correlationId=1F04BEC4658FF9C-000000000000008B
+2026-11-16T12:10:11.194Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2194 reasons=1 correlationId=1F04BEC4658FF9C-000000000000008C
+2026-11-16T12:10:11.468Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2195 reasons=1 correlationId=1F04BEC4658FF9C-000000000000008D
+2026-11-16T12:10:11.728Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2175 correlationId=1F04BEC4658FF9C-0000000000000079
+2026-11-16T12:10:11.748Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2196 reasons=1 correlationId=1F04BEC4658FF9C-000000000000008E
+2026-11-16T12:10:11.778Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2176 correlationId=1F04BEC4658FF9C-000000000000007A
+2026-11-16T12:10:11.826Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2177 correlationId=1F04BEC4658FF9C-000000000000007B
+2026-11-16T12:10:11.876Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2178 correlationId=1F04BEC4658FF9C-000000000000007C
+2026-11-16T12:10:11.938Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2179 correlationId=1F04BEC4658FF9C-000000000000007D
+2026-11-16T12:10:11.986Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2180 correlationId=1F04BEC4658FF9C-000000000000007E
+2026-11-16T12:10:12.028Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2197 reasons=1 correlationId=1F04BEC4658FF9C-000000000000008F
+2026-11-16T12:10:12.034Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2181 correlationId=1F04BEC4658FF9C-000000000000007F
+2026-11-16T12:10:12.084Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2182 correlationId=1F04BEC4658FF9C-0000000000000080
+2026-11-16T12:10:12.133Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2183 correlationId=1F04BEC4658FF9C-0000000000000081
+2026-11-16T12:10:12.181Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2184 correlationId=1F04BEC4658FF9C-0000000000000082
+2026-11-16T12:10:12.231Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2185 correlationId=1F04BEC4658FF9C-0000000000000083
+2026-11-16T12:10:12.279Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2186 correlationId=1F04BEC4658FF9C-0000000000000084
+2026-11-16T12:10:12.306Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2198 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000090
+2026-11-16T12:10:12.329Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2187 correlationId=1F04BEC4658FF9C-0000000000000085
+2026-11-16T12:10:12.380Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2188 correlationId=1F04BEC4658FF9C-0000000000000086
+2026-11-16T12:10:12.431Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2189 correlationId=1F04BEC4658FF9C-0000000000000087
+2026-11-16T12:10:12.480Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2190 correlationId=1F04BEC4658FF9C-0000000000000088
+2026-11-16T12:10:12.530Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2191 correlationId=1F04BEC4658FF9C-0000000000000089
+2026-11-16T12:10:12.582Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2192 correlationId=1F04BEC4658FF9C-000000000000008A
+2026-11-16T12:10:12.587Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2199 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000091
+2026-11-16T12:10:12.634Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2193 correlationId=1F04BEC4658FF9C-000000000000008B
+2026-11-16T12:10:12.685Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2194 correlationId=1F04BEC4658FF9C-000000000000008C
+2026-11-16T12:10:12.736Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2195 correlationId=1F04BEC4658FF9C-000000000000008D
+2026-11-16T12:10:12.862Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order rejected orderNumber=TG-2200 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000092
+2026-11-16T12:10:13.140Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2201 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000093
+2026-11-16T12:10:13.415Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2202 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000094
+2026-11-16T12:10:13.693Z  INFO 1 --- [atalog-lookup-8] partner-order-check                      : Partner order rejected orderNumber=TG-2203 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000095
+2026-11-16T12:10:13.968Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2204 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000096
+2026-11-16T12:10:14.244Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2205 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000097
+2026-11-16T12:10:14.518Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2206 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000098
+2026-11-16T12:10:14.797Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2207 reasons=1 correlationId=1F04BEC4658FF9C-0000000000000099
+2026-11-16T12:10:15.081Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order rejected orderNumber=TG-2208 reasons=1 correlationId=1F04BEC4658FF9C-000000000000009A
+2026-11-16T12:10:15.367Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2209 reasons=1 correlationId=1F04BEC4658FF9C-000000000000009B
+2026-11-16T12:10:15.643Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2210 reasons=1 correlationId=1F04BEC4658FF9C-000000000000009C
+2026-11-16T12:10:15.929Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2211 reasons=1 correlationId=1F04BEC4658FF9C-000000000000009D
+2026-11-16T12:10:16.212Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2212 reasons=1 correlationId=1F04BEC4658FF9C-000000000000009E
+2026-11-16T12:10:16.492Z  INFO 1 --- [atalog-lookup-3] partner-order-check                      : Partner order rejected orderNumber=TG-2213 reasons=1 correlationId=1F04BEC4658FF9C-000000000000009F
+2026-11-16T12:10:16.775Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2214 reasons=1 correlationId=1F04BEC4658FF9C-00000000000000A0
+2026-11-16T12:10:17.052Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2215 reasons=1 correlationId=1F04BEC4658FF9C-00000000000000A1
+2026-11-16T12:10:17.327Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2216 reasons=1 correlationId=1F04BEC4658FF9C-00000000000000A2
+2026-11-16T12:10:17.611Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2217 reasons=1 correlationId=1F04BEC4658FF9C-00000000000000A3
+2026-11-16T12:10:17.787Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2196 correlationId=1F04BEC4658FF9C-000000000000008E
+2026-11-16T12:10:17.835Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2197 correlationId=1F04BEC4658FF9C-000000000000008F
+2026-11-16T12:10:17.884Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2198 correlationId=1F04BEC4658FF9C-0000000000000090
+2026-11-16T12:10:17.886Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2218 reasons=1 correlationId=1F04BEC4658FF9C-00000000000000A4
+2026-11-16T12:10:17.934Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2199 correlationId=1F04BEC4658FF9C-0000000000000091
+2026-11-16T12:10:17.981Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2200 correlationId=1F04BEC4658FF9C-0000000000000092
+2026-11-16T12:10:18.030Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2201 correlationId=1F04BEC4658FF9C-0000000000000093
+2026-11-16T12:10:18.083Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2202 correlationId=1F04BEC4658FF9C-0000000000000094
+2026-11-16T12:10:18.133Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2203 correlationId=1F04BEC4658FF9C-0000000000000095
+2026-11-16T12:10:18.174Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order rejected orderNumber=TG-2219 reasons=1 correlationId=1F04BEC4658FF9C-00000000000000A5
+2026-11-16T12:10:18.186Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2204 correlationId=1F04BEC4658FF9C-0000000000000096
+2026-11-16T12:10:18.239Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2205 correlationId=1F04BEC4658FF9C-0000000000000097
+2026-11-16T12:10:18.290Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2206 correlationId=1F04BEC4658FF9C-0000000000000098
+2026-11-16T12:10:18.343Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2207 correlationId=1F04BEC4658FF9C-0000000000000099
+2026-11-16T12:10:18.398Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2208 correlationId=1F04BEC4658FF9C-000000000000009A
+2026-11-16T12:10:18.451Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2209 correlationId=1F04BEC4658FF9C-000000000000009B
+2026-11-16T12:10:18.471Z  INFO 1 --- [talog-lookup-10] partner-order-check                      : Partner order rejected orderNumber=TG-2220 reasons=1 correlationId=1F04BEC4658FF9C-00000000000000A6
+2026-11-16T12:10:18.512Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2210 correlationId=1F04BEC4658FF9C-000000000000009C
+2026-11-16T12:10:18.564Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2211 correlationId=1F04BEC4658FF9C-000000000000009D
+2026-11-16T12:10:18.615Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2212 correlationId=1F04BEC4658FF9C-000000000000009E
+2026-11-16T12:10:18.664Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2213 correlationId=1F04BEC4658FF9C-000000000000009F
+2026-11-16T12:10:18.712Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2214 correlationId=1F04BEC4658FF9C-00000000000000A0
+2026-11-16T12:10:18.746Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order rejected orderNumber=TG-2221 reasons=1 correlationId=1F04BEC4658FF9C-00000000000000A7
+2026-11-16T12:10:18.760Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2215 correlationId=1F04BEC4658FF9C-00000000000000A1
+2026-11-16T12:10:18.808Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2216 correlationId=1F04BEC4658FF9C-00000000000000A2
+2026-11-16T12:10:18.855Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2217 correlationId=1F04BEC4658FF9C-00000000000000A3
+2026-11-16T12:10:23.941Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2218 correlationId=1F04BEC4658FF9C-00000000000000A4
+2026-11-16T12:10:23.993Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2219 correlationId=1F04BEC4658FF9C-00000000000000A5
+2026-11-16T12:10:24.042Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2220 correlationId=1F04BEC4658FF9C-00000000000000A6
+2026-11-16T12:10:24.090Z  INFO 1 --- [mail-select.sql] partner-rejection-email-send             : Rejection email sent orderNumber=TG-2221 correlationId=1F04BEC4658FF9C-00000000000000A7
+2026-11-16T12:10:57.207Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1200 correlationId=1F04BEC4658FF9C-00000000000000A8
+2026-11-16T12:10:57.227Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1201 correlationId=1F04BEC4658FF9C-00000000000000A9
+2026-11-16T12:10:57.235Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1202 correlationId=1F04BEC4658FF9C-00000000000000AA
+2026-11-16T12:10:57.242Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1203 correlationId=1F04BEC4658FF9C-00000000000000AB
+2026-11-16T12:10:57.248Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1204 correlationId=1F04BEC4658FF9C-00000000000000AC
+2026-11-16T12:10:57.269Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1205 correlationId=1F04BEC4658FF9C-00000000000000AD
+2026-11-16T12:10:57.275Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1206 correlationId=1F04BEC4658FF9C-00000000000000AE
+2026-11-16T12:10:57.281Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1207 correlationId=1F04BEC4658FF9C-00000000000000AF
+2026-11-16T12:10:57.286Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1208 correlationId=1F04BEC4658FF9C-00000000000000B0
+2026-11-16T12:10:57.293Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1209 correlationId=1F04BEC4658FF9C-00000000000000B1
+2026-11-16T12:10:57.299Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1210 correlationId=1F04BEC4658FF9C-00000000000000B2
+2026-11-16T12:10:57.303Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1211 correlationId=1F04BEC4658FF9C-00000000000000B3
+2026-11-16T12:10:57.308Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1212 correlationId=1F04BEC4658FF9C-00000000000000B4
+2026-11-16T12:10:57.314Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1213 correlationId=1F04BEC4658FF9C-00000000000000B5
+2026-11-16T12:10:57.319Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1214 correlationId=1F04BEC4658FF9C-00000000000000B6
+2026-11-16T12:10:57.324Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1215 correlationId=1F04BEC4658FF9C-00000000000000B7
+2026-11-16T12:10:57.327Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1216 correlationId=1F04BEC4658FF9C-00000000000000B8
+2026-11-16T12:10:57.331Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1217 correlationId=1F04BEC4658FF9C-00000000000000B9
+2026-11-16T12:10:57.334Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1218 correlationId=1F04BEC4658FF9C-00000000000000BA
+2026-11-16T12:10:57.338Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1219 correlationId=1F04BEC4658FF9C-00000000000000BB
+2026-11-16T12:10:57.340Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1220 correlationId=1F04BEC4658FF9C-00000000000000BC
+2026-11-16T12:10:57.343Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1221 correlationId=1F04BEC4658FF9C-00000000000000BD
+2026-11-16T12:10:57.346Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1222 correlationId=1F04BEC4658FF9C-00000000000000BE
+2026-11-16T12:10:57.350Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1223 correlationId=1F04BEC4658FF9C-00000000000000BF
+2026-11-16T12:10:57.354Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1224 correlationId=1F04BEC4658FF9C-00000000000000C0
+2026-11-16T12:10:57.358Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1225 correlationId=1F04BEC4658FF9C-00000000000000C1
+2026-11-16T12:10:57.362Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1226 correlationId=1F04BEC4658FF9C-00000000000000C2
+2026-11-16T12:10:57.365Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1227 correlationId=1F04BEC4658FF9C-00000000000000C3
+2026-11-16T12:10:57.369Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1228 correlationId=1F04BEC4658FF9C-00000000000000C4
+2026-11-16T12:10:57.373Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1229 correlationId=1F04BEC4658FF9C-00000000000000C5
+2026-11-16T12:10:57.376Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1230 correlationId=1F04BEC4658FF9C-00000000000000C6
+2026-11-16T12:10:57.379Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1231 correlationId=1F04BEC4658FF9C-00000000000000C7
+2026-11-16T12:10:57.382Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1232 correlationId=1F04BEC4658FF9C-00000000000000C8
+2026-11-16T12:10:57.386Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1233 correlationId=1F04BEC4658FF9C-00000000000000C9
+2026-11-16T12:10:57.389Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1234 correlationId=1F04BEC4658FF9C-00000000000000CA
+2026-11-16T12:10:57.392Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1235 correlationId=1F04BEC4658FF9C-00000000000000CB
+2026-11-16T12:10:57.396Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1236 correlationId=1F04BEC4658FF9C-00000000000000CC
+2026-11-16T12:10:57.399Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1237 correlationId=1F04BEC4658FF9C-00000000000000CD
+2026-11-16T12:10:57.402Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1238 correlationId=1F04BEC4658FF9C-00000000000000CE
+2026-11-16T12:10:57.405Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1239 correlationId=1F04BEC4658FF9C-00000000000000CF
+2026-11-16T12:10:57.409Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1240 correlationId=1F04BEC4658FF9C-00000000000000D0
+2026-11-16T12:10:57.418Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1241 correlationId=1F04BEC4658FF9C-00000000000000D1
+2026-11-16T12:10:57.425Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1242 correlationId=1F04BEC4658FF9C-00000000000000D2
+2026-11-16T12:10:57.430Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1243 correlationId=1F04BEC4658FF9C-00000000000000D3
+2026-11-16T12:10:57.436Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1244 correlationId=1F04BEC4658FF9C-00000000000000D4
+2026-11-16T12:10:57.441Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1245 correlationId=1F04BEC4658FF9C-00000000000000D5
+2026-11-16T12:10:57.446Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1246 correlationId=1F04BEC4658FF9C-00000000000000D6
+2026-11-16T12:10:57.452Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1247 correlationId=1F04BEC4658FF9C-00000000000000D7
+2026-11-16T12:10:57.456Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1248 correlationId=1F04BEC4658FF9C-00000000000000D8
+2026-11-16T12:10:57.460Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1249 correlationId=1F04BEC4658FF9C-00000000000000D9
+2026-11-16T12:10:57.468Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1250 correlationId=1F04BEC4658FF9C-00000000000000DA
+2026-11-16T12:10:57.473Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1251 correlationId=1F04BEC4658FF9C-00000000000000DB
+2026-11-16T12:10:57.478Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1252 correlationId=1F04BEC4658FF9C-00000000000000DC
+2026-11-16T12:10:57.482Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1253 correlationId=1F04BEC4658FF9C-00000000000000DD
+2026-11-16T12:10:57.486Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1254 correlationId=1F04BEC4658FF9C-00000000000000DE
+2026-11-16T12:10:57.492Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1255 correlationId=1F04BEC4658FF9C-00000000000000DF
+2026-11-16T12:10:57.496Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1256 correlationId=1F04BEC4658FF9C-00000000000000E0
+2026-11-16T12:10:57.501Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1257 correlationId=1F04BEC4658FF9C-00000000000000E1
+2026-11-16T12:10:57.507Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1258 correlationId=1F04BEC4658FF9C-00000000000000E2
+2026-11-16T12:10:57.512Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1259 correlationId=1F04BEC4658FF9C-00000000000000E3
+2026-11-16T12:10:57.517Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1260 correlationId=1F04BEC4658FF9C-00000000000000E4
+2026-11-16T12:10:57.521Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1261 correlationId=1F04BEC4658FF9C-00000000000000E5
+2026-11-16T12:10:57.525Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1262 correlationId=1F04BEC4658FF9C-00000000000000E6
+2026-11-16T12:10:57.531Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1263 correlationId=1F04BEC4658FF9C-00000000000000E7
+2026-11-16T12:10:57.539Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1264 correlationId=1F04BEC4658FF9C-00000000000000E8
+2026-11-16T12:10:57.548Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1265 correlationId=1F04BEC4658FF9C-00000000000000E9
+2026-11-16T12:10:57.555Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1266 correlationId=1F04BEC4658FF9C-00000000000000EA
+2026-11-16T12:10:57.561Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1267 correlationId=1F04BEC4658FF9C-00000000000000EB
+2026-11-16T12:10:57.566Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1268 correlationId=1F04BEC4658FF9C-00000000000000EC
+2026-11-16T12:10:57.570Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1269 correlationId=1F04BEC4658FF9C-00000000000000ED
+2026-11-16T12:10:57.574Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1270 correlationId=1F04BEC4658FF9C-00000000000000EE
+2026-11-16T12:10:57.578Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1271 correlationId=1F04BEC4658FF9C-00000000000000EF
+2026-11-16T12:10:57.584Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1272 correlationId=1F04BEC4658FF9C-00000000000000F0
+2026-11-16T12:10:57.590Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1273 correlationId=1F04BEC4658FF9C-00000000000000F1
+2026-11-16T12:10:57.594Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1274 correlationId=1F04BEC4658FF9C-00000000000000F2
+2026-11-16T12:10:57.599Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1275 correlationId=1F04BEC4658FF9C-00000000000000F3
+2026-11-16T12:10:57.606Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1276 correlationId=1F04BEC4658FF9C-00000000000000F4
+2026-11-16T12:10:57.614Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1277 correlationId=1F04BEC4658FF9C-00000000000000F5
+2026-11-16T12:10:57.620Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1278 correlationId=1F04BEC4658FF9C-00000000000000F6
+2026-11-16T12:10:57.632Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1279 correlationId=1F04BEC4658FF9C-00000000000000F7
+2026-11-16T12:10:57.640Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1280 correlationId=1F04BEC4658FF9C-00000000000000F8
+2026-11-16T12:10:57.645Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1281 correlationId=1F04BEC4658FF9C-00000000000000F9
+2026-11-16T12:10:57.650Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1282 correlationId=1F04BEC4658FF9C-00000000000000FA
+2026-11-16T12:10:57.654Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1283 correlationId=1F04BEC4658FF9C-00000000000000FB
+2026-11-16T12:10:57.659Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1284 correlationId=1F04BEC4658FF9C-00000000000000FC
+2026-11-16T12:10:57.664Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1285 correlationId=1F04BEC4658FF9C-00000000000000FD
+2026-11-16T12:10:57.672Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1286 correlationId=1F04BEC4658FF9C-00000000000000FE
+2026-11-16T12:10:57.677Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1287 correlationId=1F04BEC4658FF9C-00000000000000FF
+2026-11-16T12:10:57.682Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1288 correlationId=1F04BEC4658FF9C-0000000000000100
+2026-11-16T12:10:57.688Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1289 correlationId=1F04BEC4658FF9C-0000000000000101
+2026-11-16T12:10:57.694Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1290 correlationId=1F04BEC4658FF9C-0000000000000102
+2026-11-16T12:10:57.703Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1291 correlationId=1F04BEC4658FF9C-0000000000000103
+2026-11-16T12:10:57.714Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1292 correlationId=1F04BEC4658FF9C-0000000000000104
+2026-11-16T12:10:57.722Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1293 correlationId=1F04BEC4658FF9C-0000000000000105
+2026-11-16T12:10:57.726Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1294 correlationId=1F04BEC4658FF9C-0000000000000106
+2026-11-16T12:10:57.730Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1295 correlationId=1F04BEC4658FF9C-0000000000000107
+2026-11-16T12:10:57.735Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1296 correlationId=1F04BEC4658FF9C-0000000000000108
+2026-11-16T12:10:57.740Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1297 correlationId=1F04BEC4658FF9C-0000000000000109
+2026-11-16T12:10:57.744Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1298 correlationId=1F04BEC4658FF9C-000000000000010A
+2026-11-16T12:10:57.749Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1299 correlationId=1F04BEC4658FF9C-000000000000010B
+2026-11-16T12:10:57.754Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1300 correlationId=1F04BEC4658FF9C-000000000000010C
+2026-11-16T12:10:57.758Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1301 correlationId=1F04BEC4658FF9C-000000000000010D
+2026-11-16T12:10:57.762Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1302 correlationId=1F04BEC4658FF9C-000000000000010E
+2026-11-16T12:10:57.766Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1303 correlationId=1F04BEC4658FF9C-000000000000010F
+2026-11-16T12:10:57.773Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1304 correlationId=1F04BEC4658FF9C-0000000000000110
+2026-11-16T12:10:57.779Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1305 correlationId=1F04BEC4658FF9C-0000000000000111
+2026-11-16T12:10:57.784Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1306 correlationId=1F04BEC4658FF9C-0000000000000112
+2026-11-16T12:10:57.788Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1307 correlationId=1F04BEC4658FF9C-0000000000000113
+2026-11-16T12:10:58.025Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1308 correlationId=1F04BEC4658FF9C-0000000000000114
+2026-11-16T12:10:58.030Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1309 correlationId=1F04BEC4658FF9C-0000000000000115
+2026-11-16T12:10:58.033Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1310 correlationId=1F04BEC4658FF9C-0000000000000116
+2026-11-16T12:10:58.038Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1311 correlationId=1F04BEC4658FF9C-0000000000000117
+2026-11-16T12:10:58.042Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1312 correlationId=1F04BEC4658FF9C-0000000000000118
+2026-11-16T12:10:58.047Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1313 correlationId=1F04BEC4658FF9C-0000000000000119
+2026-11-16T12:10:58.051Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1314 correlationId=1F04BEC4658FF9C-000000000000011A
+2026-11-16T12:10:58.054Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1315 correlationId=1F04BEC4658FF9C-000000000000011B
+2026-11-16T12:10:58.058Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1316 correlationId=1F04BEC4658FF9C-000000000000011C
+2026-11-16T12:10:58.061Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1317 correlationId=1F04BEC4658FF9C-000000000000011D
+2026-11-16T12:10:58.064Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1318 correlationId=1F04BEC4658FF9C-000000000000011E
+2026-11-16T12:10:58.068Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1319 correlationId=1F04BEC4658FF9C-000000000000011F
+2026-11-16T12:10:58.072Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1320 correlationId=1F04BEC4658FF9C-0000000000000120
+2026-11-16T12:10:58.076Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1321 correlationId=1F04BEC4658FF9C-0000000000000121
+2026-11-16T12:10:58.079Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1322 correlationId=1F04BEC4658FF9C-0000000000000122
+2026-11-16T12:10:58.083Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1323 correlationId=1F04BEC4658FF9C-0000000000000123
+2026-11-16T12:10:58.086Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1324 correlationId=1F04BEC4658FF9C-0000000000000124
+2026-11-16T12:10:58.098Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1325 correlationId=1F04BEC4658FF9C-0000000000000125
+2026-11-16T12:10:58.103Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1326 correlationId=1F04BEC4658FF9C-0000000000000126
+2026-11-16T12:10:58.115Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1327 correlationId=1F04BEC4658FF9C-0000000000000127
+2026-11-16T12:10:58.120Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1328 correlationId=1F04BEC4658FF9C-0000000000000128
+2026-11-16T12:10:58.125Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1329 correlationId=1F04BEC4658FF9C-0000000000000129
+2026-11-16T12:10:58.129Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1330 correlationId=1F04BEC4658FF9C-000000000000012A
+2026-11-16T12:10:58.133Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1331 correlationId=1F04BEC4658FF9C-000000000000012B
+2026-11-16T12:10:58.137Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1332 correlationId=1F04BEC4658FF9C-000000000000012C
+2026-11-16T12:10:58.141Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1333 correlationId=1F04BEC4658FF9C-000000000000012D
+2026-11-16T12:10:58.146Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1334 correlationId=1F04BEC4658FF9C-000000000000012E
+2026-11-16T12:10:58.149Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1335 correlationId=1F04BEC4658FF9C-000000000000012F
+2026-11-16T12:10:58.153Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1336 correlationId=1F04BEC4658FF9C-0000000000000130
+2026-11-16T12:10:58.158Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1337 correlationId=1F04BEC4658FF9C-0000000000000131
+2026-11-16T12:10:58.161Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1338 correlationId=1F04BEC4658FF9C-0000000000000132
+2026-11-16T12:10:58.165Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1339 correlationId=1F04BEC4658FF9C-0000000000000133
+2026-11-16T12:10:58.168Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1340 correlationId=1F04BEC4658FF9C-0000000000000134
+2026-11-16T12:10:58.171Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1341 correlationId=1F04BEC4658FF9C-0000000000000135
+2026-11-16T12:10:58.175Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1342 correlationId=1F04BEC4658FF9C-0000000000000136
+2026-11-16T12:10:58.179Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1343 correlationId=1F04BEC4658FF9C-0000000000000137
+2026-11-16T12:10:58.694Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1344 correlationId=1F04BEC4658FF9C-0000000000000138
+2026-11-16T12:10:58.699Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1345 correlationId=1F04BEC4658FF9C-0000000000000139
+2026-11-16T12:10:58.703Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1346 correlationId=1F04BEC4658FF9C-000000000000013A
+2026-11-16T12:10:58.708Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1347 correlationId=1F04BEC4658FF9C-000000000000013B
+2026-11-16T12:10:58.712Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1348 correlationId=1F04BEC4658FF9C-000000000000013C
+2026-11-16T12:10:58.716Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1349 correlationId=1F04BEC4658FF9C-000000000000013D
+2026-11-16T12:10:58.720Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1350 correlationId=1F04BEC4658FF9C-000000000000013E
+2026-11-16T12:10:58.725Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1351 correlationId=1F04BEC4658FF9C-000000000000013F
+2026-11-16T12:10:58.729Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1352 correlationId=1F04BEC4658FF9C-0000000000000140
+2026-11-16T12:10:58.734Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1353 correlationId=1F04BEC4658FF9C-0000000000000141
+2026-11-16T12:10:58.737Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1354 correlationId=1F04BEC4658FF9C-0000000000000142
+2026-11-16T12:10:58.741Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1355 correlationId=1F04BEC4658FF9C-0000000000000143
+2026-11-16T12:10:58.745Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1356 correlationId=1F04BEC4658FF9C-0000000000000144
+2026-11-16T12:10:58.749Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1357 correlationId=1F04BEC4658FF9C-0000000000000145
+2026-11-16T12:10:58.752Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1358 correlationId=1F04BEC4658FF9C-0000000000000146
+2026-11-16T12:10:58.756Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1359 correlationId=1F04BEC4658FF9C-0000000000000147
+2026-11-16T12:10:58.760Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1360 correlationId=1F04BEC4658FF9C-0000000000000148
+2026-11-16T12:10:58.764Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1361 correlationId=1F04BEC4658FF9C-0000000000000149
+2026-11-16T12:10:58.767Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1362 correlationId=1F04BEC4658FF9C-000000000000014A
+2026-11-16T12:10:58.771Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1363 correlationId=1F04BEC4658FF9C-000000000000014B
+2026-11-16T12:10:58.774Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1364 correlationId=1F04BEC4658FF9C-000000000000014C
+2026-11-16T12:10:58.778Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1365 correlationId=1F04BEC4658FF9C-000000000000014D
+2026-11-16T12:10:58.783Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1366 correlationId=1F04BEC4658FF9C-000000000000014E
+2026-11-16T12:10:58.786Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1367 correlationId=1F04BEC4658FF9C-000000000000014F
+2026-11-16T12:10:58.789Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1368 correlationId=1F04BEC4658FF9C-0000000000000150
+2026-11-16T12:10:58.793Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1369 correlationId=1F04BEC4658FF9C-0000000000000151
+2026-11-16T12:10:58.798Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1370 correlationId=1F04BEC4658FF9C-0000000000000152
+2026-11-16T12:10:58.802Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1371 correlationId=1F04BEC4658FF9C-0000000000000153
+2026-11-16T12:10:58.806Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1372 correlationId=1F04BEC4658FF9C-0000000000000154
+2026-11-16T12:10:58.810Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1373 correlationId=1F04BEC4658FF9C-0000000000000155
+2026-11-16T12:10:58.816Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1374 correlationId=1F04BEC4658FF9C-0000000000000156
+2026-11-16T12:10:58.823Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1375 correlationId=1F04BEC4658FF9C-0000000000000157
+2026-11-16T12:10:58.828Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1376 correlationId=1F04BEC4658FF9C-0000000000000158
+2026-11-16T12:10:58.834Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1377 correlationId=1F04BEC4658FF9C-0000000000000159
+2026-11-16T12:10:58.840Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1378 correlationId=1F04BEC4658FF9C-000000000000015A
+2026-11-16T12:10:58.845Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1379 correlationId=1F04BEC4658FF9C-000000000000015B
+2026-11-16T12:10:59.016Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1380 correlationId=1F04BEC4658FF9C-000000000000015C
+2026-11-16T12:10:59.022Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1381 correlationId=1F04BEC4658FF9C-000000000000015D
+2026-11-16T12:10:59.030Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1382 correlationId=1F04BEC4658FF9C-000000000000015E
+2026-11-16T12:10:59.042Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1383 correlationId=1F04BEC4658FF9C-000000000000015F
+2026-11-16T12:10:59.053Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1384 correlationId=1F04BEC4658FF9C-0000000000000160
+2026-11-16T12:10:59.054Z  INFO 1 --- [atalog-lookup-2] order-record                             : Peakmart order recorded orderNumber=PM-1200 lines=2 correlationId=1F04BEC4658FF9C-00000000000000A8
+2026-11-16T12:10:59.058Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1385 correlationId=1F04BEC4658FF9C-0000000000000161
+2026-11-16T12:10:59.064Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1386 correlationId=1F04BEC4658FF9C-0000000000000162
+2026-11-16T12:10:59.066Z  INFO 1 --- [talog-lookup-10] order-record                             : Peakmart order recorded orderNumber=PM-1201 lines=2 correlationId=1F04BEC4658FF9C-00000000000000A9
+2026-11-16T12:10:59.071Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1387 correlationId=1F04BEC4658FF9C-0000000000000163
+2026-11-16T12:10:59.078Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1388 correlationId=1F04BEC4658FF9C-0000000000000164
+2026-11-16T12:10:59.079Z  INFO 1 --- [atalog-lookup-8] order-record                             : Peakmart order recorded orderNumber=PM-1202 lines=2 correlationId=1F04BEC4658FF9C-00000000000000AA
+2026-11-16T12:10:59.085Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1389 correlationId=1F04BEC4658FF9C-0000000000000165
+2026-11-16T12:10:59.087Z  INFO 1 --- [atalog-lookup-2] order-record                             : Peakmart order recorded orderNumber=PM-1203 lines=2 correlationId=1F04BEC4658FF9C-00000000000000AB
+2026-11-16T12:10:59.090Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1390 correlationId=1F04BEC4658FF9C-0000000000000166
+2026-11-16T12:10:59.117Z  INFO 1 --- [atalog-lookup-6] order-record                             : Peakmart order recorded orderNumber=PM-1204 lines=2 correlationId=1F04BEC4658FF9C-00000000000000AC
+2026-11-16T12:10:59.119Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1391 correlationId=1F04BEC4658FF9C-0000000000000167
+2026-11-16T12:10:59.129Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1392 correlationId=1F04BEC4658FF9C-0000000000000168
+2026-11-16T12:10:59.131Z  INFO 1 --- [atalog-lookup-8] order-record                             : Peakmart order recorded orderNumber=PM-1205 lines=2 correlationId=1F04BEC4658FF9C-00000000000000AD
+2026-11-16T12:10:59.135Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1393 correlationId=1F04BEC4658FF9C-0000000000000169
+2026-11-16T12:10:59.139Z  INFO 1 --- [atalog-lookup-2] order-record                             : Peakmart order recorded orderNumber=PM-1206 lines=2 correlationId=1F04BEC4658FF9C-00000000000000AE
+2026-11-16T12:10:59.140Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1394 correlationId=1F04BEC4658FF9C-000000000000016A
+2026-11-16T12:10:59.144Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1395 correlationId=1F04BEC4658FF9C-000000000000016B
+2026-11-16T12:10:59.146Z  INFO 1 --- [atalog-lookup-4] order-record                             : Peakmart order recorded orderNumber=PM-1207 lines=2 correlationId=1F04BEC4658FF9C-00000000000000AF
+2026-11-16T12:10:59.147Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1396 correlationId=1F04BEC4658FF9C-000000000000016C
+2026-11-16T12:10:59.151Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1397 correlationId=1F04BEC4658FF9C-000000000000016D
+2026-11-16T12:10:59.152Z  INFO 1 --- [atalog-lookup-8] order-record                             : Peakmart order recorded orderNumber=PM-1208 lines=2 correlationId=1F04BEC4658FF9C-00000000000000B0
+2026-11-16T12:10:59.154Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1398 correlationId=1F04BEC4658FF9C-000000000000016E
+2026-11-16T12:10:59.157Z  INFO 1 --- [atalog-lookup-2] order-record                             : Peakmart order recorded orderNumber=PM-1209 lines=2 correlationId=1F04BEC4658FF9C-00000000000000B1
+2026-11-16T12:10:59.158Z  INFO 1 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-1399 correlationId=1F04BEC4658FF9C-000000000000016F
+2026-11-16T12:11:00.019Z  INFO 1 --- [atalog-lookup-4] order-record                             : Peakmart order recorded orderNumber=PM-1210 lines=2 correlationId=1F04BEC4658FF9C-00000000000000B2
+2026-11-16T12:11:00.062Z  INFO 1 --- [atalog-lookup-9] partner-order-check                      : Partner order recorded orderNumber=TG-1200 lines=2 correlationId=1F04BEC4658FF9C-0000000000000170
+2026-11-16T12:11:00.074Z  INFO 1 --- [atalog-lookup-2] order-record                             : Peakmart order recorded orderNumber=PM-1211 lines=2 correlationId=1F04BEC4658FF9C-00000000000000B3
+2026-11-16T12:11:00.088Z  INFO 1 --- [atalog-lookup-5] order-record                             : Peakmart order recorded orderNumber=PM-1212 lines=2 correlationId=1F04BEC4658FF9C-00000000000000B4
+2026-11-16T12:11:00.093Z  INFO 1 --- [atalog-lookup-1] order-record                             : Peakmart order recorded orderNumber=PM-1213 lines=2 correlationId=1F04BEC4658FF9C-00000000000000B5
+2026-11-16T12:11:00.125Z  INFO 1 --- [atalog-lookup-3] order-record                             : Peakmart order recorded orderNumber=PM-1214 lines=2 correlationId=1F04BEC4658FF9C-00000000000000B6
+2026-11-16T12:11:00.137Z  INFO 1 --- [atalog-lookup-5] order-record                             : Peakmart order recorded orderNumber=PM-1215 lines=2 correlationId=1F04BEC4658FF9C-00000000000000B7
+2026-11-16T12:11:00.145Z  INFO 1 --- [atalog-lookup-1] order-record                             : Peakmart order recorded orderNumber=PM-1216 lines=2 correlationId=1F04BEC4658FF9C-00000000000000B8
+2026-11-16T12:11:00.151Z  INFO 1 --- [atalog-lookup-3] order-record                             : Peakmart order recorded orderNumber=PM-1217 lines=2 correlationId=1F04BEC4658FF9C-00000000000000B9
+2026-11-16T12:11:00.157Z  INFO 1 --- [atalog-lookup-5] order-record                             : Peakmart order recorded orderNumber=PM-1218 lines=2 correlationId=1F04BEC4658FF9C-00000000000000BA
+2026-11-16T12:11:01.018Z  INFO 1 --- [talog-lookup-10] order-record                             : Peakmart order recorded orderNumber=PM-1219 lines=2 correlationId=1F04BEC4658FF9C-00000000000000BB
+2026-11-16T12:11:01.062Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order recorded orderNumber=TG-1201 lines=2 correlationId=1F04BEC4658FF9C-0000000000000171
+2026-11-16T12:11:01.074Z  INFO 1 --- [atalog-lookup-6] order-record                             : Peakmart order recorded orderNumber=PM-1220 lines=2 correlationId=1F04BEC4658FF9C-00000000000000BC
+2026-11-16T12:11:01.088Z  INFO 1 --- [atalog-lookup-4] order-record                             : Peakmart order recorded orderNumber=PM-1221 lines=2 correlationId=1F04BEC4658FF9C-00000000000000BD
+2026-11-16T12:11:01.095Z  INFO 1 --- [atalog-lookup-8] order-record                             : Peakmart order recorded orderNumber=PM-1222 lines=2 correlationId=1F04BEC4658FF9C-00000000000000BE
+2026-11-16T12:11:01.129Z  INFO 1 --- [atalog-lookup-6] order-record                             : Peakmart order recorded orderNumber=PM-1223 lines=2 correlationId=1F04BEC4658FF9C-00000000000000BF
+2026-11-16T12:11:01.140Z  INFO 1 --- [atalog-lookup-3] order-record                             : Peakmart order recorded orderNumber=PM-1224 lines=2 correlationId=1F04BEC4658FF9C-00000000000000C0
+2026-11-16T12:11:01.147Z  INFO 1 --- [atalog-lookup-8] order-record                             : Peakmart order recorded orderNumber=PM-1225 lines=2 correlationId=1F04BEC4658FF9C-00000000000000C1
+2026-11-16T12:11:01.152Z  INFO 1 --- [atalog-lookup-6] order-record                             : Peakmart order recorded orderNumber=PM-1226 lines=2 correlationId=1F04BEC4658FF9C-00000000000000C2
+2026-11-16T12:11:01.158Z  INFO 1 --- [atalog-lookup-3] order-record                             : Peakmart order recorded orderNumber=PM-1227 lines=2 correlationId=1F04BEC4658FF9C-00000000000000C3
+2026-11-16T12:11:02.018Z  INFO 1 --- [atalog-lookup-9] order-record                             : Peakmart order recorded orderNumber=PM-1228 lines=2 correlationId=1F04BEC4658FF9C-00000000000000C4
+2026-11-16T12:11:02.064Z  INFO 1 --- [atalog-lookup-5] partner-order-check                      : Partner order recorded orderNumber=TG-1202 lines=2 correlationId=1F04BEC4658FF9C-0000000000000172
+2026-11-16T12:11:02.076Z  INFO 1 --- [atalog-lookup-4] order-record                             : Peakmart order recorded orderNumber=PM-1229 lines=2 correlationId=1F04BEC4658FF9C-00000000000000C5
+2026-11-16T12:11:02.088Z  INFO 1 --- [talog-lookup-10] order-record                             : Peakmart order recorded orderNumber=PM-1230 lines=2 correlationId=1F04BEC4658FF9C-00000000000000C6
+2026-11-16T12:11:02.094Z  INFO 1 --- [atalog-lookup-2] order-record                             : Peakmart order recorded orderNumber=PM-1231 lines=2 correlationId=1F04BEC4658FF9C-00000000000000C7
+2026-11-16T12:11:02.126Z  INFO 1 --- [atalog-lookup-7] order-record                             : Peakmart order recorded orderNumber=PM-1232 lines=2 correlationId=1F04BEC4658FF9C-00000000000000C8
+2026-11-16T12:11:02.139Z  INFO 1 --- [atalog-lookup-6] order-record                             : Peakmart order recorded orderNumber=PM-1233 lines=2 correlationId=1F04BEC4658FF9C-00000000000000C9
+2026-11-16T12:11:02.146Z  INFO 1 --- [atalog-lookup-3] order-record                             : Peakmart order recorded orderNumber=PM-1234 lines=2 correlationId=1F04BEC4658FF9C-00000000000000CA
+2026-11-16T12:11:02.152Z  INFO 1 --- [atalog-lookup-4] order-record                             : Peakmart order recorded orderNumber=PM-1235 lines=2 correlationId=1F04BEC4658FF9C-00000000000000CB
+2026-11-16T12:11:02.157Z  INFO 1 --- [atalog-lookup-1] order-record                             : Peakmart order recorded orderNumber=PM-1236 lines=2 correlationId=1F04BEC4658FF9C-00000000000000CC
+2026-11-16T12:11:02.873Z  INFO 1 --- [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-11-16T12:11:03.020Z  INFO 1 --- [atalog-lookup-3] order-record                             : Peakmart order recorded orderNumber=PM-1237 lines=2 correlationId=1F04BEC4658FF9C-00000000000000CD
+2026-11-16T12:11:03.065Z  INFO 1 --- [atalog-lookup-4] partner-order-check                      : Partner order recorded orderNumber=TG-1203 lines=2 correlationId=1F04BEC4658FF9C-0000000000000173
+2026-11-16T12:11:03.076Z  INFO 1 --- [atalog-lookup-1] order-record                             : Peakmart order recorded orderNumber=PM-1238 lines=2 correlationId=1F04BEC4658FF9C-00000000000000CE
+2026-11-16T12:11:03.080Z  INFO 1 --- [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-11-16T12:11:03.083Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   : Apache Camel 4.22.2 (trailhead-order-integration) is shutting down (timeout:45s)
+2026-11-16T12:11:03.088Z  INFO 1 --- [atalog-lookup-8] order-record                             : Peakmart order recorded orderNumber=PM-1239 lines=2 correlationId=1F04BEC4658FF9C-00000000000000CF
+2026-11-16T12:11:03.094Z  INFO 1 --- [atalog-lookup-5] order-record                             : Peakmart order recorded orderNumber=PM-1240 lines=2 correlationId=1F04BEC4658FF9C-00000000000000D0
+2026-11-16T12:11:03.525Z  INFO 1 --- [ - ShutdownTask] o.a.camel.component.kafka.KafkaConsumer  : Pausing Kafka record fetcher task running client ID 
+2026-11-16T12:11:03.525Z  INFO 1 --- [ - ShutdownTask] o.a.c.component.kafka.KafkaFetchRecords  : A pause request was issued and the consumer thread will pause after current processing has finished
+2026-11-16T12:11:03.534Z  INFO 1 --- [ - ShutdownTask] o.a.camel.component.kafka.KafkaConsumer  : Stopping Kafka consumer on topic: peakmart.orders.v2
+2026-11-16T12:11:03.534Z  INFO 1 --- [ - ShutdownTask] o.a.c.component.kafka.KafkaFetchRecords  : Waiting up to 30000 milliseconds for the processing to finish
+2026-11-16T12:11:04.160Z  INFO 1 --- [mart.orders.v2]] o.a.c.component.kafka.KafkaFetchRecords  : Pausing the consumer as a response to a pause request
+2026-11-16T12:11:04.160Z  INFO 1 --- [mart.orders.v2]] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Revoke previously assigned partitions [peakmart.orders.v2-0, peakmart.orders.v2-1]
+2026-11-16T12:11:04.161Z  INFO 1 --- [mart.orders.v2]] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] The pause flag in partitions [peakmart.orders.v2-0, peakmart.orders.v2-1] will be removed due to revocation.
+2026-11-16T12:11:04.161Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Member consumer-trailhead-order-integration-1-1a976957-904e-40a0-af0c-7e49f602a8bf sending LeaveGroup request to coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false) due to the consumer unsubscribed from all topics
+2026-11-16T12:11:04.162Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Resetting generation and member id due to: consumer pro-actively leaving the group
+2026-11-16T12:11:04.162Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Request joining group due to: consumer pro-actively leaving the group
+2026-11-16T12:11:04.162Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.i.ClassicKafkaConsumer         : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Unsubscribed all topics or patterns and assigned partitions
+2026-11-16T12:11:04.162Z  INFO 1 --- [mart.orders.v2]] o.a.c.component.kafka.KafkaFetchRecords  : Terminating KafkaConsumer thread peakmart.orders.v2-Thread 0 receiving from topic(s) peakmart.orders.v2
+2026-11-16T12:11:04.168Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Resetting generation and member id due to: consumer pro-actively leaving the group
+2026-11-16T12:11:04.168Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Request joining group due to: consumer pro-actively leaving the group
+2026-11-16T12:11:04.533Z  INFO 1 --- [mart.orders.v2]] o.apache.kafka.common.metrics.Metrics    : Metrics scheduler closed
+2026-11-16T12:11:04.533Z  INFO 1 --- [mart.orders.v2]] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.metrics.JmxReporter
+2026-11-16T12:11:04.533Z  INFO 1 --- [mart.orders.v2]] o.apache.kafka.common.metrics.Metrics    : Closing reporter org.apache.kafka.common.telemetry.internals.ClientTelemetryReporter
+2026-11-16T12:11:04.533Z  INFO 1 --- [mart.orders.v2]] o.apache.kafka.common.metrics.Metrics    : Metrics reporters closed
+2026-11-16T12:11:04.543Z  INFO 1 --- [mart.orders.v2]] o.a.kafka.common.utils.AppInfoParser     : App info kafka.consumer for consumer-trailhead-order-integration-1 unregistered
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   : Routes stopped (total:19 rest-dsl:1)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-orders-rest-route (rest-openapi://classpath:contract/api/partner-orders.openapi.yaml)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-order-read (direct://partner-order-read)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-order-answer (direct://partner-order-answer)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-order-check (direct://partner-order-check)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-order-receive (direct://partner-order-receive)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-order-submit (direct://submitPartnerOrder)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped order-desk-notification-send (sql://classpath:sql/notification-select.sql)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped pick-list-delivery (sql://classpath:sql/pick-list-select.sql)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped order-record (direct://order-record)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped order-reject (direct://order-reject)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped product-lookup (direct://product-lookup)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped order-check (direct://order-check)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-order-check-poll (sql://classpath:sql/waiting-select.sql)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-event-read-json (direct://peakmart-event-read-json)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-order-receive (direct://peakmart-order-receive)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-event-set-aside (direct://peakmart-event-set-aside)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-event-read (direct://peakmart-event-read)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped peakmart-order-intake (kafka://peakmart.orders.v2)
+2026-11-16T12:11:04.556Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   :     Stopped partner-rejection-email-send (sql://classpath:sql/rejection-email-select.sql)
+2026-11-16T12:11:04.561Z  INFO 1 --- [ionShutdownHook] o.a.c.impl.engine.AbstractCamelContext   : Apache Camel 4.22.2 (trailhead-order-integration) shutdown in 1s477ms (uptime:1m36s)
+2026-11-16T12:11:04.573Z  INFO 1 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-11-16T12:11:04.610Z  INFO 1 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

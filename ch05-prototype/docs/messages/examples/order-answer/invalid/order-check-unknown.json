@@ -1,0 +1,7 @@
+{
+  "orderNumber": "TG-1061",
+  "result": "rejected",
+  "rejectionReasons": [
+    { "orderCheck": "credit-limit", "text": "The credit limit is exceeded." }
+  ]
+}

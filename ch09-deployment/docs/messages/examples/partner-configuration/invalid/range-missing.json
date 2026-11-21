@@ -1,0 +1,10 @@
+{
+  "partners": [
+    {
+      "partnerId": "summit-outfitters",
+      "shopName": "Summit Outfitters",
+      "orderContact": "orders@summit-outfitters.example.com",
+      "apiKeyName": "partner-api-key-summit-outfitters"
+    }
+  ]
+}

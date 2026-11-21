@@ -1,0 +1,15 @@
+- route:
+    id: publish-accepted-orders
+    from:
+      uri: direct:accepted
+      steps:
+        - setHeader:
+            name: kafka.KEY
+            simple: "${header.orderId}"
+        - to:
+            uri: kafka:orders.accepted
+            parameters:
+              brokers: "{{kafka.brokers}}"
+              enableIdempotence: true
+              requestRequiredAcks: all
+              compressionCodec: lz4

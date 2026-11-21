@@ -1,0 +1,27 @@
+{
+  "eventId": "1f4e9a7c-2b3d-4c5e-8f60-7a8b9c0d1e2f",
+  "correctedEvent": {
+    "event_type": "order.placed",
+    "event_id": "1f4e9a7c-2b3d-4c5e-8f60-7a8b9c0d1e2f",
+    "occurred_at": "2026-11-02T09:14:30Z",
+    "order_ref": "PM-50119",
+    "buyer": {
+      "email": "sam.okafor@example.com"
+    },
+    "ship_to": {
+      "full_name": "Sam Okafor",
+      "address1": "88 Kensington Road NW",
+      "city": "Calgary",
+      "state": "AB",
+      "zip": "T2N 3P8",
+      "country_code": "CA"
+    },
+    "items": [
+      {
+        "sku": "TENT-2P",
+        "qty": 1,
+        "price_usd": "229.00"
+      }
+    ]
+  }
+}

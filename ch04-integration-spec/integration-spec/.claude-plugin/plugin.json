@@ -1,0 +1,8 @@
+{
+  "name": "integration-spec",
+  "displayName": "Integration spec for AIUP",
+  "description": "Adds what an integration spec needs to the AI Unified Process: a canonical message model with field mappings, OpenAPI and AsyncAPI contracts, a review of every message step against integration failure modes, and a check that runs in CI",
+  "version": "0.1.0",
+  "author": { "name": "Dhrubo Kayal" },
+  "license": "Apache-2.0"
+}

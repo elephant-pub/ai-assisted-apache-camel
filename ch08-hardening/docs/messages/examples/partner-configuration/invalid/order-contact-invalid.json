@@ -1,0 +1,14 @@
+{
+  "partners": [
+    {
+      "partnerId": "summit-outfitters",
+      "shopName": "Summit Outfitters",
+      "orderNumberRange": {
+        "first": 1000,
+        "last": 1999
+      },
+      "orderContact": "orders at summit",
+      "apiKeyName": "partner-api-key-summit-outfitters"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Order Answer",
+  "description": "The Order Answer the integration gives a Partner in the response to a Partner Order request (UC-001 step 8, A3 to A8). Trailhead Gear owns it (UC-001 BR-011). A refused request (UC-001 A1, A2) gets no Order Answer.",
+  "type": "object",
+  "required": ["result"],
+  "additionalProperties": false,
+  "properties": {
+    "orderNumber": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Order Number of the Partner Order, as the Partner sent it. Absent when the request cannot be read as a Partner Order (UC-001 A3)."
+    },
+    "result": {
+      "enum": ["accepted", "rejected", "temporarily-unavailable"],
+      "description": "`accepted` only after the Accepted Order is recorded (UC-001 BR-003); `rejected` with every Rejection Reason (UC-001 BR-004); `temporarily-unavailable` during a Catalog Outage or while the Order Database is unavailable, so that the Partner resends (UC-001 BR-009)."
+    },
+    "rejectionReasons": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Every Rejection Reason, in the order of the Order Checks (UC-001 BR-004); only when `result` is `rejected`.",
+      "items": { "$ref": "rejection-reason.schema.json" }
+    }
+  },
+  "if": { "properties": { "result": { "const": "rejected" } }, "required": ["result"] },
+  "then": { "required": ["rejectionReasons"] },
+  "else": { "not": { "required": ["rejectionReasons"] } }
+}

@@ -1,0 +1,7 @@
+{
+  "orderNumber": "PM-50118",
+  "customerEmail": "jordan.reyes@example.com",
+  "rejectionReasons": [
+    { "orderCheck": "sku", "lineNumber": 1, "text": "Order Line 1: the SKU TENT-1P is not an Active Product in the Product Catalog. Replace it with an active SKU." }
+  ]
+}

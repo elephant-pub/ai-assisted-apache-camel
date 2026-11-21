@@ -1,0 +1,313 @@
+# Design 006 D14 (§3.15, §3.16): the CI gate and the release of the order integration.
+#
+# What each job proves:
+#   1 build      everything `./mvnw verify` runs: unit tests (T1, T4, T7, T10), the YAML DSL validator, RouteCatalogTest,
+#                the five spec ITs, the failure ITs (T6, T8, T9, T13, T14) and the traceability matrix; T11: every test
+#                class has a report with 0 skipped, 0 errors, 0 failures. The summary lists each failed test with its
+#                assertion message and the Time elapsed of every IT.
+#   2 image      the release image built from the gate's jar (linux/amd64); T2 (what the image holds); T3 (no fixable
+#                HIGH/CRITICAL in the image and in the jar; findings new since the last green main run marked NEW); SBOM.
+#   3 manifests  actionlint on this workflow; T4 on what kustomize renders (validation 006, decisions 2 and 3): every T4
+#                rule on the rendered release, and no secret value in the rendered release or CI overlay; T5:
+#                deploy/k8s/ci and deploy/k8s/release valid for Kubernetes 1.34 (strict).
+#   4 kind       T12: the release with CI settings in a kind cluster inside the runner, with the lab's systems: partner
+#                orders, a Peakmart event, pick lists once, TLS, restart after exit 70 with nothing lost, a rollout
+#                with never two pods and no 404.
+#   5 release    only on a push to main, only after jobs 1-4 passed in this run: the image pushed once to GHCR,
+#                release.yaml naming it by digest, uploaded with the SBOM, the scan reports and the runbook.
+#
+# Review decision 4: the repository is private on a free GitHub plan, where branch protection and rulesets are not
+# available, so this gate cannot be made required for a merge. What holds instead: job 5 `needs:` job 4, which needs
+# jobs 2 and 3, which need job 1, so no release artifact exists without a green gate in the same run. A team repository
+# adds branch protection on main (pull request, one approval, this gate required) and CODEOWNERS (§3.16).
+#
+# Nothing here deploys anywhere but the kind cluster inside the runner: no deployment job, no cluster credential, no
+# repository secret besides GITHUB_TOKEN. Only the pull_request and push triggers (never the privileged PR-target one). Every action is pinned by its full commit SHA (the tag
+# in the comment); Trivy, kubeconform and actionlint run from the digests of deploy/local/tool.sh.
+# The four actions run on Node.js 24 (developer check 18, CI-2); their SHAs were resolved by the developer with
+# git ls-remote https://github.com/actions/<action> refs/tags/<tag>, and each matches the action's release page.
+name: gate
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash   # bash --noprofile --norc -eo pipefail: a failing command before a pipe (| tee) fails the step
+
+env:
+  RELEASE_IMAGE: trailhead/order-integration:ci        # the name deploy/k8s/ci gives the image; never pushed
+  FAULT_IMAGE: trailhead/order-integration:ci-fault    # deploy/ci/fault.Dockerfile, CI only, never published
+  KIND_VERSION: v0.30.0                                # its default node image is Kubernetes v1.34.0, pinned by digest
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+      - name: xmllint for the test reports
+        run: command -v xmllint >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q libxml2-utils; }
+      - name: verify (unit tests, YAML validator, RouteCatalogTest, spec ITs, failure ITs, matrix)
+        run: ./mvnw -B -ntp verify
+      - name: T11 test inventory
+        run: deploy/ci/test-inventory.sh
+      - name: test summary
+        if: always()
+        run: deploy/ci/test-summary.sh >> "$GITHUB_STEP_SUMMARY"
+      - name: upload the jars
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: jars
+          path: target/*.jar
+          if-no-files-found: error
+      - name: upload the test reports and the integration logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-reports
+          path: |
+            target/surefire-reports/
+            target/failsafe-reports/
+            target/spec-tests/
+          if-no-files-found: ignore
+
+  image:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: read   # the scan report artifact of the last green main run (the baseline)
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: jars
+          path: target
+      - name: build the release image (linux/amd64)
+        run: docker build --platform linux/amd64 -f src/main/docker/Dockerfile -t "$RELEASE_IMAGE" .
+      - name: T2 image check
+        run: deploy/ci/image-check.sh "$RELEASE_IMAGE"
+      - name: save the image
+        run: docker save -o target/image.tar "$RELEASE_IMAGE"
+      - name: find the last green main run
+        id: baseline
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          run_id=$(curl -fsS -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/actions/workflows/gate.yml/runs?branch=main&event=push&status=success&per_page=1" \
+            | python3 -I -c 'import json, sys; runs = json.load(sys.stdin)["workflow_runs"]; print(runs[0]["id"] if runs else "")')
+          echo "run-id=$run_id" >> "$GITHUB_OUTPUT"
+          echo "baseline run: ${run_id:-none (every finding is marked NEW)}"
+      - name: download the baseline scan reports
+        if: steps.baseline.outputs.run-id != ''
+        continue-on-error: true   # an expired artifact means no baseline: every finding is marked NEW
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: scan
+          path: target/baseline
+          run-id: ${{ steps.baseline.outputs.run-id }}
+          github-token: ${{ github.token }}
+      - name: T3 scan (image and jar)
+        run: |
+          rc=0
+          for mode in image jar; do
+            case "$mode" in image) input=target/image.tar ;; jar) input=target/order-integration-0.1.0.jar ;; esac
+            if [ ! -f "target/baseline/$mode-report.json" ]; then
+              # An empty report as the baseline: scan.sh then marks every finding NEW (review 8)
+              mkdir -p target/baseline
+              echo '{}' > "target/baseline/$mode-report.json"
+              echo "no baseline report for $mode: every finding is marked NEW"
+            fi
+            args=("$mode" "$input" --baseline "target/baseline/$mode-report.json")
+            set +e
+            deploy/ci/scan.sh "${args[@]}" > "target/scan-$mode.txt" 2>&1
+            code=$?
+            set -e
+            cat "target/scan-$mode.txt"
+            { echo "### T3 $mode scan (exit $code)"; echo '```'; cat "target/scan-$mode.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            [ "$code" -eq 0 ] || rc=1
+          done
+          exit "$rc"
+      - name: SBOM (CycloneDX)
+        run: deploy/ci/scan.sh sbom target/image.tar > target/scan/sbom.cdx.json
+      - name: upload the image
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: image
+          path: target/image.tar
+          if-no-files-found: error
+          retention-days: 7
+      - name: upload the scan reports and the SBOM
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: scan
+          path: |
+            target/scan/*-report.json
+            target/scan/*-gate.json
+            target/scan/sbom.cdx.json
+          if-no-files-found: ignore
+
+  manifests:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '25'   # ManifestPolicyTest (T4) on the rendered manifests
+          cache: maven
+      - name: actionlint
+        run: deploy/local/tool.sh actionlint -no-color
+      - name: render the CI and release manifests
+        run: |
+          mkdir -p target/k8s
+          kubectl kustomize deploy/k8s/ci > target/k8s/ci.yaml
+          kubectl kustomize deploy/k8s/release > target/k8s/release.yaml
+      - name: T4 on the rendered manifests
+        # Job 1 runs T4 on the files as written; here on what is deployed, so that a patch, a replica count or a
+        # generator in any kustomization.yaml can't get around it (decision 3), and no secret value is in either render
+        # (decision 2: a secret-named env with a literal value, or such a key in a ConfigMap).
+        run: >-
+          ./mvnw -B -ntp test -Dtest=ManifestPolicyTest
+          -Dmanifest-policy.rendered=target/k8s/release.yaml
+          -Dmanifest-policy.rendered-also=target/k8s/ci.yaml
+      - name: T5 kubeconform
+        run: >-
+          deploy/local/tool.sh kubeconform -strict -summary -kubernetes-version 1.34.0
+          /repo/target/k8s/ci.yaml /repo/target/k8s/release.yaml
+
+  kind:
+    needs: [image, manifests]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '25'   # keytool for the smoke test's truststore
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: jars
+          path: target
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: image
+          path: target
+      - name: install kind
+        # From its source at the pinned version: the Go checksum database verifies the module (finding W6-F2)
+        run: |
+          go install "sigs.k8s.io/kind@$KIND_VERSION"
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+      - name: create the cluster
+        run: kind create cluster --name trailhead-ci --wait 180s
+      - name: build the fault and SFTP images
+        run: |
+          docker load -i target/image.tar
+          docker build -f deploy/ci/fault.Dockerfile --build-arg "RELEASE_IMAGE=$RELEASE_IMAGE" -t "$FAULT_IMAGE" .
+          docker build -f deploy/local/lab/sftp.Dockerfile -t trailhead/lab-sftp:ci deploy/local/lab
+      - name: load the images into kind
+        run: kind load docker-image --name trailhead-ci "$RELEASE_IMAGE" "$FAULT_IMAGE" trailhead/lab-sftp:ci
+      - name: T12 smoke
+        env:
+          KUBE: kubectl --context kind-trailhead-ci
+          NS: trailhead-ci
+          SYSTEMS_NS: trailhead-ci-systems
+          APPLY_DIR: deploy/k8s/ci
+        run: deploy/ci/smoke.sh 2>&1 | tee target/smoke.log
+      - name: smoke summary
+        if: always()
+        run: |
+          if [ -f target/smoke.log ]; then
+            { echo "### T12 smoke"; echo '```'; grep -E '(^| )(ok|FAILED) ' target/smoke.log || true; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - name: export the cluster logs
+        if: failure()
+        run: kind export logs target/kind-logs --name trailhead-ci
+      - name: upload the cluster logs
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: kind-logs
+          path: |
+            target/kind-logs/
+            target/smoke.log
+          if-no-files-found: ignore
+
+  release:
+    needs: kind
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: image
+          path: target
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: scan
+          path: target/scan
+      - name: push the image to GHCR
+        id: push
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          owner=${GITHUB_REPOSITORY_OWNER,,}
+          ref="ghcr.io/$owner/order-integration:$GITHUB_SHA"
+          docker load -i target/image.tar
+          echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker tag "$RELEASE_IMAGE" "$ref"
+          docker push "$ref"
+          digest=$(docker buildx imagetools inspect "$ref" --format '{{json .Manifest.Digest}}' | tr -d '"')
+          case "$digest" in sha256:*) ;; *) echo "FAILED push: expected a sha256 digest for $ref, got '$digest'"; exit 1 ;; esac
+          echo "owner=$owner" >> "$GITHUB_OUTPUT"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+          echo "pushed ghcr.io/$owner/order-integration@$digest" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: render release.yaml
+        env:
+          OWNER: ${{ steps.push.outputs.owner }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          # A copy of deploy/k8s/release next to it, so that its ../base still resolves; the repository file keeps OWNER
+          command -v kustomize >/dev/null || { echo "FAILED render: expected kustomize on the runner, got none"; exit 1; }
+          mkdir -p deploy/k8s/release-render target/release
+          cp deploy/k8s/release/kustomization.yaml deploy/k8s/release-render/kustomization.yaml
+          (cd deploy/k8s/release-render && kustomize edit set image "order-integration=ghcr.io/$OWNER/order-integration@$DIGEST")
+          kubectl kustomize deploy/k8s/release-render > target/release/release.yaml
+          if grep -q 'sha256:0000000000000000000000000000000000000000000000000000000000000000' target/release/release.yaml; then
+            echo "FAILED render: expected the pushed digest, got the zero digest in release.yaml"; exit 1
+          fi
+          if grep -q 'OWNER' target/release/release.yaml; then
+            echo "FAILED render: expected ghcr.io/$OWNER, got the placeholder OWNER in release.yaml"; exit 1
+          fi
+          grep -q "image: ghcr.io/$OWNER/order-integration@$DIGEST" target/release/release.yaml \
+            || { echo "FAILED render: expected image ghcr.io/$OWNER/order-integration@$DIGEST in release.yaml, got none"; exit 1; }
+          cp target/scan/sbom.cdx.json target/scan/image-report.json target/scan/jar-report.json deploy/README.md target/release/
+          echo "release.yaml names ghcr.io/$OWNER/order-integration@$DIGEST" >> "$GITHUB_STEP_SUMMARY"
+      - name: upload the release
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release
+          path: target/release/
+          if-no-files-found: error

@@ -1,0 +1,9 @@
+12:05:08 before: ConfigMap order-integration-partners-9625b7bc6c, pod uid 5c7602f4-42c2-446f-af98-939933822ed5 started 2026-11-16T18:04:23Z
+12:05:09 before: summit-outfitters | orders@summit-outfitters.example.com | 2026-11-16 17:21:19.61271+00
+12:05:20 applied: lab overlay with the changed Partner Configuration (orderContact changed)
+12:05:20 after: ConfigMap order-integration-partners-gc9mt87488, pod uid bc25276b-175c-4a97-be04-5f5633870bf1 started 2026-11-16T18:05:15Z
+12:05:21 after: summit-outfitters | orders-desk@summit-outfitters.example.com | 2026-11-16 18:05:17.529796+00
+mounted file: orderContact orders-desk@summit-outfitters.example.com
+2026-11-16T18:05:17.540Z  INFO 1 --- [           main] c.t.o.PartnerRegistration                : Partner Configuration registered partners=1
+12:05:35 restored: ConfigMap order-integration-partners-9625b7bc6c, pod uid e8750455-f363-43eb-9171-d43f1b4ad20b started 2026-11-16T18:05:30Z
+12:05:36 restored: summit-outfitters | orders@summit-outfitters.example.com | 2026-11-16 18:05:32.53474+00

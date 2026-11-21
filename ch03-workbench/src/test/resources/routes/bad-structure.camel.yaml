@@ -1,0 +1,6 @@
+- route:
+    id: peakmart-orders
+    from:
+      uri: kafka:marketplace.orders
+      step:
+        - log: "hello"

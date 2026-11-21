@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pick List",
+  "description": "The Pick List of one Accepted Order (UC-004), in the format the Warehouse owns (`docs/inputs/warehouse-picklist-format.md`, C-012): a UTF-8, comma-separated file named `PL-<Order Number>.csv` with a header line and the columns below in this order. This schema describes the file as an array of its rows, one object per row keyed by the column names; numbers are written as digits. A value that holds a comma or a double quote is enclosed in double quotes, and a double quote inside it is doubled (RFC 4180, C-012, UC-004 BR-003).",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "required": ["order_no", "line_no", "sku", "description", "qty", "unit_weight_g", "ship_name", "ship_street", "ship_city", "ship_postcode", "ship_country", "total_weight_g"],
+    "properties": {
+      "order_no": { "type": "string", "minLength": 1, "description": "Order Number, the same on every row." },
+      "line_no": { "type": "integer", "minimum": 1, "description": "Line number: 1, 2, 3 and so on." },
+      "sku": { "type": "string", "minLength": 1, "description": "SKU of the Product." },
+      "description": { "type": "string", "minLength": 1, "description": "Product name." },
+      "qty": { "type": "integer", "minimum": 1, "description": "Quantity." },
+      "unit_weight_g": { "type": "integer", "minimum": 0, "description": "Weight of one item in grams." },
+      "ship_name": { "type": "string", "minLength": 1, "description": "Recipient name. Personal data (C-021)." },
+      "ship_street": { "type": "string", "minLength": 1, "description": "Street line, address lines joined by \", \". Personal data (C-021)." },
+      "ship_city": { "type": "string", "minLength": 1, "description": "City." },
+      "ship_postcode": { "type": "string", "minLength": 1, "description": "Postal code." },
+      "ship_country": { "type": "string", "pattern": "^[A-Z]{2}$", "description": "ISO 3166-1 alpha-2 country code." },
+      "total_weight_g": { "type": "integer", "minimum": 0, "description": "Total Weight of the Order in grams, the same on every row (UC-004 BR-002)." }
+    }
+  }
+}

@@ -1,0 +1,49 @@
+openapi: 3.1.0
+info:
+  title: Product Catalog, the operation the order integration uses
+  version: 0.1.0
+  description: |
+    Derived from docs/inputs/product-catalog-api.md; not agreed with the Product Catalog team.
+
+    The internal Product Catalog answers the data of one Product per SKU, one SKU per call, without authentication
+    and without a batch lookup (C-010). It answers in about 50 ms and is down for deployments a few minutes a week,
+    usually on Tuesday mornings (C-016). The order integration calls it to check and complete every Order Line
+    (UC-003 steps 7 to 9). The host is configuration of the integration.
+
+    **Load.** The Product Catalog team confirmed that it carries 20 calls a second; the integration calls it at most
+    20 times a second, also when it checks waiting Peakmart Orders again after a Catalog Outage (C-010, UC-003 BR-014).
+
+    **Catalog Outage.** When the Product Catalog does not answer for an SKU, the Order cannot be checked; it is never
+    rejected because of it (UC-003 BR-012). The Product Catalog counts as not answering when it has not answered within
+    2 seconds, when it answers with any status other than 200 or 404, or when a 200 answer fails
+    `product.schema.json`, such as one without the active flag, the weight or the price (UC-003 BR-013).
+
+security: []
+
+paths:
+  /products/{sku}:
+    get:
+      operationId: getProduct
+      summary: Get the Product of one SKU
+      parameters:
+        - name: sku
+          in: path
+          required: true
+          description: SKU of the Product, as the Order Line carries it.
+          schema:
+            type: string
+            minLength: 1
+          example: TENT-2P
+      responses:
+        '200':
+          description: The Product with this SKU.
+          content:
+            application/json:
+              schema:
+                $ref: '../../messages/product.schema.json'
+              examples:
+                tent:
+                  summary: TENT-2P
+                  externalValue: '../../messages/examples/product/tent-2p.json'
+        '404':
+          description: No Product has this SKU. The Order Line fails the Order Check `sku` (UC-003 BR-009).

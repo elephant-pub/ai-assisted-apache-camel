@@ -1,0 +1,102 @@
+openapi: 3.1.0
+info:
+  title: Trailhead Gear Order Lookup
+  version: 0.1.0
+  description: |
+    The read-only order lookup of the order integration (UC-005 Look Up Order). The Order Desk keeps working in its
+    Helpdesk Tool; the Helpdesk Tool calls this API, authenticated as the Helpdesk Tool, and shows the answer (FR-032,
+    UC-005 BR-005). Partners cannot use it (FR-037 is deferred).
+
+    Trailhead Gear offers this API; the Helpdesk Tool builds against it. The way the Helpdesk Tool authenticates is
+    assumed (OQ-066). The server address is given per environment and is not part of this document. All traffic uses
+    TLS 1.2 or higher.
+
+    95% of lookups answer within 2 seconds (NFR-004); a change of Order State is visible within 1 minute (NFR-005).
+    The answer holds no Customer name, email address or Shipping Address (UC-005 BR-004).
+
+security:
+  - helpdeskKey: []
+
+paths:
+  /orders/{orderNumber}:
+    get:
+      operationId: lookUpOrder
+      summary: Look up the Orders received with one Order Number in the last 90 days
+      description: |
+        Answers every Order received with this Order Number in the last 90 days, the most recent first, each with its
+        Channel, its Partner for a Partner Order, its current Order State, its Order History and, for a Rejected
+        Order, its Rejection Reasons (UC-005 steps 3 to 5, A3, A4). Read-only: the lookup changes no data, so a
+        repeated call has no effect.
+      parameters:
+        - name: orderNumber
+          in: path
+          required: true
+          description: Order Number, as the Customer or the Partner names it.
+          schema:
+            type: string
+            minLength: 1
+          example: TG-1060
+      responses:
+        '200':
+          description: At least one Order with this Order Number was received in the last 90 days.
+          content:
+            application/json:
+              schema:
+                $ref: '../messages/order-lookup.schema.json'
+              examples:
+                accepted:
+                  summary: An Accepted Order sent to the warehouse
+                  externalValue: '../messages/examples/order-lookup/tg-1060.json'
+                rejected:
+                  summary: A Rejected Peakmart Order
+                  externalValue: '../messages/examples/order-lookup/pm-50118-rejected.json'
+        '401':
+          description: |
+            The lookup is not authenticated as the Helpdesk Tool (UC-005 A1). Refused before any Order is read
+            (NFR-015).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: |
+            No Order with this Order Number was received in the last 90 days (UC-005 A2). Everything the integration
+            keeps about an Order is deleted 90 days after it was received (UC-005 BR-001).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+
+components:
+  securitySchemes:
+    helpdeskKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: |
+        The key of the Helpdesk Tool, kept in the Secret Store (assumed, OQ-066). The integration never shows it.
+
+  schemas:
+    Problem:
+      title: Problem Details
+      description: Problem Details for HTTP APIs (RFC 9457).
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri-reference
+          default: about:blank
+          description: Identifies the problem type; `about:blank` when the status code says it all.
+        title:
+          type: string
+          description: Short summary of the problem type, readable by a person.
+        status:
+          type: integer
+          description: The HTTP status code of the response.
+        detail:
+          type: string
+          description: Explanation of this occurrence, readable by a person. Names no Customer, email address or Shipping Address.
+        instance:
+          type: string
+          format: uri-reference
+          description: Identifies this occurrence.

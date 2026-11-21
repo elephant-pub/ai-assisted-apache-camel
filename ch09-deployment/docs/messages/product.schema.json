@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Product",
+  "description": "A Product as the Product Catalog answers it to `GET /products/{sku}` (UC-003 step 7). The Product Catalog owns this format, so extra fields are allowed. A 404 answer means no Product has the SKU (UC-003 BR-009). An answer that fails this schema, such as one without the active flag, the weight or the price, counts as the Product Catalog not answering, so the Order cannot be checked and is not rejected because of it (UC-003 BR-013).",
+  "type": "object",
+  "required": ["sku", "name", "listPrice", "currency", "weightGrams", "active"],
+  "properties": {
+    "sku": { "type": "string", "minLength": 1, "description": "SKU of the Product." },
+    "name": { "type": "string", "minLength": 1, "description": "Product name, printed on the Pick List." },
+    "listPrice": { "type": "number", "description": "Catalog Price, a JSON number as the Product Catalog sends it; the mapping turns it into a string with two decimals." },
+    "currency": { "type": "string", "description": "Currency of the Catalog Price, `USD` (C-020)." },
+    "weightGrams": { "type": "integer", "minimum": 0, "description": "Weight of one item in grams." },
+    "active": { "type": "boolean", "description": "Whether the Product is an Active Product, UC-003 BR-009." }
+  }
+}

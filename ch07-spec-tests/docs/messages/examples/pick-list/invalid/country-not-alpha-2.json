@@ -1,0 +1,16 @@
+[
+  {
+    "order_no": "TG-1060",
+    "line_no": 1,
+    "sku": "TENT-2P",
+    "description": "Ridgeline 2-Person Tent",
+    "qty": 1,
+    "unit_weight_g": 2150,
+    "ship_name": "Lee Martin",
+    "ship_street": "18 Canyon Road",
+    "ship_city": "Moab",
+    "ship_postcode": "84532",
+    "ship_country": "USA",
+    "total_weight_g": 2150
+  }
+]

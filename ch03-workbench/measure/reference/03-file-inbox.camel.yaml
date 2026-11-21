@@ -1,0 +1,12 @@
+- route:
+    id: order-files
+    from:
+      uri: file:work/inbox
+      parameters:
+        include: ".*\\.json"
+        readLock: changed
+        move: ".done/${date:now:yyyy-MM-dd}/${file:name}"
+        moveFailed: ".error/${file:name}"
+      steps:
+        - to:
+            uri: direct:intake

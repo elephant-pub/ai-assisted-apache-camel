@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Order",
+  "type": "object",
+  "required": ["orderId", "shipTo", "lines"],
+  "properties": {
+    "orderId": { "type": "string", "pattern": "^(TG|PM)-\\d{4,}$" },
+    "note": { "type": "string" },
+    "shipTo": { "$ref": "#/$defs/address" },
+    "lines": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "required": ["sku", "quantity"],
+        "properties": {
+          "sku": { "type": "string" },
+          "quantity": { "type": "integer", "minimum": 1, "maximum": 20 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "address": {
+      "type": "object", "required": ["name", "country"],
+      "properties": { "name": { "type": "string" }, "country": { "enum": ["US", "CA"] } }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "camel": {
+      "command": "jbang",
+      "args": [
+        "-Dquarkus.log.level=WARN",
+        "-Dquarkus.http.port=-1",
+        "-Dcamel.mcp.security.enabled=true",
+        "-Dcamel.mcp.security.access-level=read-only",
+        "org.apache.camel:camel-jbang-mcp:4.22.2:runner"
+      ]
+    }
+  }
+}

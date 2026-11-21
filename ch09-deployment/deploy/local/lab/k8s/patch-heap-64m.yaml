@@ -1,0 +1,9 @@
+# Deploy lab only (design 006 §3.14 A6b, supplementary run; never in deploy/k8s/): as patch-heap-96m.yaml with a
+# 64 MiB heap, because the plan's 96 MiB did not run out under the L7 burst (W5-F5).
+spec:
+  template:
+    spec:
+      containers:
+        - name: order-integration
+          env:
+            - {name: JDK_JAVA_OPTIONS, value: "-Xmx64m"}

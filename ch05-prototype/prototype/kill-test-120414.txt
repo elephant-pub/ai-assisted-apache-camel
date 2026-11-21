@@ -1,0 +1,6 @@
+killed with 16 of 50 received; committed offset moved by 15
+ok   orders recorded: 50
+ok   orders recorded twice: 0
+ok   history entries: 100
+ok   Duplicates skipped after the restart: 1
+logs in target/kill-test/120414

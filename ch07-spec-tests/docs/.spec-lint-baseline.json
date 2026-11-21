@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "findings": [
+    {
+      "fingerprint": "e4c17e964d4206bdd15a513380e316d830bb3af4",
+      "code": "ACTOR_MISMATCH",
+      "path": "use_cases/UC-003-check-order.md",
+      "element": "UC-003",
+      "message": "primary actor 'Partner' is not connected to UC-003 in use_cases.puml"
+    },
+    {
+      "fingerprint": "d6d5a55feb05f0b86c56f5cb012df4731d4bc4e2",
+      "code": "ACTOR_MISMATCH",
+      "path": "use_cases/UC-003-check-order.md",
+      "element": "UC-003",
+      "message": "primary actor 'Peakmart' is not connected to UC-003 in use_cases.puml"
+    }
+  ]
+}

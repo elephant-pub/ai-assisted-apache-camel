@@ -1,0 +1,9 @@
+- route:
+    id: store-order
+    from:
+      uri: direct:store-order
+      steps:
+        - to:
+            uri: "sql:insert into orders (id, partner, total) values (:#id, :#partner, :#total)"
+            parameters:
+              dataSource: "#orderDb"

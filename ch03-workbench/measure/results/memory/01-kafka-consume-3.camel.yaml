@@ -1,0 +1,14 @@
+- route:
+    id: peakmart-order-intake
+    from:
+      uri: kafka:marketplace.orders
+      parameters:
+        brokers: "{{kafka.brokers}}"
+        groupId: order-intake
+        autoOffsetReset: earliest
+        maxPollRecords: 50
+        autoCommitEnable: false
+        allowManualCommit: true
+      steps:
+        - to:
+            uri: direct:intake

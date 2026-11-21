@@ -1,0 +1,318 @@
+# Flow peakmart-order-check (design §3): run every Order Check on each waiting Peakmart Order, then record it,
+# reject it, or leave it waiting during a Catalog Outage (UC-003). Each outcome is one atomic SQL statement.
+- routeConfiguration:
+    id: order-check-error-handling
+    description: A database failure while rejecting or recording is retried, then logged; the order stays waiting
+    onException:
+      - onException:
+          id: on-check-database-failure
+          exception:
+            - java.sql.SQLException
+            - org.springframework.dao.DataAccessException
+          handled:
+            constant:
+              expression: "true"
+          redeliveryPolicy:
+            maximumRedeliveries: 2
+            redeliveryDelay: "1000"
+            useExponentialBackOff: true
+            logExhaustedMessageBody: false
+            logExhaustedMessageHistory: false
+          steps:
+            - log:
+                id: log-check-database-failure
+                loggingLevel: WARN
+                message: "Peakmart order stays waiting after a database failure orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+
+- route:
+    id: peakmart-order-check-poll
+    description: Poll the Order Database for Peakmart Orders waiting to be checked, oldest first
+    routeConfigurationId: order-check-error-handling
+    from:
+      id: from-waiting-orders
+      uri: sql:file:{{sql.dir}}/waiting-select.sql
+      parameters:
+        dataSource: "#orderDb"
+        delay: "{{order-check.poll-delay-ms}}"
+        maxMessagesPerPoll: "{{order-check.batch-size}}"
+      steps:
+        - setProperty:
+            id: set-check-correlation-id
+            name: correlation-id
+            expression:
+              simple:
+                expression: "${body[correlation_id]}"
+        - setProperty:
+            id: set-receipt-id
+            name: receipt-id
+            expression:
+              simple:
+                expression: "${body[id]}"
+        - setProperty:
+            id: set-check-order-number
+            name: order-number
+            expression:
+              simple:
+                expression: "${body[order_number]}"
+        - setBody:
+            id: set-body-waiting-order
+            expression:
+              simple:
+                expression: "${body[waiting_order]}"
+        - setProperty:
+            id: set-order
+            name: order
+            expression:
+              simple:
+                expression: "${body}"
+        - to:
+            id: to-order-check
+            uri: direct:order-check
+
+- route:
+    id: order-check
+    description: Run the UC-003 Order Checks on one Peakmart Order and route it by the outcome
+    routeConfigurationId: order-check-error-handling
+    from:
+      id: from-order-check
+      uri: direct:order-check
+      steps:
+        - setProperty:
+            id: set-structural-reasons
+            name: structural-reasons
+            expression:
+              method:
+                ref: orderChecks
+                method: structuralReasons
+        - split:
+            id: split-order-lines
+            expression:
+              jsonpath:
+                expression: "$.lines"
+            aggregationStrategy: "#class:org.apache.camel.processor.aggregate.GroupedBodyAggregationStrategy"
+            steps:
+              - to:
+                  id: to-product-lookup
+                  uri: direct:product-lookup
+        - bean:
+            id: bean-evaluate
+            ref: orderChecks
+            method: "evaluate(${exchangeProperty.order}, ${exchangeProperty.structural-reasons}, ${body})"
+        - choice:
+            id: choice-check-outcome
+            when:
+              - id: when-catalog-outage
+                expression:
+                  simple:
+                    expression: "${body[outcome]} == 'CATALOG_OUTAGE'"
+                steps:
+                  - log:
+                      id: log-waits-for-catalog
+                      loggingLevel: WARN
+                      message: "Peakmart order waits for Product Catalog orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+              - id: when-rejected
+                expression:
+                  simple:
+                    expression: "${body[outcome]} == 'REJECTED'"
+                steps:
+                  - to:
+                      id: to-order-reject
+                      uri: direct:order-reject
+              - id: when-passed
+                expression:
+                  simple:
+                    expression: "${body[outcome]} == 'PASSED'"
+                steps:
+                  - to:
+                      id: to-order-record
+                      uri: direct:order-record
+
+- route:
+    id: product-lookup
+    description: Look up the Product of one Order Line in the Product Catalog at most 20 times a second
+    routeConfigurationId: order-check-error-handling
+    from:
+      id: from-product-lookup
+      uri: direct:product-lookup
+      steps:
+        # One throttle node shared by every check and re-check (BR-014)
+        - throttle:
+            id: throttle-product-catalog
+            mode: TotalRequests
+            timePeriodMillis: "1000"
+            expression:
+              constant:
+                expression: "{{catalog.max-calls-per-second}}"
+        - setProperty:
+            id: set-line-number
+            name: line-number
+            expression:
+              simple:
+                expression: "${body[lineNumber]}"
+        - setProperty:
+            id: set-sku
+            name: sku
+            expression:
+              simple:
+                expression: "${body[sku]}"
+        - setHeader:
+            id: set-http-path
+            name: CamelHttpPath
+            expression:
+              method:
+                ref: orderChecks
+                method: productPath(${exchangeProperty.sku})
+        - doTry:
+            id: try-product-catalog
+            steps:
+              - setBody:
+                  id: set-body-empty-request
+                  expression:
+                    simple:
+                      expression: "${null}"
+              - to:
+                  id: to-product-catalog
+                  uri: "http://{{catalog.host}}"
+                  parameters:
+                    httpMethod: GET
+                    throwExceptionOnFailure: false
+              - convertBodyTo:
+                  id: convert-answer-to-string
+                  type: java.lang.String
+              - choice:
+                  id: choice-catalog-status
+                  when:
+                    - id: when-status-200
+                      expression:
+                        simple:
+                          expression: "${header.CamelHttpResponseCode} == 200"
+                      steps:
+                        - doTry:
+                            id: try-validate-product
+                            steps:
+                              - to:
+                                  id: to-validate-product
+                                  uri: json-validator:file:{{schemas.dir}}/product.schema.json
+                              - setBody:
+                                  id: set-body-found
+                                  expression:
+                                    method:
+                                      ref: orderChecks
+                                      method: "answer(${exchangeProperty.line-number}, ${exchangeProperty.sku}, 'FOUND', ${body})"
+                            doCatch:
+                              # A 200 answer that fails product.schema.json counts as not answering (BR-013)
+                              - id: catch-product-invalid
+                                exception:
+                                  - org.apache.camel.component.jsonvalidator.JsonValidationException
+                                  - java.lang.Exception
+                                steps:
+                                  - setBody:
+                                      id: set-body-outage-invalid
+                                      expression:
+                                        method:
+                                          ref: orderChecks
+                                          method: "answer(${exchangeProperty.line-number}, ${exchangeProperty.sku}, 'OUTAGE', null)"
+                    - id: when-status-404
+                      expression:
+                        simple:
+                          expression: "${header.CamelHttpResponseCode} == 404"
+                      steps:
+                        - setBody:
+                            id: set-body-unknown
+                            expression:
+                              method:
+                                ref: orderChecks
+                                method: "answer(${exchangeProperty.line-number}, ${exchangeProperty.sku}, 'UNKNOWN', null)"
+                  otherwise:
+                    id: otherwise-status-other
+                    steps:
+                      - setBody:
+                          id: set-body-outage-status
+                          expression:
+                            method:
+                              ref: orderChecks
+                              method: "answer(${exchangeProperty.line-number}, ${exchangeProperty.sku}, 'OUTAGE', null)"
+            doCatch:
+              # Connect refused or no answer within catalog.timeout-ms (BR-013)
+              - id: catch-catalog-io
+                exception:
+                  - java.io.IOException
+                steps:
+                  - setBody:
+                      id: set-body-outage-io
+                      expression:
+                        method:
+                          ref: orderChecks
+                          method: "answer(${exchangeProperty.line-number}, ${exchangeProperty.sku}, 'OUTAGE', null)"
+        - removeHeaders:
+            id: remove-http-headers
+            pattern: "CamelHttp*"
+
+- route:
+    id: order-reject
+    description: Reject a checked Peakmart Order with every Rejection Reason and queue the Order Desk Notification
+    routeConfigurationId: order-check-error-handling
+    from:
+      id: from-order-reject
+      uri: direct:order-reject
+      steps:
+        - setProperty:
+            id: set-mailbox
+            name: mailbox
+            expression:
+              constant:
+                expression: "{{orderdesk.mailbox}}"
+        - to:
+            id: to-order-reject-sql
+            uri: sql:file:{{sql.dir}}/order-reject.sql
+            parameters:
+              dataSource: "#orderDb"
+        - log:
+            id: log-order-rejected
+            loggingLevel: INFO
+            message: "Peakmart order rejected orderNumber=${exchangeProperty.order-number} reasons=${body[reasonCount]} correlationId=${exchangeProperty.correlation-id}"
+
+- route:
+    id: order-record
+    description: Record a Peakmart Order that passed every Order Check as an Accepted Order
+    routeConfigurationId: order-check-error-handling
+    from:
+      id: from-order-record
+      uri: direct:order-record
+      steps:
+        - setProperty:
+            id: set-line-count
+            name: line-count
+            expression:
+              simple:
+                expression: "${body[lineCount]}"
+        - setBody:
+            id: set-body-completed-order
+            expression:
+              simple:
+                expression: "${body[order]}"
+        - doTry:
+            id: try-record-order
+            steps:
+              # Guard: the completed Order must be a valid canonical Order before anything is recorded
+              - to:
+                  id: to-validate-order
+                  uri: json-validator:file:{{schemas.dir}}/order.schema.json
+              - to:
+                  id: to-order-record-sql
+                  uri: sql:file:{{sql.dir}}/order-record.sql
+                  parameters:
+                    dataSource: "#orderDb"
+              - log:
+                  id: log-order-recorded
+                  loggingLevel: INFO
+                  message: "Peakmart order recorded orderNumber=${exchangeProperty.order-number} lines=${exchangeProperty.line-count} correlationId=${exchangeProperty.correlation-id}"
+            doCatch:
+              - id: catch-order-invalid
+                exception:
+                  - org.apache.camel.component.jsonvalidator.JsonValidationException
+                steps:
+                  - log:
+                      id: log-order-invalid
+                      loggingLevel: ERROR
+                      message: "Completed Peakmart order is not a valid Order; nothing recorded, it stays waiting orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"

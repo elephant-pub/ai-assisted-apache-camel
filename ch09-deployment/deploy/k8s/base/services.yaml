@@ -1,0 +1,27 @@
+# Design 006 D4, D3: the partner endpoint only. TLS ends at the pod (OQ-078): whatever is in front passes TCP through.
+# The management port 9090 is in no Service.
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-integration-headless
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: order-integration
+  ports:
+    - name: partner
+      port: 8443
+      targetPort: partner
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: order-integration
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: order-integration
+  ports:
+    - name: partner
+      port: 8443
+      targetPort: partner

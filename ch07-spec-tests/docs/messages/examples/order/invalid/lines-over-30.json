@@ -1,0 +1,359 @@
+{
+  "orderNumber": "TG-1060",
+  "channel": "partner",
+  "partnerId": "summit-outfitters",
+  "orderedAt": "2026-11-02T14:05:12Z",
+  "receivedAt": "2026-11-02T14:05:13Z",
+  "correlationId": "3f6b2a90-1c4d-4e8b-9a7f-5d2e8c1b0a64",
+  "customerEmail": "lee@example.com",
+  "shippingAddress": {
+    "recipientName": "Lee Martin",
+    "streetLine": "18 Canyon Road",
+    "city": "Moab",
+    "postalCode": "84532",
+    "country": "US"
+  },
+  "lines": [
+    {
+      "lineNumber": 1,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 2,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 3,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 4,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 5,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 6,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 7,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 8,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 9,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 10,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 11,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 12,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 13,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 14,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 15,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 16,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 17,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 18,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 19,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 20,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 21,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 22,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 23,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 24,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 25,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 26,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 27,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 28,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 29,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 30,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 30,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    }
+  ]
+}

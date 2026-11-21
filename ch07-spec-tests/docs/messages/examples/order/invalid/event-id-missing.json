@@ -1,0 +1,40 @@
+{
+  "orderNumber": "PM-50117",
+  "channel": "peakmart",
+  "orderedAt": "2026-11-02T09:14:31Z",
+  "receivedAt": "2026-11-02T09:14:33Z",
+  "correlationId": "a1c9e7d2-6b3f-4f10-8e2a-7c5d9b4e1f03",
+  "customerEmail": "jordan.reyes@example.com",
+  "shippingAddress": {
+    "recipientName": "Jordan Reyes",
+    "streetLine": "2240 Pearl Street, Apt 4",
+    "city": "Boulder",
+    "stateRegion": "CO",
+    "postalCode": "80302",
+    "country": "US"
+  },
+  "lines": [
+    {
+      "lineNumber": 1,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "229.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 2,
+      "sku": "STAKE-AL8",
+      "quantity": 2,
+      "unitPrice": {
+        "amount": "12.50",
+        "currency": "USD"
+      },
+      "productName": "Aluminium Tent Stakes 8-Pack",
+      "unitWeightGrams": 120
+    }
+  ]
+}

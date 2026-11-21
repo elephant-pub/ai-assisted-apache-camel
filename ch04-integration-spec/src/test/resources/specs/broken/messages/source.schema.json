@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "objekt",
+  "required": ["ref", "to", "items"],
+  "properties": {
+    "ref": { "type": "string" },
+    "to": { "type": "object", "properties": { "full_name": { "type": "string" }, "cc": { "type": "string" } } },
+    "items": { "type": "array", "items": { "type": "object", "properties": { "sku": { "type": "string" }, "qty": { "type": "integer" } } } }
+  }
+}

@@ -1,0 +1,13 @@
+- route:
+    id: pick-list-to-warehouse-sftp
+    from:
+      uri: direct:pick-list
+      steps:
+        - to:
+            uri: sftp:warehouse.trailhead.example/inbound/picklists
+            parameters:
+              username: trailhead
+              password: "{{warehouse.password}}"
+              tempFileName: "${file:onlyname}.inprogress"
+              fileExist: Fail
+              strictHostKeyChecking: "yes"

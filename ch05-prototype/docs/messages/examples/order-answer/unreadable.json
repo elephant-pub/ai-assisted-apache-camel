@@ -1,0 +1,8 @@
+{
+  "result": "rejected",
+  "rejectionReasons": [
+    {
+      "text": "The request cannot be read as a Partner Order: the field orderId is missing."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+11:31:04 == replicas in the StatefulSet: 1
+11:31:11 == 100 accepted and 200 rejected events published PM-600000..PM-600299
+11:31:16 == rollout restart
+11:31:27 == rollout done
+11:31:42 == delete pod order-integration-0
+11:31:55 == replacement ready
+11:35:05 == warehouse pickup stopped
+integration pods at most: 1
+picked up: 1550, received again: 0, in inbound: 0
+once=200
+notifications=200 sent=200
+pick lists=100 delivered=100 attempts>1=0 failures=-
+statuses: 
+11:31:04 == replicas in the StatefulSet: 1
+11:31:11 == 100 accepted and 200 rejected events published PM-600000..PM-600299
+11:31:16 == rollout restart
+11:31:27 == rollout done
+11:31:42 == delete pod order-integration-0
+11:31:55 == replacement ready
+11:35:05 == warehouse pickup stopped
+integration pods at most: 1
+picked up: 1550, received again: 0, in inbound: 0
+once=200
+notifications=200 sent=200
+pick lists=100 delivered=100 attempts>1=0 failures=-
+statuses: 

@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Order",
+  "description": "The canonical Order: the one shape every Channel is turned into, completed from the Product Catalog, recorded as an Accepted Order and turned into the Pick List (UC-001, UC-002, UC-003, UC-004). Trailhead Gear owns it. It holds every Order Check that concerns the Order alone, so a Rejected Order is never a valid Order; the Order Checks that need other data are named in the descriptions.",
+  "type": "object",
+  "required": ["orderNumber", "channel", "orderedAt", "receivedAt", "correlationId", "shippingAddress", "lines"],
+  "additionalProperties": false,
+  "properties": {
+    "orderNumber": {
+      "type": "string",
+      "pattern": "^(TG-\\d{4,}|PM-\\d+)$",
+      "description": "Order Number: `TG-` and four or more digits for a Partner Order, `PM-` and digits for a Peakmart Order (UC-003 BR-002). The Order Number Range (UC-003 BR-003), an Order Number already used (UC-003 BR-004) and a Duplicate (UC-001 BR-007, UC-002 BR-002) are checked against the Partner and the Order History."
+    },
+    "channel": { "enum": ["partner", "peakmart"], "description": "Channel the Order arrived on." },
+    "partnerId": { "type": "string", "minLength": 1, "description": "Partner that sent a Partner Order; only for the Channel `partner`. Checked against the API Key, UC-001 BR-002." },
+    "eventId": { "type": "string", "minLength": 1, "description": "Event id of the Order Event a Peakmart Order was first taken from; only for the Channel `peakmart`." },
+    "orderedAt": { "type": "string", "format": "date-time", "description": "Date and time the Customer placed the Order, with the offset the Channel sent." },
+    "receivedAt": { "type": "string", "format": "date-time", "description": "Date and time the integration received the Order, in UTC; the 90 days of retention count from it (C-022)." },
+    "correlationId": { "type": "string", "minLength": 1, "description": "Correlation id carried by every log entry about the Order (NFR-013)." },
+    "customerEmail": { "type": "string", "format": "email", "description": "Email address of the Customer, when the Channel sent one. Personal data (C-021)." },
+    "shippingAddress": { "$ref": "#/$defs/shippingAddress", "description": "Shipping Address of the Order." },
+    "lines": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 30,
+      "description": "Order Lines, 1 to 30 (UC-003 BR-005).",
+      "items": { "$ref": "#/$defs/orderLine" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "channel": { "const": "partner" } }, "required": ["channel"] },
+      "then": { "required": ["partnerId"], "properties": { "orderNumber": { "pattern": "^TG-" }, "eventId": false } }
+    },
+    {
+      "if": { "properties": { "channel": { "const": "peakmart" } }, "required": ["channel"] },
+      "then": { "required": ["eventId"], "properties": { "orderNumber": { "pattern": "^PM-" }, "partnerId": false } }
+    }
+  ],
+  "$defs": {
+    "money": {
+      "type": "object",
+      "description": "An amount of money: a string with two decimals next to its currency, never a JSON number.",
+      "required": ["amount", "currency"],
+      "additionalProperties": false,
+      "properties": {
+        "amount": { "type": "string", "pattern": "^\\d+\\.\\d{2}$", "description": "Amount with two decimals." },
+        "currency": { "const": "USD", "description": "Currency; every price is in US dollars (C-020)." }
+      }
+    },
+    "shippingAddress": {
+      "type": "object",
+      "description": "Shipping Address, complete (UC-003 BR-007) and in the US or Canada (UC-003 BR-008). Personal data (C-021).",
+      "required": ["recipientName", "streetLine", "city", "postalCode", "country"],
+      "additionalProperties": false,
+      "properties": {
+        "recipientName": { "type": "string", "minLength": 1, "description": "Name of the Recipient." },
+        "streetLine": { "type": "string", "minLength": 1, "description": "Street line; several address lines are joined by \", \" (UC-002 BR-007)." },
+        "city": { "type": "string", "minLength": 1, "description": "City." },
+        "stateRegion": { "type": "string", "minLength": 1, "description": "State or province, when the Channel sends one (UC-002 BR-007)." },
+        "postalCode": { "type": "string", "minLength": 1, "description": "Postal code." },
+        "country": { "enum": ["US", "CA"], "description": "Country, ISO 3166-1 alpha-2: the US or Canada (C-017)." }
+      }
+    },
+    "orderLine": {
+      "type": "object",
+      "description": "One Order Line, completed from the Product Catalog (UC-003 BR-011).",
+      "required": ["lineNumber", "sku", "quantity", "unitPrice", "productName", "unitWeightGrams"],
+      "additionalProperties": false,
+      "properties": {
+        "lineNumber": { "type": "integer", "minimum": 1, "maximum": 30, "description": "Number of the line within the Order, from 1." },
+        "sku": { "type": "string", "minLength": 1, "description": "SKU of an Active Product, checked against the Product Catalog, UC-003 BR-009." },
+        "quantity": { "type": "integer", "minimum": 1, "maximum": 20, "description": "Number of items, 1 to 20; more is a Reseller (UC-003 BR-006)." },
+        "unitPrice": { "$ref": "#/$defs/money", "description": "Price of one item: the Catalog Price for a Partner Order (UC-001 BR-006), the Peakmart Price for a Peakmart Order (UC-002 BR-003)." },
+        "productName": { "type": "string", "minLength": 1, "description": "Product name from the Product Catalog." },
+        "unitWeightGrams": { "type": "integer", "minimum": 0, "description": "Weight of one item in grams from the Product Catalog." }
+      }
+    }
+  }
+}

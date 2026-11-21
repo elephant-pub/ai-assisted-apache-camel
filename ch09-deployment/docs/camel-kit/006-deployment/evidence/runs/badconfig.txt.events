@@ -1,0 +1,5 @@
+06:12:55 == rollout with patch patch-wrong-db-password.yaml
+06:13:55 == after 60 s
+POD                                 READY   RESTARTS   STATE                                                                                                                                                                                                   LAST    EXIT
+order-integration-b48c9dbd5-lxb2g   false   3          map[terminated:map[containerID:containerd://d8331411449f98d123f80d9ebd0e0a97dff956d7cadce2c0b44c9b6439f190fa exitCode:1 finishedAt:2026-11-16T12:13:47Z reason:Error startedAt:2026-11-16T12:13:45Z]]   Error   1
+statuses: 000=109 200=40 

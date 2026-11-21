@@ -1,0 +1,19 @@
+{
+  "event_type": "order.cancelled",
+  "event_id": "a914bb66-ef44-4c52-9201-8f54b4f63e06",
+  "occurred_at": "2026-11-02T11:30:00Z",
+  "order_ref": "PM-50117",
+  "buyer": { "email": "jordan.reyes@example.com" },
+  "ship_to": {
+    "full_name": "Jordan Reyes",
+    "address1": "2240 Pearl Street",
+    "address2": "Apt 4",
+    "city": "Boulder",
+    "state": "CO",
+    "zip": "80302",
+    "country_code": "US"
+  },
+  "items": [
+    { "sku": "TENT-2P", "qty": 1, "price_usd": 229.00 }
+  ]
+}

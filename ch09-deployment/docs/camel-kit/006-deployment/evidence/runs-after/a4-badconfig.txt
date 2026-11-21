@@ -1,0 +1,64 @@
+11:43:39 == bad release applied: lab overlay + patch-wrong-db-password.yaml
+11:44:40 == after 60 s
+POD                   READY   RESTARTS   STATE                                                                                                                                                                                      LAST    EXIT
+order-integration-0   false   2          map[waiting:map[message:back-off 20s restarting failed container=order-integration pod=order-integration-0_trailhead-lab(f14dfaa0-e300-4470-8429-213af9725d80) reason:CrashLoopBackOff]]   Error   1
+last log: 	at org.flywaydb.core.Flyway.migrate(Flyway.java:181) ~[flyway-core-12.4.0.jar:na]
+last log: 	at org.springframework.boot.flyway.autoconfigure.FlywayMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:55) ~[spring-boot-flyway-4.1.2.jar:4.1.2]
+last log: Caused by: org.postgresql.util.PSQLException: FATAL: password authentication failed for user "trailhead"
+11:44:40 == rollback: apply the previous objects (deploy/local/lab/k8s/release)
+11:45:11 == pod order-integration-0 still on the bad revision after 30 s (never ready): delete it (runbook step, developer check 10)
+11:45:19 == ready again 39 s after the rollback
+integration pods at most: 1
+statuses: 000=111 422=178 
+17:43:40 TG-40538 000 0.001050
+17:43:40 TG-40539 000 0.001295
+17:43:40 TG-40540 000 0.002468
+17:43:41 TG-40541 000 0.000861
+17:43:41 TG-40542 000 0.001397
+17:43:41 TG-40543 000 0.000981
+17:43:41 TG-40544 000 0.001167
+17:43:42 TG-40545 000 0.001545
+17:43:42 TG-40546 000 0.000807
+17:43:42 TG-40547 000 0.001697
+17:43:42 TG-40548 000 0.000788
+17:43:43 TG-40549 000 0.000844
+17:43:43 TG-40550 000 0.000942
+17:43:43 TG-40551 000 0.001234
+17:43:43 TG-40552 000 0.000699
+17:43:44 TG-40553 000 0.000792
+17:43:44 TG-40554 000 0.000684
+17:43:44 TG-40555 000 0.001593
+17:43:45 TG-40556 000 1.044917
+17:43:46 TG-40557 000 0.000960
+17:43:47 TG-40558 000 1.019040
+17:43:48 TG-40559 000 1.023804
+17:43:50 TG-40560 000 1.023780
+17:43:50 TG-40561 000 0.001036
+17:43:51 TG-40562 000 1.012030
+17:43:52 TG-40563 000 1.020809
+17:43:53 TG-40564 000 0.000842
+17:43:54 TG-40565 000 1.022167
+17:43:55 TG-40566 000 1.023163
+17:43:56 TG-40567 000 1.022489
+17:43:57 TG-40568 000 0.000745
+17:43:58 TG-40569 000 1.014786
+17:43:59 TG-40570 000 1.021269
+17:44:01 TG-40571 000 1.022656
+17:44:01 TG-40572 000 0.000776
+17:44:02 TG-40573 000 1.014930
+17:44:03 TG-40574 000 1.016338
+17:44:04 TG-40575 000 0.001103
+17:44:05 TG-40576 000 1.020836
+17:44:06 TG-40577 000 1.019356
+11:43:39 == bad release applied: lab overlay + patch-wrong-db-password.yaml
+11:44:40 == after 60 s
+POD                   READY   RESTARTS   STATE                                                                                                                                                                                      LAST    EXIT
+order-integration-0   false   2          map[waiting:map[message:back-off 20s restarting failed container=order-integration pod=order-integration-0_trailhead-lab(f14dfaa0-e300-4470-8429-213af9725d80) reason:CrashLoopBackOff]]   Error   1
+last log: 	at org.flywaydb.core.Flyway.migrate(Flyway.java:181) ~[flyway-core-12.4.0.jar:na]
+last log: 	at org.springframework.boot.flyway.autoconfigure.FlywayMigrationInitializer.afterPropertiesSet(FlywayMigrationInitializer.java:55) ~[spring-boot-flyway-4.1.2.jar:4.1.2]
+last log: Caused by: org.postgresql.util.PSQLException: FATAL: password authentication failed for user "trailhead"
+11:44:40 == rollback: apply the previous objects (deploy/local/lab/k8s/release)
+11:45:11 == pod order-integration-0 still on the bad revision after 30 s (never ready): delete it (runbook step, developer check 10)
+11:45:19 == ready again 39 s after the rollback
+integration pods at most: 1
+statuses: 000=111 422=178 

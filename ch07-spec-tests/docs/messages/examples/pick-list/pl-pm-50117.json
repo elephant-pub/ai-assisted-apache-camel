@@ -1,0 +1,30 @@
+[
+  {
+    "order_no": "PM-50117",
+    "line_no": 1,
+    "sku": "TENT-2P",
+    "description": "Ridgeline 2-Person Tent",
+    "qty": 1,
+    "unit_weight_g": 2150,
+    "ship_name": "Jordan Reyes",
+    "ship_street": "2240 Pearl Street, Apt 4",
+    "ship_city": "Boulder",
+    "ship_postcode": "80302",
+    "ship_country": "US",
+    "total_weight_g": 2390
+  },
+  {
+    "order_no": "PM-50117",
+    "line_no": 2,
+    "sku": "STAKE-AL8",
+    "description": "Aluminium Tent Stakes 8-Pack",
+    "qty": 2,
+    "unit_weight_g": 120,
+    "ship_name": "Jordan Reyes",
+    "ship_street": "2240 Pearl Street, Apt 4",
+    "ship_city": "Boulder",
+    "ship_postcode": "80302",
+    "ship_country": "US",
+    "total_weight_g": 2390
+  }
+]

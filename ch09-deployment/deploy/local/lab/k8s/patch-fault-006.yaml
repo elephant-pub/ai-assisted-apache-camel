@@ -1,0 +1,11 @@
+# Deploy lab only (design 006 §3.14 A7): the release with the fault image (deploy/ci/fault.Dockerfile FROM :006, never
+# published); an OutOfMemoryError before the first intake validation of every process start, which H1 turns into
+# "Fatal error ... the process stops" and exit code 70. Applied with `runs.sh patched`, removed with `runs.sh release`.
+spec:
+  template:
+    spec:
+      containers:
+        - name: order-integration
+          image: trailhead/order-integration:006-fault
+          env:
+            - {name: FAULT_POINTS, value: "to-validate-order-placed:oom:1"}

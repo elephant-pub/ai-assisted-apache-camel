@@ -1,0 +1,11 @@
+# Design 006 D2 (§3.3): exceptions to the vulnerability gate of deploy/ci/scan.sh.
+# An entry is a reviewed change, never added by an agent (§3.16, plan P-17). Each entry has:
+# (this layout exactly: two spaces before "- id", four before the keys, six before list items)
+#   - id: CVE-YYYY-NNNNN
+#     purls:
+#       - pkg:maven/group/artifact@version
+#     statement: why it is accepted, and who accepted it
+#     expired_at: YYYY-MM-DD
+# scan.sh fails on a line in another layout, and on an entry without a package (purls or paths), without a statement,
+# that has expired, or whose expired_at lies more than 90 days ahead.
+vulnerabilities: []

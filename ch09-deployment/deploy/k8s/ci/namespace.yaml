@@ -1,0 +1,23 @@
+# Design 006 D8, §3.15 job 4: the CI kind cluster's namespaces.
+# - trailhead-ci: the integration (the release with CI settings) and the client pod, under Pod Security "restricted",
+#   as the target namespace is documented to be.
+# - trailhead-ci-systems: the stand-ins for the systems around it. The native SFTP server is sshd with a chroot: it
+#   starts as root and needs SYS_CHROOT, so it cannot run restricted (and the PostgreSQL image starts as root to
+#   prepare its data folder). They run under "baseline" instead (no host access, no privilege).
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: trailhead-ci
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/audit: restricted
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: trailhead-ci-systems
+  labels:
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/warn: baseline
+    pod-security.kubernetes.io/audit: baseline

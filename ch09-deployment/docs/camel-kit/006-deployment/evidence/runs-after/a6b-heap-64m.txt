@@ -1,0 +1,36 @@
+11:54:04 == applied lab overlay + patch-heap-64m.yaml
+11:54:19 == ready
+POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:54:09Z]]   <none>   <none>
+statuses: 
+11:54:04 == applied lab overlay + patch-heap-64m.yaml
+11:54:19 == ready
+POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:54:09Z]]   <none>   <none>
+statuses: 
+before: POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+before: order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:54:09Z]]   <none>   <none>
+11:54:29 == 300 accepted and 200 rejected events published PM-640000..PM-640499
+11:57:13 error: Metrics API not available | cgroup current=405MiB peak=405MiB  | restarts=0 last=/
+11:57:18 error: Metrics API not available | cgroup current=405MiB peak=405MiB  | restarts=0 last=/
+11:57:24 error: Metrics API not available | cgroup current=404MiB peak=405MiB  | restarts=0 last=/
+peak memory (top): not measured
+peak memory (cgroup memory.peak of the running container): 449 MiB
+after: POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+after: order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:54:09Z]]   <none>   <none>
+receipts=500 distinct=500 recorded=300 rejected=200
+set aside=0
+statuses: 422=318 
+before: POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+before: order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:54:09Z]]   <none>   <none>
+11:54:29 == 300 accepted and 200 rejected events published PM-640000..PM-640499
+11:57:13 error: Metrics API not available | cgroup current=405MiB peak=405MiB  | restarts=0 last=/
+11:57:18 error: Metrics API not available | cgroup current=405MiB peak=405MiB  | restarts=0 last=/
+11:57:24 error: Metrics API not available | cgroup current=404MiB peak=405MiB  | restarts=0 last=/
+peak memory (top): not measured
+peak memory (cgroup memory.peak of the running container): 449 MiB
+after: POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+after: order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:54:09Z]]   <none>   <none>
+receipts=500 distinct=500 recorded=300 rejected=200
+set aside=0
+statuses: 422=318 

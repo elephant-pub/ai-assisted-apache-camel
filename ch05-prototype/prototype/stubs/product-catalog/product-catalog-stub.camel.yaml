@@ -1,0 +1,90 @@
+- rest:
+    id: product-catalog-rest
+    openApi:
+      specification: ../../../docs/api/external/product-catalog.openapi.yaml
+- route:
+    id: product-catalog-get-product
+    description: Answer GET /products/{sku} from the product examples, with the fault mode chosen by stub.mode
+    from:
+      id: from-get-product
+      uri: direct:getProduct
+      steps:
+        - setProperty:
+            id: set-stub-mode
+            name: stub-mode
+            expression:
+              simple:
+                expression: "{{stub.mode}}"
+        - setProperty:
+            id: set-examples-dir
+            name: examples-dir
+            expression:
+              simple:
+                expression: "{{stub.examples-dir}}"
+        - choice:
+            id: choice-slow-mode
+            when:
+              - id: when-slow-mode
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.stub-mode} == 'slow'"
+                steps:
+                  - delay:
+                      id: delay-slow-mode
+                      expression:
+                        constant:
+                          expression: "3000"
+        - setBody:
+            id: set-body-product-example
+            expression:
+              groovy:
+                expression: |
+                  import groovy.json.JsonSlurper
+                  // Match by the example's own "sku" field; never build a file path from the request.
+                  def dir = new File(exchange.getProperty('examples-dir', String))
+                  if (exchange.getProperty('stub-mode', String) == 'invalid') {
+                    return new File(dir, 'invalid/active-missing.json').getText('UTF-8')
+                  }
+                  def sku = request.headers['sku']?.toString()
+                  def files = (dir.listFiles() ?: []) as List
+                  def match = files.findAll { it.isFile() && it.name.endsWith('.json') }.sort { it.name }.find { f ->
+                    def json = new JsonSlurper().parseText(f.getText('UTF-8'))
+                    json instanceof Map && json.sku == sku
+                  }
+                  match ? match.getText('UTF-8') : null
+        - removeHeaders:
+            id: remove-request-headers
+            pattern: "*"
+        - choice:
+            id: choice-product-found
+            when:
+              - id: when-product-not-found
+                expression:
+                  simple:
+                    expression: "${body} == null"
+                steps:
+                  - setHeader:
+                      id: set-status-404
+                      name: CamelHttpResponseCode
+                      expression:
+                        constant:
+                          expression: "404"
+            otherwise:
+              id: otherwise-product-found
+              steps:
+                - setHeader:
+                    id: set-status-200
+                    name: CamelHttpResponseCode
+                    expression:
+                      constant:
+                        expression: "200"
+                - setHeader:
+                    id: set-content-type-json
+                    name: Content-Type
+                    expression:
+                      constant:
+                        expression: application/json
+        - log:
+            id: log-product-answered
+            loggingLevel: INFO
+            message: "Product Catalog stub answered status=${header.CamelHttpResponseCode} mode=${exchangeProperty.stub-mode}"

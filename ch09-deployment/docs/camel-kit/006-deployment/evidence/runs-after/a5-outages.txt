@@ -1,0 +1,69 @@
+restartCount before: 0
+11:58:18 == kafka down
+11:58:49 health            DOWN http=503 0.211523s down: -
+11:58:50 health/readiness  UP http=200 0.004634s down: -
+11:58:50 health/liveness   UP http=200 0.002830s down: -
+partner TG-1100: 200 1.090492 {"orderNumber":"TG-1100","result":"accepted"}
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:57:56Z]]   <none>   <none>
+11:58:51 == kafka back
+11:59:12 health            UP http=200 0.767199s down: -
+11:59:13 health/readiness  UP http=200 0.004965s down: -
+11:59:13 health/liveness   UP http=200 0.003391s down: -
+11:59:14 == postgres down
+11:59:44 health            DOWN http=503 3.029691s down: -
+11:59:47 health/readiness  UP http=200 0.003959s down: -
+11:59:48 health/liveness   UP http=200 0.003047s down: -
+partner TG-1101: 503 2.101703 {"type":"about:blank","title":"Service Unavailable","status":503,"detail":"The Order cannot be checked or recorded now. Send the request again late
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:57:56Z]]   <none>   <none>
+11:59:50 == postgres back
+12:00:11 health            UP http=200 1.017416s down: -
+12:00:13 health/readiness  UP http=200 0.005852s down: -
+12:00:13 health/liveness   UP http=200 0.003677s down: -
+12:00:13 == catalog down
+12:01:15 health            UP http=200 0.972310s down: -
+12:01:16 health/readiness  UP http=200 0.003019s down: -
+12:01:16 health/liveness   UP http=200 0.002467s down: -
+partner TG-1102: 503 0.103543 {"type":"about:blank","title":"Service Unavailable","status":503,"detail":"The Order cannot be checked or recorded now. Send the request again late
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:57:56Z]]   <none>   <none>
+12:01:16 == catalog back
+12:01:38 health            UP http=200 0.546416s down: -
+12:01:38 health/readiness  UP http=200 0.002659s down: -
+12:01:39 health/liveness   UP http=200 0.003651s down: -
+restartCount after: 0
+deploy/local/lab/runs.sh: line 45: 36324 Terminated: 15          k get pod $pod -w -o jsonpath='{.metadata.name} ready={.status.conditions[?(@.type=="Ready")].status} restarts={.status.containerStatuses[0].restartCount}{"\n"}' > "$log.podwatch" 2>&1
+pod watch: 0 line(s) with ready=False of 1
+statuses: 
+restartCount before: 0
+11:58:18 == kafka down
+11:58:49 health            DOWN http=503 0.211523s down: -
+11:58:50 health/readiness  UP http=200 0.004634s down: -
+11:58:50 health/liveness   UP http=200 0.002830s down: -
+partner TG-1100: 200 1.090492 {"orderNumber":"TG-1100","result":"accepted"}
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:57:56Z]]   <none>   <none>
+11:58:51 == kafka back
+11:59:12 health            UP http=200 0.767199s down: -
+11:59:13 health/readiness  UP http=200 0.004965s down: -
+11:59:13 health/liveness   UP http=200 0.003391s down: -
+11:59:14 == postgres down
+11:59:44 health            DOWN http=503 3.029691s down: -
+11:59:47 health/readiness  UP http=200 0.003959s down: -
+11:59:48 health/liveness   UP http=200 0.003047s down: -
+partner TG-1101: 503 2.101703 {"type":"about:blank","title":"Service Unavailable","status":503,"detail":"The Order cannot be checked or recorded now. Send the request again late
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:57:56Z]]   <none>   <none>
+11:59:50 == postgres back
+12:00:11 health            UP http=200 1.017416s down: -
+12:00:13 health/readiness  UP http=200 0.005852s down: -
+12:00:13 health/liveness   UP http=200 0.003677s down: -
+12:00:13 == catalog down
+12:01:15 health            UP http=200 0.972310s down: -
+12:01:16 health/readiness  UP http=200 0.003019s down: -
+12:01:16 health/liveness   UP http=200 0.002467s down: -
+partner TG-1102: 503 0.103543 {"type":"about:blank","title":"Service Unavailable","status":503,"detail":"The Order cannot be checked or recorded now. Send the request again late
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:57:56Z]]   <none>   <none>
+12:01:16 == catalog back
+12:01:38 health            UP http=200 0.546416s down: -
+12:01:38 health/readiness  UP http=200 0.002659s down: -
+12:01:39 health/liveness   UP http=200 0.003651s down: -
+restartCount after: 0
+pod watch: 0 line(s) with ready=False of 1
+statuses: 

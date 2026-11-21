@@ -1,0 +1,11 @@
+2026-11-13T13:48:51.347-06:00  WARN 77476 --- [ting-select.sql] order-check                              : Peakmart order waits for Product Catalog orderNumber=PM-69009 correlation
+2026-11-13T13:48:56.370-06:00  WARN 77476 --- [ting-select.sql] order-check                              : Peakmart order waits for Product Catalog orderNumber=PM-69009 correlation
+2026-11-13T13:49:01.392-06:00  WARN 77476 --- [ting-select.sql] order-check                              : Peakmart order waits for Product Catalog orderNumber=PM-69009 correlation
+2026-11-13T13:49:06.411-06:00  WARN 77476 --- [ting-select.sql] order-check                              : Peakmart order waits for Product Catalog orderNumber=PM-69009 correlation
+2026-11-13T13:49:11.427-06:00  WARN 77476 --- [ting-select.sql] order-check                              : Peakmart order waits for Product Catalog orderNumber=PM-69009 correlation
+2026-11-13T13:49:17.150-06:00  INFO 77476 --- [ting-select.sql] order-reject                             : Peakmart order rejected orderNumber=PM-69009 reasons=2 correlationId=1FEF
+2026-11-13T13:49:26.463-06:00  INFO 77476 --- [tion-select.sql] order-desk-notification-send             : Order Desk notified orderNumber=PM-69009 correlationId=1FEF4D4AF44B54F-00
+2026-11-13T13:48:24.950-06:00  INFO 77411 --- [mart.orders.v2]] peakmart-order-receive                   : Peakmart order received orderNumber=PM-69009 correlationId=1FEF4D4AF44B54
+2026-11-13T13:48:27.393-06:00  WARN 77411 --- [ting-select.sql] order-check                              : Peakmart order waits for Product Catalog orderNumber=PM-69009 correlation
+2026-11-13T13:48:32.413-06:00  WARN 77411 --- [ting-select.sql] order-check                              : Peakmart order waits for Product Catalog orderNumber=PM-69009 correlation
+2026-11-13T13:48:37.433-06:00  WARN 77411 --- [ting-select.sql] order-check                              : Peakmart order waits for Product Catalog orderNumber=PM-69009 correlation

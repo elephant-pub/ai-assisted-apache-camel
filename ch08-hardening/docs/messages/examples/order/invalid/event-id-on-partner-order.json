@@ -1,0 +1,41 @@
+{
+  "orderNumber": "TG-1060",
+  "channel": "partner",
+  "partnerId": "summit-outfitters",
+  "orderedAt": "2026-11-02T14:05:12Z",
+  "receivedAt": "2026-11-02T14:05:13Z",
+  "correlationId": "3f6b2a90-1c4d-4e8b-9a7f-5d2e8c1b0a64",
+  "customerEmail": "lee@example.com",
+  "shippingAddress": {
+    "recipientName": "Lee Martin",
+    "streetLine": "18 Canyon Road",
+    "city": "Moab",
+    "postalCode": "84532",
+    "country": "US"
+  },
+  "lines": [
+    {
+      "lineNumber": 1,
+      "sku": "TENT-2P",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": "249.00",
+        "currency": "USD"
+      },
+      "productName": "Ridgeline 2-Person Tent",
+      "unitWeightGrams": 2150
+    },
+    {
+      "lineNumber": 2,
+      "sku": "LAMP-HD200",
+      "quantity": 2,
+      "unitPrice": {
+        "amount": "39.95",
+        "currency": "USD"
+      },
+      "productName": "HD200 Headlamp",
+      "unitWeightGrams": 95
+    }
+  ],
+  "eventId": "8d2f6c1e-4b7a-4f0e-9a51-3c2e7b9d0f14"
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Rejection Reason",
+  "description": "One Rejection Reason, a part shared by the Order Answer, the Rejection Email and the Order Desk Notification. Trailhead Gear owns it.",
+  "type": "object",
+  "required": ["text"],
+  "additionalProperties": false,
+  "properties": {
+    "orderCheck": {
+      "enum": ["order-number-format", "order-number-range", "order-number-already-used", "sku", "quantity", "number-of-order-lines", "shipping-address", "destination-country"],
+      "description": "Order Check that failed (UC-003). Absent for a request that cannot be read as a Partner Order, UC-001 A3."
+    },
+    "lineNumber": { "type": "integer", "minimum": 1, "maximum": 30, "description": "Order Line the reason refers to, when it refers to one, UC-003 BR-010." },
+    "text": { "type": "string", "minLength": 1, "description": "The Rejection Reason, readable by a person: the failed check and what to change. Names no Customer, email address or Shipping Address (C-023)." }
+  }
+}

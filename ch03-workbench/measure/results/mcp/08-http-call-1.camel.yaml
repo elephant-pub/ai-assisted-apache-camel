@@ -1,0 +1,21 @@
+# In Camel 4.22, connectTimeout / responseTimeout are component-level options
+# of camel-http (not endpoint options), so the "https" component is configured
+# here as a bean. Camel resolves components from the registry by scheme name.
+- beans:
+    - name: https
+      type: org.apache.camel.component.http.HttpComponent
+      properties:
+        connectTimeout: 2000    # give up connecting after 2 s
+        responseTimeout: 5000   # give up waiting for a response after 5 s
+
+- route:
+    id: enrich-product
+    from:
+      uri: direct:enrich
+      steps:
+        - toD:
+            uri: https://catalog.trailhead.example/products/${header.sku}
+            parameters:
+              httpMethod: GET
+              # treat 404 as a non-failure; other non-2xx still raise HttpOperationFailedException
+              okStatusCodeRange: 200-299,404

@@ -1,0 +1,17 @@
+- route:
+    id: supplier-invoices-sftp
+    from:
+      # Double slash = absolute path /outbound/invoices on the server
+      uri: sftp:sftp.supplier.example:22//outbound/invoices
+      parameters:
+        username: trailhead
+        privateKeyFile: /secrets/id_ed25519
+        knownHostsFile: /secrets/known_hosts
+        strictHostKeyChecking: "yes"
+        useUserKnownHostsFile: false
+        antInclude: "*.csv"
+        delete: true
+        delay: 300000
+      steps:
+        - to:
+            uri: file:work/invoices

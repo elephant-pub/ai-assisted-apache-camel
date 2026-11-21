@@ -1,0 +1,16 @@
+- route:
+    id: peakmart-mapping
+    from:
+      uri: direct:peakmart-mapping
+      steps:
+        - log:
+            message: Mapping preview
+        - step:
+            id: kaoto-datamapper-c0a47830
+            steps:
+              - to:
+                  id: kaoto-datamapper-xslt-3353
+                  uri: xslt-saxon:kaoto-datamapper-c0a47830.xsl
+                  parameters:
+                    failOnNullBody: false
+                    useJsonBody: true

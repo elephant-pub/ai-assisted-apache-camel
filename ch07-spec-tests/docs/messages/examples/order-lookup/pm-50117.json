@@ -1,0 +1,24 @@
+{
+  "orderNumber": "PM-50117",
+  "orders": [
+    {
+      "channel": "peakmart",
+      "receivedAt": "2026-11-02T09:14:33Z",
+      "orderState": "sent-to-warehouse",
+      "history": [
+        {
+          "orderState": "received",
+          "at": "2026-11-02T09:14:33Z"
+        },
+        {
+          "orderState": "recorded",
+          "at": "2026-11-02T09:14:34Z"
+        },
+        {
+          "orderState": "sent-to-warehouse",
+          "at": "2026-11-02T09:16:05Z"
+        }
+      ]
+    }
+  ]
+}

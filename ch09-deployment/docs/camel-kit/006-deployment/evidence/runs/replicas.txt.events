@@ -1,0 +1,14 @@
+06:34:41 == replicas=2: 2 pods
+06:34:51 == 300 accepted and 200 rejected events published PM-7000..
+06:38:02 == warehouse pickup stopped
+picked up: 1425, received again: 0, in inbound: 0
+   2 Peakmart order PM-7350 rejected
+   2 Peakmart order PM-7349 rejected
+   2 Peakmart order PM-7348 rejected
+twice-or-more=152
+once=48
+notifications=0 sent=0
+pick lists=130 delivered=130 attempts>1=0 failures=-
+pod/order-integration-bf545679b-47shs: delivered=641 already=0 not-delivered=0 notified=190
+pod/order-integration-bf545679b-t5g4v: delivered=200 already=0 not-delivered=0 notified=222
+statuses: 

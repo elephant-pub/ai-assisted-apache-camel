@@ -1,0 +1,27 @@
+{
+  "orderNumber": "PM-50118",
+  "orders": [
+    {
+      "channel": "peakmart",
+      "receivedAt": "2026-11-02T10:02:11Z",
+      "orderState": "rejected",
+      "history": [
+        {
+          "orderState": "received",
+          "at": "2026-11-02T10:02:11Z"
+        },
+        {
+          "orderState": "rejected",
+          "at": "2026-11-02T10:02:12Z"
+        }
+      ],
+      "rejectionReasons": [
+        {
+          "orderCheck": "sku",
+          "lineNumber": 1,
+          "text": "Order Line 1: the SKU TENT-1P is not an Active Product in the Product Catalog. Replace it with an active SKU."
+        }
+      ]
+    }
+  ]
+}

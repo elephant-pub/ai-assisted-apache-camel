@@ -1,0 +1,5 @@
+target/
+prototype/target/
+prototype/target-*
+.camel-jbang/
+**/.camel-jbang/

@@ -1,0 +1,54 @@
+# Glossary
+
+| Term                   | Definition                                                                                                                                         | Avoid                  |
+|------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|
+| Partner                | A shop that sends orders to Trailhead Gear from its own system over HTTP, identified by its API Key. Six today, two more from Q1.                | Client                 |
+| Partner Manager        | The Trailhead Gear employee who manages the relationship with the Partners and assigns their Order Number Ranges.                                 |                        |
+| Peakmart               | The marketplace that publishes its orders as Order Events on its own order topic and takes nothing back.                                           |                        |
+| Channel                | The way an Order arrives: the partner HTTP endpoint or the Peakmart order topic.                                                                   |                        |
+| Order                  | A request from a Partner or from Peakmart to ship Products to a Recipient, identified by its Order Number. Web shop orders are not Orders here.   |                        |
+| Partner Order          | An Order a Partner sent in one HTTP request.                                                                                                        |                        |
+| Peakmart Order         | An Order taken from an `order.placed` Order Event of Peakmart.                                                                                      |                        |
+| Order Event            | A message Peakmart publishes on its topic `peakmart.orders.v2`, identified by its event id; the same Order Event may arrive more than once. Peakmart keeps it on the topic for 7 days. | Order Message          |
+| Order Number           | The number that identifies an Order across all Channels: `TG-` and four or more digits for a Partner Order, `PM-` and digits for a Peakmart Order. | Order Reference, Order ID |
+| Order Number Range     | The range of Order Numbers assigned to one Partner, so that no two Partners use the same Order Number.                                            |                        |
+| Order Line             | One Product of an Order with its SKU, quantity and price.                                                                                           | Position               |
+| SKU                    | The code that identifies a Product in the Product Catalog.                                                                                          | Article Number         |
+| Product                | An article Trailhead Gear sells, described in the Product Catalog by name, Catalog Price, weight in grams and whether it is active.             |                        |
+| Active Product         | A Product the Product Catalog flags as active; only Active Products can be ordered.                                                                |                        |
+| Product Catalog        | The internal REST service that answers the data of one Product per SKU.                                                                            | Product Master         |
+| Catalog Price          | The price of a Product in the Product Catalog, in US dollars; the price of every Order Line of a Partner Order.                                    |                        |
+| Peakmart Price         | The price Peakmart sends for an Order Line, which is what the Customer paid; the price of every Order Line of a Peakmart Order.                    |                        |
+| Customer               | The person who placed the Order at a Partner or on Peakmart; not necessarily the Recipient.                                                        |                        |
+| Recipient              | The person named in the Shipping Address who receives the shipment.                                                                                | Consignee              |
+| Shipping Address       | Where an Order is shipped: Recipient name, street line, city, postal code and country (US or Canada).                                            | Delivery Address       |
+| Reseller               | A buyer of more than 20 of one Product in one Order Line; Trailhead Gear does not sell to Resellers through these Channels.                       |                        |
+| Order Check            | One of the rules every Order must pass, the same for every Channel (SKU, quantity, number of Order Lines, Shipping Address, Order Number).      | Validation Rule        |
+| Rejection Reason       | A text, readable by a person, that names one failed Order Check and what to change.                                                              |                        |
+| Accepted Order         | An Order that passed every Order Check and was recorded in the Order Database; a Partner is answered "accepted" only after the recording.       |                        |
+| Rejected Order         | An Order that failed at least one Order Check; it is not recorded in the Order Database and gets no Pick List.                                   |                        |
+| Duplicate              | A Partner Order whose Order Number was already received with the same content (a Partner resend), or a Peakmart Order whose Order Number was already received, under any event id (a Peakmart redelivery). |                        |
+| Order Desk Notification | The plain-text email with the Order Number and every Rejection Reason of a Rejected Peakmart Order that goes to the Order Desk mailbox; nothing goes to Peakmart. |                        |
+| Rejection Email        | The plain-text email with the Order Number and every Rejection Reason that goes to the Order Contact of the Partner of a Rejected Order.         | Error Mail             |
+| Order Answer           | The answer a Partner gets to the request that carried its Partner Order, with the Order Number when it can be read and a result: accepted, rejected with every Rejection Reason, or temporarily unavailable. A refused request gets no Order Answer. | Response Message |
+| Order Contact          | The email address of the person at a Partner who receives the Rejection Emails of that Partner.                                                   |                        |
+| API Key                | The secret a Partner sends with every request and that identifies the Partner; the Integration Team creates it in the Secret Store, and the integration never shows it.                         |                        |
+| Order Database         | The team's PostgreSQL 16 database that holds each Accepted Order once, for 90 days after the Order was received.                                  |                        |
+| Pick List              | The CSV file for one Accepted Order that tells the Warehouse Team what to pick and where to ship, named `PL-<Order Number>.csv`.                  | Pick Ticket            |
+| Total Weight           | The weight of an Order in grams: the sum of quantity times Product weight over all Order Lines, on every row of the Pick List.                    |                        |
+| Warehouse SFTP Server  | The SFTP server of the Warehouse where Pick Lists are delivered into the folder `/inbound/picklists`; the Warehouse moves every file it has picked up to `/inbound/picklists/processed`. |                        |
+| Warehouse              | The Trailhead Gear site that picks and ships Accepted Orders and reserves stock itself.                                                            |                        |
+| Warehouse Team         | The people in the Warehouse who work from the Pick Lists and choose the carrier from the Total Weight.                                           |                        |
+| Order Desk             | The team that answers Customers and Partners and looks up Orders and their Order History from its Helpdesk Tool.                                 | Customer Service       |
+| Order State            | Where an Order stands: received, rejected, recorded, or sent to warehouse.                                                                         | Order Status           |
+| Order History          | The Order States an Order passed through with date and time, plus its Rejection Reasons; kept for 90 days.                                       | Audit Log              |
+| Integration Team       | The team that builds and runs the order integration, registers Partners in the Partner Configuration, receives the Alerts and resubmits Set-Aside Order Events. |                        |
+| Maintenance Window     | The weekly period when the Warehouse SFTP Server is down: Sundays 02:00 to 04:00 US Mountain Time (America/Denver), the Warehouse's local time.  |                        |
+| Catalog Outage         | A period when the Product Catalog does not answer, such as its weekly deployment.                                                                  |                        |
+| ERP                    | Trailhead Gear's enterprise resource planning system, which also holds Accepted Orders and keeps them longer than the 90 days of the integration. |                        |
+| Set-Aside Order Event  | An Order Event of type `order.placed` that cannot be read as an Order; it is kept with its event id for the Integration Team to examine and resubmit, and deleted 90 days after it arrived. |                        |
+| Resubmission           | The Integration Team putting a Set-Aside Order Event through again after its cause is fixed; it is then processed like a new Order Event.         |                        |
+| Alert                  | The plain-text email to the Integration Team mailbox about Orders past a time limit, a Set-Aside Order Event, or the Peakmart order topic not being read; it carries no personal data. |                        |
+| Helpdesk Tool          | The tool the Order Desk works in; it calls the read-only order lookup of the integration and is authenticated as the Helpdesk Tool.            |                        |
+| Partner Configuration  | The list of registered Partners in the repository of the integration, with each Partner's identifier, Order Number Range, Order Contact and the name of its API Key in the Secret Store; changed by review and release. |                        |
+| Secret Store           | The store in which the Integration Team creates and keeps the API Keys of the Partners, and from which the integration reads them.               |                        |

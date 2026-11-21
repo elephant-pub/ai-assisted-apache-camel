@@ -1,0 +1,138 @@
+openapi: 3.1.0
+info:
+  title: Trailhead Gear Set-Aside Order Event Resubmission
+  version: 0.1.0
+  description: |
+    The operations API with which an Integration Team member resubmits a Set-Aside Order Event after its cause is
+    fixed (UC-008 Resubmit Set-Aside Order Event, FR-041). The entry point (an API, no screen) and the authentication
+    are assumed (OQ-061, OQ-067). Only the Integration Team uses it. The server address is given per environment and
+    is not part of this document. All traffic uses TLS 1.2 or higher.
+
+    A resubmitted Order Event is taken in like a new Order Event (UC-002 Take In Peakmart Order); nothing is sent to
+    Peakmart (C-007).
+
+security:
+  - integrationTeam: []
+
+paths:
+  /set-aside-order-events/resubmissions:
+    post:
+      operationId: resubmitOrderEvent
+      summary: Resubmit one Set-Aside Order Event, unchanged or with its content corrected
+      description: |
+        Finds the Set-Aside Order Event by its `eventId` and takes it in like a new Order Event, unchanged or as the
+        `correctedEvent` (UC-008 steps 1 to 6, BR-002). Who resubmitted it and when is kept with it.
+
+        **Resend.** Resubmitting the same `eventId` again has no second effect: once taken in, the Order Event is no
+        longer set aside and the second call is answered `not-found` (404, UC-008 A1); a Peakmart Order whose Order
+        Number was already received is skipped as a Duplicate and answered `already-received` (UC-008 A3,
+        UC-002 BR-002). No resubmission records a Peakmart Order twice or leads to a second Pick List.
+
+        The answer and the log entries hold no Customer name, email address or Shipping Address (UC-008 BR-004).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../messages/order-event-resubmission.schema.json'
+            examples:
+              unchanged:
+                summary: Resubmitted unchanged, after a fix in the integration
+                externalValue: '../messages/examples/order-event-resubmission/unchanged.json'
+              corrected:
+                summary: Resubmitted with its content corrected
+                externalValue: '../messages/examples/order-event-resubmission/corrected.json'
+      responses:
+        '200':
+          description: |
+            The Order Event was taken in as a Peakmart Order (`taken-in`, UC-008 step 6), or its Order Number was
+            already received and it was skipped as a Duplicate (`already-received`, UC-008 A3). Either way it is no
+            longer set aside.
+          content:
+            application/json:
+              schema:
+                $ref: '../messages/resubmission-result.schema.json'
+              examples:
+                takenIn:
+                  summary: Taken in
+                  externalValue: '../messages/examples/resubmission-result/taken-in.json'
+        '400':
+          description: |
+            The request is not an Order Event Resubmission: it is not JSON, it has no `eventId`, or it holds a field the
+            format does not name.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '401':
+          description: The request is not authenticated as a member of the Integration Team. Nothing is resubmitted.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '404':
+          description: |
+            No Set-Aside Order Event with this `eventId` is kept: it was already resubmitted, or it was deleted 90 days
+            after it arrived (UC-008 A1, BR-003). `result` is `not-found`.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ResubmissionProblem'
+        '422':
+          description: |
+            The resubmitted Order Event still cannot be read as an Order (UC-008 A2). `result` is `still-unreadable`
+            and `reason` names what cannot be read; the Order Event stays set aside.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ResubmissionProblem'
+
+components:
+  securitySchemes:
+    integrationTeam:
+      type: http
+      scheme: bearer
+      description: |
+        A token that identifies the Integration Team member, so that who resubmitted is kept (assumed, OQ-067).
+
+  schemas:
+    Problem:
+      title: Problem Details
+      description: Problem Details for HTTP APIs (RFC 9457).
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri-reference
+          default: about:blank
+          description: Identifies the problem type; `about:blank` when the status code says it all.
+        title:
+          type: string
+          description: Short summary of the problem type, readable by a person.
+        status:
+          type: integer
+          description: The HTTP status code of the response.
+        detail:
+          type: string
+          description: Explanation of this occurrence, readable by a person. Names no personal data.
+        instance:
+          type: string
+          format: uri-reference
+          description: Identifies this occurrence.
+    ResubmissionProblem:
+      title: Resubmission Result as Problem Details
+      description: |
+        Problem Details (RFC 9457) that carry the Resubmission Result of a resubmission that did not take the Order
+        Event in. The extension members are those of `../messages/resubmission-result.schema.json` and follow its
+        rules.
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          required: [eventId, result]
+          properties:
+            eventId:
+              $ref: '../messages/resubmission-result.schema.json#/properties/eventId'
+            result:
+              $ref: '../messages/resubmission-result.schema.json#/properties/result'
+            reason:
+              $ref: '../messages/resubmission-result.schema.json#/properties/reason'

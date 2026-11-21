@@ -1,0 +1,10 @@
+# Deploy lab only (design 006 §3.14 A6b, never in deploy/k8s/): the heap forced small, so that the JVM itself throws
+# OutOfMemoryError under load and -XX:+ExitOnOutOfMemoryError (D6) ends the process with exit code 3.
+# JDK_JAVA_OPTIONS is read by the java launcher; an explicit -Xmx wins over the image's -XX:MaxRAMPercentage=50.
+spec:
+  template:
+    spec:
+      containers:
+        - name: order-integration
+          env:
+            - {name: JDK_JAVA_OPTIONS, value: "-Xmx96m"}

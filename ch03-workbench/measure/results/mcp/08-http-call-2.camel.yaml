@@ -1,0 +1,15 @@
+- route:
+    id: enrich-from-product-catalog
+    from:
+      uri: direct:enrich
+      steps:
+        - toD:
+            uri: https://catalog.trailhead.example/products/${header.sku}
+            parameters:
+              httpMethod: GET
+              # fail fast if the TCP/TLS connection is not established within 2s
+              httpConnection.connectTimeout: 2000
+              # give up waiting for the response after 5s
+              httpClient.responseTimeout: 5000
+              # treat 404 as a normal response (no HttpOperationFailedException)
+              okStatusCodeRange: 200-299,404

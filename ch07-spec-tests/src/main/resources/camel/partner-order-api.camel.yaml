@@ -1,0 +1,672 @@
+# Flow partner-order-api (design 003 §3, UC-001): take one Partner Order per HTTP request, authenticate it, check it
+# with the shared Order Checks, record or reject it, and answer synchronously with the Order Answer. The contract
+# (docs/api/partner-orders.openapi.yaml, copied to the classpath at build) is the single source of path and method.
+# Log lines carry the partner id, the order number and the correlation id only: never a body, key, contact or address.
+- rest:
+    id: partner-orders-rest
+    openApi:
+      specification: classpath:contract/api/partner-orders.openapi.yaml
+      missingOperation: fail
+      # The route Camel generates for the contract's operation (POST /orders -> direct:submitPartnerOrder)
+      routeId: partner-orders-rest-route
+
+- routeConfiguration:
+    id: partner-order-error-handling
+    description: Any failure while a partner request is handled is answered temporarily unavailable; the partner resends
+    onException:
+      - onException:
+          id: on-partner-order-failure
+          exception:
+            - java.lang.Exception
+          handled:
+            constant:
+              expression: "true"
+          # No redelivery inside a synchronous request: the partner resends (NFR-002 10 s budget)
+          redeliveryPolicy:
+            maximumRedeliveries: 0
+            logExhaustedMessageBody: false
+            logExhaustedMessageHistory: false
+          steps:
+            # The exception class only: a SQL message may quote values
+            - log:
+                id: log-partner-order-failure
+                loggingLevel: WARN
+                message: "Partner order temporarily unavailable after a failure orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id} cause=${exception.class.name}"
+            # Best effort: when the database is down the release fails too, and the 30 s expiry covers that case
+            - filter:
+                id: filter-release-after-failure
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.receipt-id} != null"
+                steps:
+                  - doTry:
+                      id: try-release-after-failure
+                      steps:
+                        - to:
+                            id: to-release-after-failure
+                            uri: sql:classpath:sql/partner-receipt-release.sql
+                            parameters:
+                              dataSource: "#dataSource"
+                      doCatch:
+                        - id: catch-release-failure
+                          exception:
+                            - java.lang.Exception
+                          steps:
+                            - log:
+                                id: log-release-failure
+                                loggingLevel: DEBUG
+                                message: "Partner receipt not released, it expires instead orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+            - setProperty:
+                id: set-status-503-after-failure
+                name: answer-status
+                expression:
+                  constant:
+                    expression: "503"
+            - to:
+                id: to-answer-after-failure
+                uri: direct:partner-order-answer
+
+- route:
+    id: partner-order-submit
+    description: Authenticate one Partner Order request, read it, and turn it into the canonical Order (UC-001 steps 1-3)
+    routeConfigurationId: partner-order-error-handling
+    from:
+      id: from-submit-partner-order
+      uri: direct:submitPartnerOrder
+      steps:
+        - setProperty:
+            id: set-partner-correlation-id
+            name: correlation-id
+            expression:
+              simple:
+                expression: "${uuid}"
+        - setProperty:
+            id: set-partner-received-at
+            name: received-at
+            expression:
+              simple:
+                expression: "${date-with-timezone:now:UTC:yyyy-MM-dd'T'HH:mm:ss.SSS'Z'}"
+        # Hash-based, constant-time comparison; the key is never logged, stored or echoed (UC-007 BR-003)
+        - setProperty:
+            id: set-partner
+            name: partner
+            expression:
+              method:
+                ref: partnerRegistry
+                method: "authenticate(${header.X-API-Key})"
+        # Security-critical: no request header may reach the sql, http or smtp steps (CamelSqlQuery would replace a
+        # query). This also drops X-API-Key. Kept whatever platform-http filters itself (design review R4).
+        - removeHeaders:
+            id: remove-request-headers
+            pattern: "*"
+        - choice:
+            id: choice-api-key
+            when:
+              - id: when-api-key-unknown
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.partner} == null"
+                steps:
+                  - log:
+                      id: log-api-key-refused
+                      loggingLevel: WARN
+                      message: "Partner request refused: API key missing or unknown correlationId=${exchangeProperty.correlation-id}"
+                  - setProperty:
+                      id: set-status-401
+                      name: answer-status
+                      expression:
+                        constant:
+                          expression: "401"
+                  - to:
+                      id: to-answer-401
+                      uri: direct:partner-order-answer
+                  - stop:
+                      id: stop-after-401
+        # Readable (UC-001 A3, BR-010): any failure here is a 400, never a 503
+        - doTry:
+            id: try-read-partner-order
+            steps:
+              - convertBodyTo:
+                  id: convert-request-to-string
+                  type: java.lang.String
+                  charset: UTF-8
+              - setProperty:
+                  id: set-request-body
+                  name: request-body
+                  expression:
+                    simple:
+                      expression: "${body}"
+              - choice:
+                  id: choice-request-size
+                  when:
+                    - id: when-request-too-large
+                      expression:
+                        simple:
+                          expression: "${body.length()} > {{partner.max-request-chars}}"
+                      steps:
+                        - setProperty:
+                            id: set-partner-reason-too-large
+                            name: unreadable-reason
+                            expression:
+                              method:
+                                ref: partnerOrders
+                                method: "tooLargeReason({{partner.max-request-chars}})"
+                  otherwise:
+                    id: otherwise-request-size-ok
+                    steps:
+                      - to:
+                          id: to-validate-partner-order
+                          uri: json-validator:classpath:contract/messages/partner-order.schema.json
+                      # Guards the schema cannot enforce: format is not asserted (C-10)
+                      - setProperty:
+                          id: set-reason-guards
+                          name: unreadable-reason
+                          expression:
+                            method:
+                              ref: partnerOrders
+                              method: "readableReason(${exchangeProperty.request-body})"
+            doCatch:
+              - id: catch-partner-order-unreadable
+                exception:
+                  - java.lang.Exception
+                steps:
+                  - setProperty:
+                      id: set-reason-cannot-read
+                      name: unreadable-reason
+                      expression:
+                        method:
+                          ref: partnerOrders
+                          method: "cannotReadReason(${exception})"
+        - setProperty:
+            id: set-partner-order-number
+            name: order-number
+            expression:
+              method:
+                ref: partnerOrders
+                method: "orderNumberOf(${exchangeProperty.request-body})"
+        - choice:
+            id: choice-partner-readable
+            when:
+              - id: when-unreadable
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.unreadable-reason} != null"
+                steps:
+                  - log:
+                      id: log-partner-request-unreadable
+                      loggingLevel: INFO
+                      message: "Partner request cannot be read partnerId=${exchangeProperty.partner.partnerId} orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+                  - setProperty:
+                      id: set-reasons-unreadable
+                      name: answer-reasons
+                      expression:
+                        method:
+                          ref: orderAnswers
+                          method: "unreadableReasons(${exchangeProperty.unreadable-reason})"
+                  - setProperty:
+                      id: set-status-400
+                      name: answer-status
+                      expression:
+                        constant:
+                          expression: "400"
+                  - to:
+                      id: to-answer-400
+                      uri: direct:partner-order-answer
+                  - stop:
+                      id: stop-after-400
+        # UC-001 A2, BR-002: the order must name the partner of the API Key
+        - setProperty:
+            id: set-order-partner-id
+            name: order-partner-id
+            expression:
+              jsonpath:
+                expression: "$.partnerId"
+        - choice:
+            id: choice-partner-match
+            when:
+              - id: when-other-partner
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.order-partner-id} != ${exchangeProperty.partner.partnerId}"
+                steps:
+                  - log:
+                      id: log-other-partner-refused
+                      loggingLevel: WARN
+                      message: "Partner request refused: order names another partner keyPartnerId=${exchangeProperty.partner.partnerId} orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+                  - setProperty:
+                      id: set-status-403
+                      name: answer-status
+                      expression:
+                        constant:
+                          expression: "403"
+                  - to:
+                      id: to-answer-403
+                      uri: direct:partner-order-answer
+                  - stop:
+                      id: stop-after-403
+        # Same content = same JSON value: key order, whitespace and number notation are ignored (C-6)
+        - setProperty:
+            id: set-content-hash
+            name: content-hash
+            expression:
+              method:
+                ref: partnerOrders
+                method: "contentHash(${exchangeProperty.request-body})"
+        - transform:
+            id: kaoto-datamapper-7d3b2e91
+            description: "DataMapper partner-order -> canonical Order (docs/messages/mappings/partner-order-to-order.md)"
+            expression:
+              groovy:
+                expression: |
+                  import groovy.json.JsonSlurper
+                  import groovy.json.JsonOutput
+
+                  def src = new JsonSlurper().parseText(exchange.getProperty('request-body', String))
+                  def present = { v -> v != null && v.toString() != '' }
+                  def shipTo = src.shipTo ?: [:]
+
+                  def address = [:]
+                  if (present(shipTo.name)) { address.recipientName = shipTo.name }
+                  if (present(shipTo.street)) { address.streetLine = shipTo.street }
+                  if (present(shipTo.city)) { address.city = shipTo.city }
+                  if (present(shipTo.postalCode)) { address.postalCode = shipTo.postalCode }
+                  if (present(shipTo.country)) { address.country = shipTo.country }
+
+                  def order = [:]
+                  order.orderNumber = src.orderId
+                  order.channel = 'partner'
+                  order.partnerId = src.partnerId
+                  order.orderedAt = src.orderedAt
+                  order.receivedAt = exchange.getProperty('received-at', String)
+                  order.correlationId = exchange.getProperty('correlation-id', String)
+                  if (src.customerEmail != null) { order.customerEmail = src.customerEmail }
+                  order.shippingAddress = address
+                  // unitPrice is dropped: the Catalog Price applies (UC-001 BR-006)
+                  order.lines = (src.lines ?: []).withIndex().collect { line, index ->
+                    [lineNumber: index + 1,
+                     sku       : line.sku,
+                     quantity  : line.quantity]
+                  }
+                  JsonOutput.toJson(order)
+        - setProperty:
+            id: set-partner-order
+            name: order
+            expression:
+              simple:
+                expression: "${body}"
+        - to:
+            id: to-partner-order-receive
+            uri: direct:partner-order-receive
+
+- route:
+    id: partner-order-receive
+    description: Receive the Partner Order once, or answer a resend or a request in progress as before (UC-001 step 4, A4, A8)
+    routeConfigurationId: partner-order-error-handling
+    from:
+      id: from-partner-order-receive
+      uri: direct:partner-order-receive
+      steps:
+        - setProperty:
+            id: set-partner-db-id
+            name: partner-db-id
+            expression:
+              simple:
+                expression: "${exchangeProperty.partner.id}"
+        - setProperty:
+            id: set-checking-expiry-seconds
+            name: checking-expiry-seconds
+            expression:
+              constant:
+                expression: "{{partner.checking-expiry-seconds}}"
+        - to:
+            id: to-partner-receipt-claim
+            uri: sql:classpath:sql/partner-receipt-claim.sql
+            parameters:
+              dataSource: "#dataSource"
+              outputType: SelectOne
+        - setProperty:
+            id: set-claim-outcome
+            name: claim-outcome
+            expression:
+              simple:
+                expression: "${body[outcome]}"
+        - setProperty:
+            id: set-partner-receipt-id
+            name: receipt-id
+            expression:
+              simple:
+                expression: "${body[receipt_id]}"
+        - setProperty:
+            id: set-first-answer-state
+            name: first-answer-state
+            expression:
+              simple:
+                expression: "${body[order_state]}"
+        - choice:
+            id: choice-claim-outcome
+            when:
+              - id: when-in-progress
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.claim-outcome} == 'IN_PROGRESS'"
+                steps:
+                  - log:
+                      id: log-partner-order-in-progress
+                      loggingLevel: INFO
+                      message: "Partner order already being checked, answered temporarily unavailable orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+                  - setProperty:
+                      id: set-status-503-in-progress
+                      name: answer-status
+                      expression:
+                        constant:
+                          expression: "503"
+                  - to:
+                      id: to-answer-in-progress
+                      uri: direct:partner-order-answer
+              - id: when-duplicate-accepted
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.claim-outcome} == 'DUPLICATE' && ${exchangeProperty.first-answer-state} != 'Rejected'"
+                steps:
+                  - log:
+                      id: log-partner-duplicate-accepted
+                      loggingLevel: INFO
+                      message: "Partner order resend answered as before: accepted orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+                  - setProperty:
+                      id: set-status-200-duplicate
+                      name: answer-status
+                      expression:
+                        constant:
+                          expression: "200"
+                  - to:
+                      id: to-answer-duplicate-accepted
+                      uri: direct:partner-order-answer
+              - id: when-duplicate-rejected
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.claim-outcome} == 'DUPLICATE'"
+                steps:
+                  - to:
+                      id: to-rejection-reasons-select
+                      uri: sql:classpath:sql/rejection-reasons-select.sql
+                      parameters:
+                        dataSource: "#dataSource"
+                        outputType: SelectOne
+                  - setProperty:
+                      id: set-reasons-duplicate
+                      name: answer-reasons
+                      expression:
+                        simple:
+                          expression: "${body}"
+                  - log:
+                      id: log-partner-duplicate-rejected
+                      loggingLevel: INFO
+                      message: "Partner order resend answered as before: rejected orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+                  - setProperty:
+                      id: set-status-422-duplicate
+                      name: answer-status
+                      expression:
+                        constant:
+                          expression: "422"
+                  - to:
+                      id: to-answer-duplicate-rejected
+                      uri: direct:partner-order-answer
+            # NEW or CLAIMED: this request holds the receipt and checks the order on it
+            otherwise:
+              id: otherwise-check-partner-order
+              steps:
+                - setBody:
+                    id: set-body-partner-order
+                    expression:
+                      simple:
+                        expression: "${exchangeProperty.order}"
+                - to:
+                    id: to-partner-order-check
+                    uri: direct:partner-order-check
+
+- route:
+    id: partner-order-check
+    description: Run the shared Order Checks on a received Partner Order, then record or reject it (UC-001 steps 5-8, A5-A7)
+    routeConfigurationId: partner-order-error-handling
+    from:
+      id: from-partner-order-check
+      uri: direct:partner-order-check
+      steps:
+        - to:
+            id: to-accepted-content-select
+            uri: sql:classpath:sql/accepted-content-select.sql
+            parameters:
+              dataSource: "#dataSource"
+              outputType: SelectOne
+        - setProperty:
+            id: set-accepted-content-hash
+            name: accepted-content-hash
+            expression:
+              simple:
+                expression: "${body}"
+        # The Partner-only reasons (range, already used), put after the format reason by order-check
+        - setProperty:
+            id: set-order-number-reasons
+            name: order-number-reasons
+            expression:
+              method:
+                ref: orderChecks
+                method: "partnerNumberReasons(${exchangeProperty.order}, ${exchangeProperty.partner.rangeFirst}, ${exchangeProperty.partner.rangeLast}, ${exchangeProperty.accepted-content-hash}, ${exchangeProperty.content-hash})"
+        - setBody:
+            id: set-body-order-for-check
+            expression:
+              simple:
+                expression: "${exchangeProperty.order}"
+        - to:
+            id: to-shared-order-check
+            uri: direct:order-check
+        - choice:
+            id: choice-partner-check-outcome
+            when:
+              - id: when-partner-catalog-outage
+                expression:
+                  simple:
+                    expression: "${body[outcome]} == 'CATALOG_OUTAGE'"
+                steps:
+                  - to:
+                      id: to-release-catalog-outage
+                      uri: sql:classpath:sql/partner-receipt-release.sql
+                      parameters:
+                        dataSource: "#dataSource"
+                  - log:
+                      id: log-partner-catalog-outage
+                      loggingLevel: WARN
+                      message: "Partner order temporarily unavailable: Product Catalog not answering orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+                  - setProperty:
+                      id: set-status-503-outage
+                      name: answer-status
+                      expression:
+                        constant:
+                          expression: "503"
+                  - to:
+                      id: to-answer-catalog-outage
+                      uri: direct:partner-order-answer
+              - id: when-partner-rejected
+                expression:
+                  simple:
+                    expression: "${body[outcome]} == 'REJECTED'"
+                steps:
+                  - setProperty:
+                      id: set-reasons-rejected
+                      name: answer-reasons
+                      expression:
+                        simple:
+                          expression: "${body[reasons]}"
+                  - setProperty:
+                      id: set-reason-count
+                      name: reason-count
+                      expression:
+                        simple:
+                          expression: "${body[reasonCount]}"
+                  - setProperty:
+                      id: set-partner-notification-type
+                      name: notification-type
+                      expression:
+                        constant:
+                          expression: Rejection Email
+                  # The Order Contact from the Partner Configuration, never an address from the order
+                  - setProperty:
+                      id: set-partner-recipient
+                      name: recipient
+                      expression:
+                        simple:
+                          expression: "${exchangeProperty.partner.orderContact}"
+                  # The shared statement, called directly (the Peakmart order-reject route sets the Order Desk values)
+                  - to:
+                      id: to-partner-order-reject-sql
+                      uri: sql:classpath:sql/order-reject.sql
+                      parameters:
+                        dataSource: "#dataSource"
+                  - choice:
+                      id: choice-reject-count
+                      when:
+                        - id: when-reject-too-late
+                          expression:
+                            simple:
+                              expression: "${header.CamelSqlUpdateCount} == 0"
+                          steps:
+                            - log:
+                                id: log-reject-too-late
+                                loggingLevel: WARN
+                                message: "Partner order already answered by another request, nothing written orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+                            - setProperty:
+                                id: set-status-503-reject-too-late
+                                name: answer-status
+                                expression:
+                                  constant:
+                                    expression: "503"
+                      otherwise:
+                        id: otherwise-rejected
+                        steps:
+                          - log:
+                              id: log-partner-order-rejected
+                              loggingLevel: INFO
+                              message: "Partner order rejected orderNumber=${exchangeProperty.order-number} reasons=${exchangeProperty.reason-count} correlationId=${exchangeProperty.correlation-id}"
+                          - setProperty:
+                              id: set-status-422
+                              name: answer-status
+                              expression:
+                                constant:
+                                  expression: "422"
+                  - to:
+                      id: to-answer-rejected
+                      uri: direct:partner-order-answer
+              - id: when-partner-passed
+                expression:
+                  simple:
+                    expression: "${body[outcome]} == 'PASSED'"
+                steps:
+                  - setProperty:
+                      id: set-partner-line-count
+                      name: line-count
+                      expression:
+                        simple:
+                          expression: "${body[lineCount]}"
+                  - setBody:
+                      id: set-body-completed-partner-order
+                      expression:
+                        simple:
+                          expression: "${body[order]}"
+                  # Guard: the completed Order must be a valid canonical Order before anything is recorded
+                  - to:
+                      id: to-validate-partner-completed-order
+                      uri: json-validator:classpath:schemas/order.schema.json
+                  # The shared statement: records the order and queues its Pick List in one statement
+                  - to:
+                      id: to-partner-order-record-sql
+                      uri: sql:classpath:sql/order-record.sql
+                      parameters:
+                        dataSource: "#dataSource"
+                  - choice:
+                      id: choice-record-count
+                      when:
+                        - id: when-record-too-late
+                          expression:
+                            simple:
+                              expression: "${header.CamelSqlUpdateCount} == 0"
+                          steps:
+                            - log:
+                                id: log-record-too-late
+                                loggingLevel: WARN
+                                message: "Partner order already answered by another request, nothing written orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+                            - setProperty:
+                                id: set-status-503-record-too-late
+                                name: answer-status
+                                expression:
+                                  constant:
+                                    expression: "503"
+                      otherwise:
+                        id: otherwise-recorded
+                        steps:
+                          - log:
+                              id: log-partner-order-recorded
+                              loggingLevel: INFO
+                              message: "Partner order recorded orderNumber=${exchangeProperty.order-number} lines=${exchangeProperty.line-count} correlationId=${exchangeProperty.correlation-id}"
+                          - setProperty:
+                              id: set-status-200
+                              name: answer-status
+                              expression:
+                                constant:
+                                  expression: "200"
+                  - to:
+                      id: to-answer-recorded
+                      uri: direct:partner-order-answer
+            # Any other outcome is not expected; the partner resends, nothing was written
+            otherwise:
+              id: otherwise-unexpected-outcome
+              steps:
+                - log:
+                    id: log-unexpected-outcome
+                    loggingLevel: WARN
+                    message: "Partner order temporarily unavailable: unexpected check outcome orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"
+                - to:
+                    id: to-release-unexpected-outcome
+                    uri: sql:classpath:sql/partner-receipt-release.sql
+                    parameters:
+                      dataSource: "#dataSource"
+                - setProperty:
+                    id: set-status-503-unexpected-outcome
+                    name: answer-status
+                    expression:
+                      constant:
+                        expression: "503"
+                - to:
+                    id: to-answer-unexpected-outcome
+                    uri: direct:partner-order-answer
+
+- route:
+    id: partner-order-answer
+    description: Build the HTTP response of a partner request from its status (Order Answer or Problem Details)
+    routeConfigurationId: partner-order-error-handling
+    from:
+      id: from-partner-order-answer
+      uri: direct:partner-order-answer
+      steps:
+        # Nothing from the exchange may become a response header
+        - removeHeaders:
+            id: remove-headers-before-answer
+            pattern: "*"
+        - setHeader:
+            id: set-answer-status
+            name: CamelHttpResponseCode
+            expression:
+              simple:
+                expression: "${exchangeProperty.answer-status}"
+        - setHeader:
+            id: set-answer-content-type
+            name: Content-Type
+            expression:
+              method:
+                ref: orderAnswers
+                method: "contentType(${exchangeProperty.answer-status})"
+        - setBody:
+            id: set-answer-body
+            expression:
+              method:
+                ref: orderAnswers
+                method: "body(${exchangeProperty.answer-status}, ${exchangeProperty.order-number}, ${exchangeProperty.answer-reasons})"

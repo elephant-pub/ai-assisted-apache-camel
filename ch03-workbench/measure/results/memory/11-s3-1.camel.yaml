@@ -1,0 +1,15 @@
+- route:
+    id: daily-order-export-to-s3
+    from:
+      uri: direct:export
+      steps:
+        - setHeader:
+            name: CamelAwsS3Key
+            expression:
+              simple:
+                expression: "${header.exportName}"
+        - to:
+            uri: aws2-s3:trailhead-exports
+            parameters:
+              region: eu-west-1
+              useDefaultCredentialsProvider: true

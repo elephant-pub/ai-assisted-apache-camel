@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Order Lookup",
+  "description": "The answer of the read-only order lookup to the Helpdesk Tool (UC-005). Trailhead Gear owns it. It allows no other field, so that no Customer name, email address or Shipping Address can get into it (UC-005 BR-004). It is built from the Order History, not converted from another message.",
+  "type": "object",
+  "required": ["orderNumber", "orders"],
+  "additionalProperties": false,
+  "properties": {
+    "orderNumber": { "type": "string", "minLength": 1, "description": "The Order Number that was looked up." },
+    "orders": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Every Order received with this Order Number in the last 90 days, the most recent first (UC-005 A3). When none was received there is no Order Lookup (UC-005 A2).",
+      "items": {
+        "type": "object",
+        "required": ["channel", "receivedAt", "orderState", "history"],
+        "additionalProperties": false,
+        "properties": {
+          "channel": { "enum": ["partner", "peakmart"], "description": "Channel of the Order." },
+          "partnerId": { "type": "string", "minLength": 1, "description": "Partner that sent a Partner Order; only for the Channel `partner`." },
+          "receivedAt": { "type": "string", "format": "date-time", "description": "When the Order was received, in UTC." },
+          "orderState": { "$ref": "#/$defs/orderState", "description": "Current Order State." },
+          "history": {
+            "type": "array",
+            "minItems": 1,
+            "description": "Every Order State the Order has passed through, the oldest first (UC-005 step 5).",
+            "items": {
+              "type": "object",
+              "required": ["orderState", "at"],
+              "additionalProperties": false,
+              "properties": {
+                "orderState": { "$ref": "#/$defs/orderState", "description": "The Order State reached." },
+                "at": { "type": "string", "format": "date-time", "description": "When the Order reached it, in UTC." }
+              }
+            }
+          },
+          "rejectionReasons": {
+            "type": "array",
+            "minItems": 1,
+            "description": "Every Rejection Reason of a Rejected Order, in the order the Partner or the Order Desk received them (UC-005 A4).",
+            "items": { "$ref": "rejection-reason.schema.json" }
+          }
+        },
+        "if": { "properties": { "orderState": { "const": "rejected" } }, "required": ["orderState"] },
+        "then": { "required": ["rejectionReasons"] },
+        "else": { "not": { "required": ["rejectionReasons"] } }
+      }
+    }
+  },
+  "$defs": {
+    "orderState": { "enum": ["received", "rejected", "recorded", "sent-to-warehouse"], "description": "An Order State (UC-005 BR-002)." }
+  }
+}

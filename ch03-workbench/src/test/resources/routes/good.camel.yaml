@@ -1,0 +1,16 @@
+- route:
+    id: peakmart-orders
+    from:
+      uri: kafka:marketplace.orders
+      parameters:
+        groupId: order-intake
+        autoOffsetReset: earliest
+        brokers: "{{kafka.brokers}}"
+      steps:
+        - to:
+            uri: file:work/orders
+            parameters:
+              fileName: ${header.kafka.KEY}.json
+              fileExist: Fail
+        - log:
+            message: "Order ${header.kafka.KEY} stored"

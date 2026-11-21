@@ -1,0 +1,200 @@
+# Deploy lab (design 006): the systems the integration talks to, in namespace trailhead-lab. Lab only.
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: catalog-stub, namespace: trailhead-lab}
+data:
+  stub.py: |
+    # Product Catalog stand-in: GET /products/{sku} answers the example whose "sku" matches, else 404 (C-010)
+    import json, os, glob
+    from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+    products = {}
+    for f in glob.glob('/examples/*.json'):
+        d = json.load(open(f))
+        if isinstance(d, dict) and 'sku' in d:
+            products[d['sku']] = json.dumps(d).encode()
+    class H(BaseHTTPRequestHandler):
+        def do_GET(self):
+            sku = self.path.rsplit('/', 1)[-1]
+            body = products.get(sku) if self.path.startswith('/products/') else None
+            self.send_response(200 if body else 404)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            if body: self.wfile.write(body)
+        def log_message(self, *a): pass
+    ThreadingHTTPServer(('', 8091), H).serve_forever()
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: catalog, namespace: trailhead-lab}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: catalog}}
+  template:
+    metadata: {labels: {app: catalog}}
+    spec:
+      containers:
+        - name: catalog
+          image: python:3.12-alpine
+          imagePullPolicy: Never
+          command: [python3, -u, /stub/stub.py]
+          ports: [{containerPort: 8091}]
+          volumeMounts:
+            - {name: stub, mountPath: /stub}
+            - {name: examples, mountPath: /examples}
+      volumes:
+        - {name: stub, configMap: {name: catalog-stub}}
+        - {name: examples, configMap: {name: product-examples}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: catalog, namespace: trailhead-lab}
+spec: {selector: {app: catalog}, ports: [{port: 8091}]}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: postgres, namespace: trailhead-lab}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: postgres}}
+  template:
+    metadata: {labels: {app: postgres}}
+    spec:
+      securityContext: {fsGroup: 70}
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          imagePullPolicy: Never
+          args: ["-c", "ssl=on", "-c", "ssl_cert_file=/tls/tls.crt", "-c", "ssl_key_file=/tls/tls.key"]
+          env:
+            - {name: POSTGRES_USER, value: trailhead}
+            - {name: POSTGRES_DB, value: orders}
+            - {name: PGDATA, value: /var/lib/postgresql/data/pgdata}
+            - name: POSTGRES_PASSWORD
+              valueFrom: {secretKeyRef: {name: lab-passwords, key: db-password}}
+          ports: [{containerPort: 5432}]
+          volumeMounts: [{name: tls, mountPath: /tls}, {name: data, mountPath: /var/lib/postgresql/data}]
+          readinessProbe:
+            exec: {command: [pg_isready, -U, trailhead, -d, orders]}
+            periodSeconds: 2
+      volumes:
+        - name: tls
+          secret: {secretName: postgres-tls, defaultMode: 0640}
+        # The Order Database outlives its pod (scaling it to 0 is an outage, not a wipe)
+        - name: data
+          persistentVolumeClaim: {claimName: postgres-data}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: postgres-data, namespace: trailhead-lab}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources: {requests: {storage: 1Gi}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: postgres, namespace: trailhead-lab}
+spec: {selector: {app: postgres}, ports: [{port: 5432}]}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: kafka, namespace: trailhead-lab}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: kafka}}
+  template:
+    metadata: {labels: {app: kafka}}
+    spec:
+      containers:
+        - name: kafka
+          image: mirror.gcr.io/apache/kafka:4.3.1
+          imagePullPolicy: Never
+          env:
+            - {name: KAFKA_NODE_ID, value: "1"}
+            - {name: KAFKA_PROCESS_ROLES, value: "broker,controller"}
+            - {name: KAFKA_LISTENERS, value: "PLAINTEXT://:9092,CONTROLLER://:9093"}
+            - {name: KAFKA_ADVERTISED_LISTENERS, value: "PLAINTEXT://kafka:9092"}
+            - {name: KAFKA_CONTROLLER_LISTENER_NAMES, value: CONTROLLER}
+            - {name: KAFKA_LISTENER_SECURITY_PROTOCOL_MAP, value: "CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT"}
+            - {name: KAFKA_CONTROLLER_QUORUM_VOTERS, value: "1@localhost:9093"}
+            - {name: KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR, value: "1"}
+            - {name: KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR, value: "1"}
+            - {name: KAFKA_TRANSACTION_STATE_LOG_MIN_ISR, value: "1"}
+            - {name: KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS, value: "0"}
+            - {name: KAFKA_NUM_PARTITIONS, value: "2"}
+          ports: [{containerPort: 9092}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: kafka, namespace: trailhead-lab}
+spec: {selector: {app: kafka}, ports: [{port: 9092}]}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: sftp, namespace: trailhead-lab}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: sftp}}
+  template:
+    metadata: {labels: {app: sftp}}
+    spec:
+      containers:
+        - name: sftp
+          # deploy/local/lab/sftp.Dockerfile (native; atmoz/sftp is amd64 only and hangs under emulation)
+          image: trailhead/lab-sftp:2
+          imagePullPolicy: Never
+          ports: [{containerPort: 22}]
+          volumeMounts:
+            - {name: hostkey, mountPath: /hk}
+            - {name: pw, mountPath: /pw}
+      volumes:
+        - name: hostkey
+          secret: {secretName: sftp-host-key, defaultMode: 0600}
+        - name: pw
+          secret: {secretName: lab-passwords}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: sftp, namespace: trailhead-lab}
+spec: {selector: {app: sftp}, ports: [{port: 22}]}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: mail, namespace: trailhead-lab}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: mail}}
+  template:
+    metadata: {labels: {app: mail}}
+    spec:
+      containers:
+        - name: mailpit
+          image: axllent/mailpit:v1.21
+          imagePullPolicy: Never
+          args: [--smtp-tls-cert, /tls/tls.crt, --smtp-tls-key, /tls/tls.key, --smtp-require-starttls, --smtp-auth-accept-any]
+          ports: [{containerPort: 1025}, {containerPort: 8025}]
+          volumeMounts: [{name: tls, mountPath: /tls}]
+      volumes:
+        - name: tls
+          secret: {secretName: mail-tls}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: mail, namespace: trailhead-lab}
+spec: {selector: {app: mail}, ports: [{name: smtp, port: 1025}, {name: api, port: 8025}]}
+---
+# The client: curl for partner requests and timings, from inside the cluster
+apiVersion: v1
+kind: Pod
+metadata: {name: client, namespace: trailhead-lab}
+spec:
+  containers:
+    - name: curl
+      image: curlimages/curl:8.12.1
+      imagePullPolicy: Never
+      command: [sleep, infinity]
+      volumeMounts: [{name: key, mountPath: /key}, {name: ca, mountPath: /ca}]
+  volumes:
+    - name: key
+      secret: {secretName: order-integration-secret-store}
+    - name: ca
+      secret: {secretName: order-integration-files, items: [{key: db-ca.crt, path: ca.crt}]}

@@ -1,0 +1,12 @@
+- route:
+    id: enrich-from-catalog
+    from:
+      uri: direct:enrich
+      steps:
+        - toD:
+            uri: https://catalog.trailhead.example/products/${header.sku}
+            parameters:
+              httpMethod: GET
+              connectTimeout: 2000
+              responseTimeout: 5000
+              okStatusCodeRange: 200-299,404

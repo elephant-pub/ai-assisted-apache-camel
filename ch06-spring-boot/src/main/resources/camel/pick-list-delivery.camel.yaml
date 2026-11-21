@@ -1,0 +1,143 @@
+# Flow pick-list-delivery (design 003 §3, UC-004): deliver each pending Pick List, for an Accepted Order of either
+# Channel, to the Warehouse SFTP Server exactly once, then record Sent to Warehouse (FR-025-FR-028, NFR-006, NFR-007).
+# Exactly once rests on: the existence check before every write (inbound first, then processed), the atomic
+# server-side rename of the .tmp file, and one instance. A failed attempt leaves the Pick List Pending for the next poll.
+- routeConfiguration:
+    id: pick-list-delivery-error-handling
+    description: A Pick List that could not be delivered stays pending and is tried again on the next poll
+    onException:
+      - onException:
+          id: on-pick-list-delivery-failure
+          exception:
+            - java.lang.Exception
+          # Not handled on purpose: onConsumeFailed counts the attempt and the row stays Pending
+          handled:
+            constant:
+              expression: "false"
+          redeliveryPolicy:
+            maximumRedeliveries: 0
+            # The CSV holds names and addresses (C-021)
+            logExhaustedMessageBody: false
+            logExhaustedMessageHistory: false
+          steps:
+            - log:
+                id: log-pick-list-not-delivered
+                loggingLevel: WARN
+                message: "Pick list not delivered, tried again on the next poll orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id} cause=${exception.class.name}"
+
+- route:
+    id: pick-list-delivery
+    description: Deliver each pending Pick List as a CSV file to the Warehouse SFTP Server exactly once
+    routeConfigurationId: pick-list-delivery-error-handling
+    from:
+      id: from-pick-list-outbox
+      uri: sql:classpath:sql/pick-list-select.sql
+      parameters:
+        dataSource: "#dataSource"
+        delay: "{{pick-list.poll-delay-ms}}"
+        maxMessagesPerPoll: "{{pick-list.batch-size}}"
+        # Success is recorded by pick-list-delivered.sql, not by onConsume
+        onConsumeFailed: "RAW(UPDATE pick_list SET attempts = LEAST(attempts + 1, 100000), last_attempt_at = now() WHERE id = :#id)"
+      steps:
+        - setProperty:
+            id: set-pick-list-order-number
+            name: order-number
+            expression:
+              simple:
+                expression: "${body[order_number]}"
+        - setProperty:
+            id: set-pick-list-correlation-id
+            name: correlation-id
+            expression:
+              simple:
+                expression: "${body[correlation_id]}"
+        - setProperty:
+            id: set-pick-list-file-name
+            name: file-name
+            expression:
+              simple:
+                expression: "${body[file_name]}"
+        - setProperty:
+            id: set-pick-list-id
+            name: pick-list-id
+            expression:
+              simple:
+                expression: "${body[id]}"
+        - setProperty:
+            id: set-pick-list-receipt-id
+            name: receipt-id
+            expression:
+              simple:
+                expression: "${body[order_receipt_id]}"
+        - setProperty:
+            id: set-pick-list-customer-order-id
+            name: customer-order-id
+            expression:
+              simple:
+                expression: "${body[customer_order_id]}"
+        # Already delivered? stat inbound, then processed, before every attempt (A3, A4)
+        - setProperty:
+            id: set-delivered-folder
+            name: delivered-folder
+            expression:
+              method:
+                ref: warehouseSftp
+                method: "deliveredFolder(${exchangeProperty.file-name})"
+        - choice:
+            id: choice-already-delivered
+            when:
+              - id: when-already-on-server
+                expression:
+                  simple:
+                    expression: "${exchangeProperty.delivered-folder} != null"
+                steps:
+                  - log:
+                      id: log-pick-list-already-delivered
+                      loggingLevel: INFO
+                      message: "Pick list already on the warehouse server, counted as delivered orderNumber=${exchangeProperty.order-number} folder=${exchangeProperty.delivered-folder} correlationId=${exchangeProperty.correlation-id}"
+            otherwise:
+              id: otherwise-deliver-pick-list
+              steps:
+                # The order-to-pick-list mapping is in this SELECT: twelve columns, line order
+                - to:
+                    id: to-pick-list-rows
+                    uri: sql:classpath:sql/pick-list-rows.sql
+                    parameters:
+                      dataSource: "#dataSource"
+                      outputType: SelectList
+                # RFC 4180: comma, minimal quoting with '"', CRLF record separator (the default; OQ-077)
+                - marshal:
+                    id: marshal-pick-list-csv
+                    csv:
+                      header: "order_no,line_no,sku,description,qty,unit_weight_g,ship_name,ship_street,ship_city,ship_postcode,ship_country,total_weight_g"
+                      delimiter: ","
+                # Credentials only from properties; the password is RAW so no character is URI-decoded
+                - to:
+                    id: to-warehouse-sftp
+                    uri: "sftp:{{warehouse.sftp.host}}:{{warehouse.sftp.port}}/{{warehouse.sftp.inbound-directory}}"
+                    parameters:
+                      fileName: "${exchangeProperty.file-name}"
+                      # Written as PL-x.csv.tmp and renamed when complete; the Warehouse ignores .tmp files (C-014)
+                      tempFileName: "${file:name}.tmp"
+                      # Second guard: a final file is never overwritten
+                      fileExist: Fail
+                      charset: UTF-8
+                      strictHostKeyChecking: "yes"
+                      knownHostsFile: "{{warehouse.sftp.known-hosts}}"
+                      useUserKnownHostsFile: false
+                      username: "{{warehouse.sftp.username}}"
+                      password: "RAW({{warehouse.sftp.password}})"
+                      connectTimeout: "{{warehouse.sftp.timeout-ms}}"
+                      soTimeout: "{{warehouse.sftp.timeout-ms}}"
+                      # The folder is the Warehouse's: a missing folder fails loudly
+                      autoCreate: false
+                - log:
+                    id: log-pick-list-delivered
+                    loggingLevel: INFO
+                    message: "Pick list delivered orderNumber=${exchangeProperty.order-number} file=${exchangeProperty.file-name} correlationId=${exchangeProperty.correlation-id}"
+        # Both branches: Delivered, Sent to Warehouse and its history entry, in one statement
+        - to:
+            id: to-pick-list-delivered
+            uri: sql:classpath:sql/pick-list-delivered.sql
+            parameters:
+              dataSource: "#dataSource"

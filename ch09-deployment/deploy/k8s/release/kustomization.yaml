@@ -1,0 +1,11 @@
+# Design 006 D14, P-11: the release. The image is named by digest, never by a tag.
+# OWNER and the zero digest are placeholders: CI job 5 replaces both (`kustomize edit set image`) with the image it
+# pushed, renders release.yaml, and fails if the rendered file still holds OWNER or the zero digest.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../base
+images:
+  - name: order-integration
+    newName: ghcr.io/OWNER/order-integration
+    digest: sha256:0000000000000000000000000000000000000000000000000000000000000000

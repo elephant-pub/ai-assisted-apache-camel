@@ -1,0 +1,56 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Partner Order",
+  "description": "A Partner Order as a Partner sends it in one HTTP request to the partner endpoint (UC-001). Trailhead Gear defines this format, the same for every Partner, so it allows no field it does not name (UC-001 BR-010). The schema says what can be read as a Partner Order (UC-001 A3); the Order Checks are not part of it, so that every failed check becomes a Rejection Reason (UC-003 BR-010).",
+  "type": "object",
+  "required": ["orderId", "partnerId", "orderedAt", "shipTo", "lines"],
+  "additionalProperties": false,
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Order Number the Partner gives the Order. `TG-` and four or more digits (UC-003 BR-002) and the Partner's Order Number Range (UC-003 BR-003) are Order Checks, not rules of this schema."
+    },
+    "partnerId": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Identifier of the Partner the Order is sent for. Checked against the Partner the API Key belongs to, UC-001 BR-002."
+    },
+    "orderedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Date and time the Customer placed the Order at the Partner, with its offset; the sample uses UTC (`Z`), and no time zone is agreed with the Partners."
+    },
+    "customerEmail": {
+      "type": "string",
+      "format": "email",
+      "description": "Email address of the Customer, when the Partner sends one. Personal data (C-021)."
+    },
+    "shipTo": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Shipping Address. Its parts are not required here: a missing part is a Rejection Reason, UC-003 BR-007. Personal data (C-021).",
+      "properties": {
+        "name": { "type": "string", "description": "Recipient name." },
+        "street": { "type": "string", "description": "Street line." },
+        "city": { "type": "string", "description": "City." },
+        "postalCode": { "type": "string", "description": "Postal code." },
+        "country": { "type": "string", "description": "Country code; the US or Canada is an Order Check, UC-003 BR-008." }
+      }
+    },
+    "lines": {
+      "type": "array",
+      "description": "Order Lines in the Partner's order. Their number, 1 to 30, is an Order Check, UC-003 BR-005.",
+      "items": {
+        "type": "object",
+        "required": ["sku", "quantity"],
+        "additionalProperties": false,
+        "properties": {
+          "sku": { "type": "string", "minLength": 1, "description": "SKU of the Product. Checked against the Product Catalog, UC-003 BR-009." },
+          "quantity": { "type": "integer", "description": "Number of items. 1 to 20 is an Order Check, UC-003 BR-006." },
+          "unitPrice": { "type": "number", "description": "Price the Partner sent for one item, a JSON number in US dollars. Not used: the Catalog Price applies, UC-001 BR-006." }
+        }
+      }
+    }
+  }
+}

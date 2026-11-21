@@ -1,0 +1,7 @@
+{
+  "orderNumber": "TG-1060",
+  "result": "accepted",
+  "rejectionReasons": [
+    { "orderCheck": "quantity", "lineNumber": 2, "text": "Order Line 2: the quantity 25 is more than 20. Order at most 20 of one Product per Order Line." }
+  ]
+}

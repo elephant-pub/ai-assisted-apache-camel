@@ -1,0 +1,14 @@
+- route:
+    id: supplier-invoices
+    from:
+      uri: sftp:sftp.supplier.example/outbound/invoices
+      parameters:
+        username: trailhead
+        privateKeyFile: /secrets/id_ed25519
+        knownHostsFile: /secrets/known_hosts
+        include: ".*\\.csv"
+        delete: true
+        delay: 300000
+      steps:
+        - to:
+            uri: file:work/invoices

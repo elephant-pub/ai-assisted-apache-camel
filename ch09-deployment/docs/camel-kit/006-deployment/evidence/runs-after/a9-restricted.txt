@@ -1,0 +1,21 @@
+Warning: existing pods in namespace "trailhead-lab" violate the new PodSecurity enforce level "restricted:latest"
+Warning: catalog-57f459f85f-xqc9z (and 5 other pods): allowPrivilegeEscalation != false, unrestricted capabilities, runAsNonRoot != true, seccompProfile
+namespace/trailhead-lab labeled
+17:28:52 [+2s] ok secrets: 4 in trailhead-lab, 3 in trailhead-lab (values under target/lab/secrets, not printed)
+17:28:52
+serviceaccount/order-integration created
+configmap/order-integration-partners-9625b7bc6c created
+configmap/order-integration-settings created
+service/order-integration created
+Warning: spec.SessionAffinity is ignored for headless services
+service/order-integration-headless created
+statefulset.apps/order-integration created
+networkpolicy.networking.k8s.io/order-integration created
+Waiting for 1 pods to be ready...
+statefulset rolling update complete 1 pods at revision order-integration-85f8c68df...
+17:29:03
+200 1.027080 {"orderNumber":"TG-1002","result":"accepted"}
+POD                   READY   RESTARTS   STATE                                              LAST     EXIT
+order-integration-0   true    0          map[running:map[startedAt:2026-11-16T17:28:53Z]]   <none>   <none>
+Error from server (Forbidden): error when creating "deploy/local/lab/k8s/config-pods.yaml": pods "cfg-no-settings" is forbidden: violates PodSecurity "restricted:latest": allowPrivilegeEscalation != false (container "app" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (container "app" must set securityContext.capabilities.drop=["ALL"]), runAsNonRoot != true (pod or container "app" must set securityContext.runAsNonRoot=true), seccompProfile (pod or container "app" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost")
+Error from server (Forbidden): error when creating "deploy/local/lab/k8s/config-pods.yaml": pods "cfg-dev-profile" is forbidden: violates PodSecurity "restricted:latest": allowPrivilegeEscalation != false (container "app" must set securityContext.allowPrivilegeEscalation=false), unrestricted capabilities (container "app" must set securityContext.capabilities.drop=["ALL"]), runAsNonRoot != true (pod or container "app" must set securityContext.runAsNonRoot=true), seccompProfile (pod or container "app" must set securityContext.seccompProfile.type to "RuntimeDefault" or "Localhost")

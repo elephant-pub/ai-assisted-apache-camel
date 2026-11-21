@@ -1,0 +1,7 @@
+reference/08-http-call.camel.yaml             timed out (correct)
+results/mcp/08-http-call-1.camel.yaml         timed out (correct)
+results/mcp/08-http-call-2.camel.yaml         timed out (correct)
+results/mcp/08-http-call-3.camel.yaml         timed out (correct)
+results/memory/08-http-call-1.camel.yaml      waited for the slow answer (timeout ignored)
+results/memory/08-http-call-2.camel.yaml      waited for the slow answer (timeout ignored)
+results/memory/08-http-call-3.camel.yaml      waited for the slow answer (timeout ignored)

@@ -1,0 +1,12 @@
+- route:
+    id: nightly-order-export
+    from:
+      uri: quartz:orderExport/nightly
+      parameters:
+        cron: "0 0 2 * * ?"
+        trigger.timeZone: Europe/Berlin
+      steps:
+        - log:
+            message: Nightly order export started
+        - to:
+            uri: direct:export

@@ -1,0 +1,134 @@
+# Flow order-desk-notification (design 002 §3): deliver every pending Order Desk Notification by email, once per
+# Rejected Peakmart Order, retrying on the next poll until the mail server takes it, also after a restart
+# (UC-002 BR-004). The notification row is marked sent only after the SMTP server accepted the message.
+- routeConfiguration:
+    id: order-desk-notification-error-handling
+    description: A notification that could not be sent stays pending and is tried again on the next poll
+    onException:
+      - onException:
+          id: on-order-desk-notification-failure
+          exception:
+            - java.lang.Exception
+          # Not handled on purpose: a handled failure would run onConsume and mark an unsent notification as sent.
+          # Design 005 H6: this clause counts the attempt once, with its time and reason (notification-failed.sql);
+          # also for an UnexpectedErrorException (H1)
+          handled:
+            constant:
+              expression: "false"
+          redeliveryPolicy:
+            maximumRedeliveries: 0
+            # An UnexpectedErrorException's cause holds the Error message; an SMTP message can quote the address
+            logStackTrace: false
+            logNewException: false
+            logExhausted: false
+            logExhaustedMessageBody: false
+            logExhaustedMessageHistory: false
+          steps:
+            # The kind only (class name, reply code), never a message or an address
+            - setProperty:
+                id: set-notification-last-failure
+                name: last-failure
+                expression:
+                  simple:
+                    expression: "${bean:failureKinds?method=describe(${exception})}"
+            # A failure to write the reason must not hide the original failure: the notification stays unsent either way
+            - doTry:
+                id: try-notification-failed
+                steps:
+                  - to:
+                      id: to-notification-failed
+                      uri: sql:classpath:sql/notification-failed.sql
+                      parameters:
+                        dataSource: "#dataSource"
+                doCatch:
+                  - id: catch-notification-failed-failure
+                    exception:
+                      - java.lang.Exception
+                    steps:
+                      - log:
+                          id: log-notification-failed-failure
+                          loggingLevel: WARN
+                          message: "Order Desk notification failed attempt not recorded orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id} cause=${exception.class.simpleName}"
+            - log:
+                id: log-order-desk-notification-not-sent
+                loggingLevel: WARN
+                message: "Order Desk notification not sent, tried again on the next poll orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id} cause=${exchangeProperty.last-failure}"
+
+- route:
+    id: order-desk-notification-send
+    description: Deliver each pending Order Desk Notification as a plain-text email to the Order Desk mailbox
+    routeConfigurationId: order-desk-notification-error-handling
+    from:
+      id: from-notification-outbox
+      uri: sql:classpath:sql/notification-select.sql
+      parameters:
+        dataSource: "#dataSource"
+        delay: "{{notification.poll-delay-ms}}"
+        # RAW(...) keeps the '+' literal; otherwise URI decoding turns it into a space.
+        # LEAST(..., 1000) keeps attempts inside its CHECK (0-1000), so a long mail-server outage cannot make the
+        # update fail and the notification be sent again on every poll (design 002 D4).
+        # Design 005 H6: success clears last_failure; a failed attempt is counted by the error clause
+        # (notification-failed.sql), so there is no onConsumeFailed and an attempt is counted once
+        onConsume: "RAW(UPDATE notification SET sent_at = now(), attempts = LEAST(attempts + 1, 1000), last_failure = NULL WHERE id = :#notification_id)"
+      steps:
+        # The row for notification-failed.sql: the error clause no longer sees the consumer's row
+        - setProperty:
+            id: set-notification-id
+            name: notification-id
+            expression:
+              simple:
+                expression: "${body[notification_id]}"
+        - setProperty:
+            id: set-notification-order-number
+            name: order-number
+            expression:
+              simple:
+                expression: "${body[order_number]}"
+        - setProperty:
+            id: set-notification-correlation-id
+            name: correlation-id
+            expression:
+              simple:
+                expression: "${body[correlation_id]}"
+        # Camel mail turns message headers into mail headers: nothing from the row or the consumer may reach the email
+        - removeHeaders:
+            id: remove-headers-before-mail
+            pattern: "*"
+        - setHeader:
+            id: set-header-mail-to
+            name: To
+            expression:
+              simple:
+                expression: "${body[recipient_email]}"
+        - setHeader:
+            id: set-header-mail-subject
+            name: Subject
+            expression:
+              simple:
+                expression: "Peakmart order ${exchangeProperty.order-number} rejected"
+        - setBody:
+            id: set-body-notification-text
+            expression:
+              simple:
+                expression: |-
+                  Order number: ${exchangeProperty.order-number}
+                  ${body[reason_lines]}
+        # Credentials are component options (camel.component.smtp.*), never part of this URI
+        - to:
+            id: to-order-desk-mailbox
+            uri: smtp://{{smtp.host}}:{{smtp.port}}
+            parameters:
+              from: "{{orderdesk.sender}}"
+              useHeaderRecipients: true
+              useHeaderSubject: true
+              contentType: "text/plain; charset=UTF-8"
+              connectionTimeout: "{{smtp.timeout-ms}}"
+              # additionalJavaMailProperties (prefix mail.): a stalled mail server must not hang the poller thread
+              mail.smtp.timeout: "{{smtp.timeout-ms}}"
+              mail.smtp.writetimeout: "{{smtp.timeout-ms}}"
+              mail.smtp.starttls.enable: "{{smtp.starttls}}"
+              mail.smtp.starttls.required: "{{smtp.starttls}}"
+        - log:
+            id: log-order-desk-notified
+            loggingLevel: INFO
+            message: "Order Desk notified orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"

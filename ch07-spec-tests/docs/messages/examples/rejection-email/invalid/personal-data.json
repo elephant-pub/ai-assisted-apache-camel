@@ -1,0 +1,7 @@
+{
+  "orderNumber": "TG-1061",
+  "recipientName": "Lee Martin",
+  "rejectionReasons": [
+    { "orderCheck": "destination-country", "text": "Shipping Address: the country DE is not served. Ship to the US (US) or Canada (CA)." }
+  ]
+}

@@ -1,0 +1,25 @@
+# Design 006 D8: ingress only (no egress rule: the hosts are the target environment's, Not Doing).
+# - 8443 (partner) from anywhere: partners come through the load balancer, which passes TCP through.
+# - 9090 (management, health only, plain HTTP) only from pods of the same namespace. `podSelector: {}` without a
+#   namespaceSelector means "this policy's namespace", so the base needs no namespace name (it is set by the person
+#   deploying or by an overlay, and kustomize does not rewrite a namespaceSelector's labels).
+# - The kubelet's probes come from the node. In kind (kindnet) and most CNIs probes are not subject to NetworkPolicy;
+#   a CNI that does filter them needs an ipBlock rule for the node CIDR here, which is the target cluster's to give.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: order-integration
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: order-integration
+  policyTypes: [Ingress]
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8443
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 9090

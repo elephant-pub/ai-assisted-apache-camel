@@ -1,0 +1,178 @@
+openapi: 3.1.0
+info:
+  title: Trailhead Gear Partner Orders
+  version: 0.2.0
+  description: |
+    The partner endpoint of the order integration (UC-001 Submit Partner Order). A Partner sends one Partner Order per
+    request, authenticated by its API Key, and waits for the Order Answer (C-009, FR-001, FR-004).
+
+    Trailhead Gear offers this API; the Partners build against it. **Draft:** the Partner Manager has sent this
+    document to the Partners for agreement; until they agree, the path, the API Key header and the status codes stay a
+    draft. All traffic uses TLS 1.2 or higher (NFR-010, C-024). The server address is given per environment and is not
+    part of this document. Responses carry no `Retry-After` header.
+
+    For orders of up to 30 Order Lines, 95% of requests are answered within 3 seconds and 100% within 10 seconds
+    (NFR-002).
+
+security:
+  - apiKey: []
+
+paths:
+  /orders:
+    post:
+      operationId: submitPartnerOrder
+      summary: Submit one Partner Order and get its Order Answer
+      description: |
+        Authenticates the Partner by its API Key, checks the Partner Order against every Order Check and records an
+        Accepted Order in the Order Database. `accepted` is answered only after the Order is recorded (UC-001 BR-003).
+
+        **Resend.** A Partner may resend a request, for example after a timeout. A request is identified by the
+        `orderId` of the Partner Order together with the Partner of the API Key.
+        - Same `orderId` and the same content as an Order answered `accepted` or `rejected`: the resend is a Duplicate
+          and gets the original status code and Order Answer. No second recording, Rejection Email or Pick List
+          is created (UC-001 A4, BR-007, BR-011).
+        - Same `orderId` and the same content as an Order recorded before the first request could be answered:
+          return `accepted` (200) from the existing receipt. Do not record the Order or create its Pick List again
+          (UC-001 A4, BR-007).
+        - Same `orderId` as a request for this Partner that is still being checked: return
+          `temporarily-unavailable` (503) without checking the resend, whether or not its content matches
+          (UC-001 A8, BR-007, BR-008).
+        - Same `orderId` as an Order answered `temporarily-unavailable` and never recorded: check the resend like
+          a new Order, on the receipt of the first request (UC-001 BR-007, BR-009).
+        - Same `orderId` as a Rejected Order, different content: checked anew like a new Order (UC-001 BR-008).
+        - Same `orderId` as an Accepted Order, different content: rejected with the Rejection Reason of the Order Check
+          `order-number-already-used` (UC-001 BR-008, UC-003 BR-004).
+
+        A rejected Order also gets a Rejection Email to the Order Contact of the Partner
+        (`external/partner-mail.md`); a refused request, an unreadable request and a temporarily unavailable answer
+        get none (UC-001 BR-001, BR-005, BR-009). A refused or unreadable request is logged with its correlation id,
+        the Partner when known and the Order Number when readable, without personal data, and does not appear in the
+        order lookup (UC-001 BR-012).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../messages/partner-order.schema.json'
+            examples:
+              partnerOrder:
+                summary: A Partner Order
+                externalValue: '../messages/examples/partner-order/partner-order-sample.json'
+      responses:
+        '200':
+          description: |
+            The Order is accepted and recorded in the Order Database (UC-001 step 8). A Duplicate of an Order
+            already answered accepted gets the original answer. A Duplicate of an Order recorded before the first
+            request could be answered gets its accepted answer from the existing receipt (UC-001 A4, BR-007).
+            `result` is `accepted`.
+          content:
+            application/json:
+              schema:
+                $ref: '../messages/order-answer.schema.json'
+              examples:
+                accepted:
+                  summary: Accepted
+                  externalValue: '../messages/examples/order-answer/accepted.json'
+        '400':
+          description: |
+            The request cannot be read as a Partner Order (UC-001 A3): it is not JSON, a required field is missing or
+            has the wrong type, or it holds a field the Partner Order does not name. `result` is `rejected`,
+            `orderNumber` is absent when it cannot be read, and `rejectionReasons` names what cannot be read, without
+            an `orderCheck`. No Rejection Email and no entry in the Order History (UC-001 BR-005).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/OrderProblem'
+        '401':
+          description: |
+            The request carries no API Key, or one that belongs to no registered Partner (UC-001 A1). Refused before any
+            Order Check; no Order Answer, no entry in the Order History, no Rejection Email (UC-001 BR-001).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '403':
+          description: |
+            The Partner Order names a Partner (`partnerId`) other than the one the API Key belongs to (UC-001 A2).
+            Refused as not permitted for this Partner, before any Order Check; no Order Answer, no entry in the Order
+            History, no Rejection Email (UC-001 BR-002).
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/Problem'
+        '422':
+          description: |
+            The Order fails at least one Order Check (UC-001 A5), or the request is a Duplicate of an Order answered
+            rejected (UC-001 A4). `result` is `rejected` and `rejectionReasons` lists every Rejection Reason in the
+            order of the Order Checks (UC-001 BR-004), so that the Partner's system can show them to a person.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/OrderProblem'
+        '503':
+          description: |
+            `result` is `temporarily-unavailable`. The Partner can retry later. No Rejection Reason or Rejection
+            Email is produced.
+
+            - Catalog Outage or unavailable Order Database (UC-001 A6, A7): the Order is not recorded. The receipt
+              stays in the Order State received, and a later resend is checked on that receipt (UC-001 BR-009).
+              The Product Catalog counts as not answering after 2 seconds (UC-003 BR-013).
+            - Resend while the original request is still being checked (UC-001 A8): the resend is not checked and
+              the original request continues. A later resend follows the rules for the original request's outcome.
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/OrderProblem'
+
+components:
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: |
+        The API Key of the Partner, created by the Integration Team in the Secret Store and named in the Partner
+        Configuration (UC-007 BR-003). The integration never shows it.
+
+  schemas:
+    Problem:
+      title: Problem Details
+      description: Problem Details for HTTP APIs (RFC 9457).
+      type: object
+      properties:
+        type:
+          type: string
+          format: uri-reference
+          default: about:blank
+          description: Identifies the problem type; `about:blank` when the status code says it all.
+        title:
+          type: string
+          description: Short summary of the problem type, readable by a person.
+        status:
+          type: integer
+          description: The HTTP status code of the response.
+        detail:
+          type: string
+          description: Explanation of this occurrence, readable by a person. Names no Customer, email address or Shipping Address (C-023).
+        instance:
+          type: string
+          format: uri-reference
+          description: Identifies this occurrence.
+    OrderProblem:
+      title: Order Answer as Problem Details
+      description: |
+        Problem Details (RFC 9457) that carry the Order Answer of a request that is not accepted. The extension members
+        `orderNumber`, `result` and `rejectionReasons` are those of the Order Answer
+        (`../messages/order-answer.schema.json`) and follow its rules: `rejectionReasons` only and always when `result`
+        is `rejected`.
+      allOf:
+        - $ref: '#/components/schemas/Problem'
+        - type: object
+          required: [result]
+          properties:
+            orderNumber:
+              $ref: '../messages/order-answer.schema.json#/properties/orderNumber'
+            result:
+              $ref: '../messages/order-answer.schema.json#/properties/result'
+            rejectionReasons:
+              $ref: '../messages/order-answer.schema.json#/properties/rejectionReasons'

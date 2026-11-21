@@ -1,0 +1,197 @@
+[
+ {
+  "id": "01-kafka-consume",
+  "task": "Consume Peakmart orders from the Kafka topic marketplace.orders. Brokers come from the property kafka.brokers. Use the consumer group order-intake, start from the earliest offset when the group has no committed offset, read at most 50 records per poll, and turn off automatic offset commits so the route can commit manually. Send each order to direct:intake.",
+  "expect": [
+   [
+    "groupId"
+   ],
+   [
+    "autoOffsetReset"
+   ],
+   [
+    "maxPollRecords"
+   ],
+   [
+    "autoCommitEnable",
+    "allowManualCommit"
+   ]
+  ]
+ },
+ {
+  "id": "02-sftp-poll",
+  "task": "Every 5 minutes, poll the SFTP server sftp.supplier.example for supplier invoice files in the directory /outbound/invoices. Only pick up files ending in .csv. Log in as user trailhead with the private key file /secrets/id_ed25519, check the host key against /secrets/known_hosts, and delete each file from the server after downloading it. Write the files to the local folder work/invoices.",
+  "expect": [
+   [
+    "delay",
+    "scheduler.cron"
+   ],
+   [
+    "include",
+    "antInclude"
+   ],
+   [
+    "privateKeyFile"
+   ],
+   [
+    "knownHostsFile"
+   ],
+   [
+    "delete"
+   ]
+  ]
+ },
+ {
+  "id": "03-file-inbox",
+  "task": "Read JSON order files from the folder work/inbox. Only pick up files ending in .json, and only once a file has stopped changing (another system writes them slowly). Move each processed file to .done/ in a sub-folder named after today's date (yyyy-MM-dd), and move files that fail to .error/. Send each file to direct:intake.",
+  "expect": [
+   [
+    "include",
+    "antInclude",
+    "includeExt"
+   ],
+   [
+    "readLock"
+   ],
+   [
+    "move"
+   ],
+   [
+    "moveFailed"
+   ]
+  ]
+ },
+ {
+  "id": "04-http-in",
+  "task": "Expose an HTTP endpoint at /api/orders with the platform-http component that only accepts POST requests and only consumes application/json. Send each request to direct:intake.",
+  "expect": [
+   [
+    "httpMethodRestrict"
+   ],
+   [
+    "consumes"
+   ]
+  ]
+ },
+ {
+  "id": "05-sql-insert",
+  "task": "Receive orders on direct:store-order. The body is a map with keys id, partner and total. Insert a row into the PostgreSQL table orders (columns id, partner, total) with the sql component, using named parameters taken from the body, and the data source bean called orderDb.",
+  "expect": [
+   [
+    "dataSource"
+   ]
+  ]
+ },
+ {
+  "id": "06-sftp-write",
+  "task": "Receive pick lists on direct:pick-list and upload them over SFTP to the host warehouse.trailhead.example, directory /inbound/picklists, as user trailhead with the password from the property warehouse.password. Use a temporary file name while uploading so the warehouse never reads a half-written file, fail if a file with the same name already exists, and use strict host key checking.",
+  "expect": [
+   [
+    "password"
+   ],
+   [
+    "tempFileName",
+    "tempPrefix"
+   ],
+   [
+    "fileExist"
+   ],
+   [
+    "strictHostKeyChecking"
+   ]
+  ]
+ },
+ {
+  "id": "07-mail",
+  "task": "Receive rejected orders on direct:rejection-mail and email them with the smtp component through smtp.trailhead.example on port 587 with STARTTLS, logging in as orders@trailhead.example with the password from the property mail.password. The mail is from orders@trailhead.example, goes to the address in the header partnerEmail, and has the subject 'Order rejected'.",
+  "expect": [
+   [
+    "username"
+   ],
+   [
+    "password"
+   ],
+   [
+    "from"
+   ],
+   [
+    "subject"
+   ]
+  ]
+ },
+ {
+  "id": "08-http-call",
+  "task": "On direct:enrich, call the product catalog with GET https://catalog.trailhead.example/products/ followed by the value of the header sku. Give up connecting after 2 seconds and waiting for a response after 5 seconds, and don't throw an exception when the catalog answers 404.",
+  "expect": [
+   [
+    "connectTimeout",
+    "connectionRequestTimeout",
+    "httpConnection.connectTimeout"
+   ],
+   [
+    "responseTimeout",
+    "socketTimeout",
+    "soTimeout",
+    "httpClient.responseTimeout"
+   ],
+   [
+    "throwExceptionOnFailure",
+    "okStatusCodeRange"
+   ]
+  ]
+ },
+ {
+  "id": "09-kafka-produce",
+  "task": "Receive accepted orders on direct:accepted and publish them to the Kafka topic orders.accepted, using the header orderId as the record key. Brokers come from kafka.brokers. Make the producer idempotent, wait for all in-sync replicas to acknowledge, and compress with lz4.",
+  "expect": [
+   [
+    "enableIdempotence"
+   ],
+   [
+    "requestRequiredAcks"
+   ],
+   [
+    "compressionCodec"
+   ]
+  ]
+ },
+ {
+  "id": "10-jms",
+  "task": "Consume warehouse shipping confirmations from the JMS queue warehouse.confirmations, using the connection factory bean called artemisConnectionFactory, with 5 concurrent consumers and transacted sessions. Send each message to direct:confirmation.",
+  "expect": [
+   [
+    "connectionFactory"
+   ],
+   [
+    "concurrentConsumers"
+   ],
+   [
+    "transacted"
+   ]
+  ]
+ },
+ {
+  "id": "11-s3",
+  "task": "Receive the daily order export on direct:export and upload it to the AWS S3 bucket trailhead-exports in region eu-west-1, using the default AWS credentials provider chain. The object key comes from the header exportName.",
+  "expect": [
+   [
+    "region"
+   ],
+   [
+    "useDefaultCredentialsProvider"
+   ]
+  ]
+ },
+ {
+  "id": "12-schedule",
+  "task": "Every night at 02:00 Berlin time, start a route with the quartz component that logs 'Nightly order export started' and then calls direct:export.",
+  "expect": [
+   [
+    "cron"
+   ],
+   [
+    "trigger.timeZone"
+   ]
+  ]
+ }
+]

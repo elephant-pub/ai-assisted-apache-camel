@@ -1,0 +1,18 @@
+{
+  "event_id": "missing-type",
+  "occurred_at": "2026-11-02T09:14:31Z",
+  "order_ref": "PM-50120",
+  "buyer": { "email": "alex@example.com" },
+  "ship_to": {
+    "full_name": "Alex Kim",
+    "address1": "12 Pine Street",
+    "address2": null,
+    "city": "Denver",
+    "state": "CO",
+    "zip": "80202",
+    "country_code": "US"
+  },
+  "items": [
+    { "sku": "LAMP-HD200", "qty": 1, "price_usd": "39.95" }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+	"kaoto-datamapper-c0a47830": {
+		"sourceBody": {
+			"type": "JSON Schema",
+			"filePath": [
+				"docs/messages/peakmart-order-placed.schema.json"
+			]
+		},
+		"sourceParameters": {},
+		"targetBody": {
+			"type": "JSON Schema",
+			"filePath": [
+				"docs/messages/order.schema.json"
+			]
+		},
+		"xsltPath": "kaoto-datamapper-c0a47830.xsl",
+		"namespaceMap": {
+			"xs": "http://www.w3.org/2001/XMLSchema",
+			"fn": "http://www.w3.org/2005/xpath-functions",
+			"xsl": "http://www.w3.org/1999/XSL/Transform"
+		}
+	}
+}

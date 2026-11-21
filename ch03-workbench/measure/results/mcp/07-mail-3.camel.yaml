@@ -1,0 +1,25 @@
+- route:
+    id: rejection-mail
+    from:
+      uri: direct:rejection-mail
+      steps:
+        # Only the partnerEmail header decides who gets the mail
+        - removeHeaders:
+            pattern: "To|Cc|Bcc|to|cc|bcc|mail.smtp.*|mail.smtps.*"
+        - setHeader:
+            name: To
+            simple: "${header.partnerEmail}"
+        - to:
+            uri: smtp:smtp.trailhead.example:587
+            parameters:
+              username: orders@trailhead.example
+              password: "{{mail.password}}"
+              from: orders@trailhead.example
+              subject: Order rejected
+              useHeaderRecipients: true
+              useHeaderFrom: false
+              useHeaderSubject: false
+              useHeaderReplyTo: false
+              mail.smtp.auth: true
+              mail.smtp.starttls.enable: true
+              mail.smtp.starttls.required: true

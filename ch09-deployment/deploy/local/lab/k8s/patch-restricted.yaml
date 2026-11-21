@@ -1,0 +1,13 @@
+# Deploy lab: the Pod Security "restricted" profile and a read-only root file system, no writable folder given
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: order-integration
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities: {drop: [ALL]}

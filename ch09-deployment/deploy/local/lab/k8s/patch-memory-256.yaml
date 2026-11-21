@@ -1,0 +1,9 @@
+# Deploy lab: a memory limit of 256 MiB and the JVM's defaults (no heap setting), as a first manifest might set it
+spec:
+  template:
+    spec:
+      containers:
+        - name: order-integration
+          resources:
+            requests: {memory: 256Mi}
+            limits: {memory: 256Mi}

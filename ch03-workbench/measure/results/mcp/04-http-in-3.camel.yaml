@@ -1,0 +1,13 @@
+- route:
+    id: orders-intake
+    from:
+      uri: platform-http
+      parameters:
+        path: /api/orders
+        httpMethodRestrict: POST
+        consumes: application/json
+      steps:
+        - to:
+            uri: direct
+            parameters:
+              name: intake

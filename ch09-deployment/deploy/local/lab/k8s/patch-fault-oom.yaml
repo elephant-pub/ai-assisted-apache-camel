@@ -1,0 +1,10 @@
+# Deploy lab: the lab fault image (deploy/local/lab/fault.Dockerfile); an OutOfMemoryError before the first intake
+# validation of every process start, which H1 turns into "Fatal error ... the process stops" and Runtime.halt(70)
+spec:
+  template:
+    spec:
+      containers:
+        - name: order-integration
+          image: trailhead/order-integration:fault-today
+          env:
+            - {name: FAULT_POINTS, value: "to-validate-order-placed:oom:1"}

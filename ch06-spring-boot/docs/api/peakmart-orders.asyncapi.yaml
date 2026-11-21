@@ -1,0 +1,91 @@
+asyncapi: 3.0.0
+info:
+  title: Peakmart Order Events, our side
+  version: 0.1.0
+  description: |
+    Derived from docs/inputs/peakmart-order-placed-sample.json; not agreed with Peakmart.
+
+    Peakmart owns the topic and the format of its Order Events (C-005, C-006) and has an AsyncAPI document of its own
+    that it has not shared yet (OQ-038). This document describes only how the order integration reads the topic
+    (UC-002 Take In Peakmart Order). The integration publishes nothing to Peakmart: no acceptance, no rejection, no
+    error (C-007, UC-002 BR-005), so there is no send operation.
+
+channels:
+  peakmartOrders:
+    address: peakmart.orders.v2
+    title: Peakmart order topic
+    description: |
+      Peakmart's order topic, read with a consumer group Peakmart grants and read-only access (C-005).
+
+      **Retention:** Peakmart keeps every Order Event on the topic for 7 days (C-005). The Integration Team is alerted
+      when the topic has not been read for 15 minutes (UC-006 A4, BR-007), so that reading is restored long before
+      Order Events are deleted.
+
+      **Delivery:** at least once. The same Order Event may arrive more than once, especially after a rebalance, and
+      Peakmart may publish the same Order again under a new `event_id` (C-008).
+
+      **Duplicate detection:** by the Order Number `order_ref`, not by `event_id`. A Peakmart Order Number is placed
+      once; every later Order Event of type `order.placed` with an `order_ref` already received is skipped, whatever the
+      outcome of the first one (UC-002 BR-002).
+
+      **Other event types:** the topic carries Order Events of other types too. Only `event_type` `order.placed` is
+      read as a Peakmart Order; every other type is skipped without an error (UC-002 BR-001). Their format is unknown
+      and not described here.
+
+      The broker, the consumer group id and the message key are not named in the inputs (OQ-038).
+    messages:
+      orderPlaced:
+        $ref: '#/components/messages/orderPlaced'
+
+operations:
+  receivePeakmartOrderEvent:
+    action: receive
+    title: Take in a Peakmart Order
+    summary: Read an Order Event of type order.placed as a Peakmart Order (UC-002).
+    description: |
+      An Order Event that cannot be read as a Peakmart Order, for example one whose `buyer.email` is not an email
+      address, is set aside with its `event_id`, the Integration Team is alerted, and reading goes on with the next
+      Order Event (UC-002 A2, BR-009). A Set-Aside Order Event is kept for 90 days and can be resubmitted after its
+      cause is fixed (`order-event-resubmission.openapi.yaml#resubmitOrderEvent`, UC-008). `occurred_at` is taken as the
+      time the Customer placed the Order (UC-002 BR-008).
+
+      A Peakmart Order that cannot be checked or recorded during an outage waits and is never lost, also after a
+      restart; it does not hold up the Order Events behind it, which are processed (UC-002 BR-006).
+    channel:
+      $ref: '#/channels/peakmartOrders'
+    messages:
+      - $ref: '#/channels/peakmartOrders/messages/orderPlaced'
+
+components:
+  messages:
+    orderPlaced:
+      name: order.placed
+      title: Peakmart Order Event order.placed
+      contentType: application/json
+      payload:
+        $ref: '../messages/peakmart-order-placed.schema.json'
+      examples:
+        - name: PM-50117
+          summary: The sample Order Event Peakmart gave us
+          payload:
+            event_type: order.placed
+            event_id: 8d2f6c1e-4b7a-4f0e-9a51-3c2e7b9d0f14
+            occurred_at: '2026-11-02T09:14:31Z'
+            order_ref: PM-50117
+            buyer:
+              email: jordan.reyes@example.com
+            ship_to:
+              full_name: Jordan Reyes
+              address1: 2240 Pearl Street
+              address2: Apt 4
+              city: Boulder
+              state: CO
+              zip: '80302'
+              country_code: US
+            items:
+              - sku: TENT-2P
+                qty: 1
+                price_usd: '229.00'
+              - sku: STAKE-AL8
+                qty: 2
+                price_usd: '12.50'

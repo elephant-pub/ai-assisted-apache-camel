@@ -1,0 +1,62 @@
+# Deploy lab (design 006): "today". The image of src/main/docker/Dockerfile as camel export wrote it, deployed with only
+# what the jar needs to start without a profile (every host, port and secret from the environment, RequiredVariablesCheck).
+# No probes, no resources, no security context, default termination grace period (30 s), replicas 1. Lab only.
+apiVersion: v1
+kind: ConfigMap
+metadata: {name: order-integration-settings, namespace: trailhead-lab}
+data:
+  KAFKA_BROKERS: kafka:9092
+  DB_HOST: postgres.trailhead-lab.svc
+  DB_PORT: "5432"
+  DB_NAME: orders
+  DB_USERNAME: trailhead
+  DB_SSL_ROOT_CERT: /etc/trailhead/files/db-ca.crt
+  CATALOG_HOST: catalog
+  CATALOG_PORT: "8091"
+  SMTP_HOST: mail.trailhead-lab.svc
+  SMTP_PORT: "1025"
+  ORDERDESK_MAILBOX: order-desk@trailhead.example
+  ORDERDESK_SENDER: order-integration@trailhead.example
+  PARTNER_HTTP_PORT: "8443"
+  PARTNER_TLS_CERTIFICATE: file:/etc/trailhead/files/partner-tls.crt
+  PARTNER_TLS_PRIVATE_KEY: file:/etc/trailhead/files/partner-tls.key
+  PARTNER_CONFIGURATION: /etc/trailhead/partners/partner-configuration.json
+  SECRET_STORE_DIR: /etc/trailhead/secret-store
+  PARTNER_MAIL_SENDER: orders@trailhead.example
+  WAREHOUSE_SFTP_HOST: sftp
+  WAREHOUSE_SFTP_PORT: "22"
+  WAREHOUSE_SFTP_USERNAME: admin
+  WAREHOUSE_SFTP_KNOWN_HOSTS: /etc/trailhead/files/warehouse_known_hosts
+  # The lab mail server's certificate is signed by the lab CA
+  JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/etc/trailhead/files/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStoreType=PKCS12
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: order-integration, namespace: trailhead-lab}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: order-integration}}
+  template:
+    metadata: {labels: {app: order-integration}}
+    spec:
+      containers:
+        - name: order-integration
+          image: trailhead/order-integration:today
+          imagePullPolicy: Never
+          ports: [{containerPort: 8443, name: partner}]
+          envFrom:
+            - configMapRef: {name: order-integration-settings}
+            - secretRef: {name: order-integration-env}
+          volumeMounts:
+            - {name: files, mountPath: /etc/trailhead/files}
+            - {name: partners, mountPath: /etc/trailhead/partners}
+            - {name: secret-store, mountPath: /etc/trailhead/secret-store}
+      volumes:
+        - {name: files, secret: {secretName: order-integration-files}}
+        - {name: partners, configMap: {name: partner-configuration}}
+        - {name: secret-store, secret: {secretName: order-integration-secret-store}}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: order-integration, namespace: trailhead-lab}
+spec: {selector: {app: order-integration}, ports: [{name: partner, port: 8443, targetPort: partner}]}

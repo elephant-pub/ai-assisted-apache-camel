@@ -1,0 +1,57 @@
+# Flow order-desk-notification (design §3): deliver every pending Order Desk Notification once, retrying until it
+# succeeds and across restarts (UC-002 BR-004). The file outbox stands in for SMTP in the prototype.
+- route:
+    id: order-desk-notification-send
+    description: Deliver each pending Order Desk Notification as a plain-text file to the Order Desk outbox
+    from:
+      id: from-notification-outbox
+      uri: sql:file:{{sql.dir}}/notification-select.sql
+      parameters:
+        dataSource: "#orderDb"
+        delay: "{{notification.poll-delay-ms}}"
+        # RAW(...) keeps the '+' literal; otherwise URI decoding turns it into a space
+        onConsume: "RAW(UPDATE notification SET sent_at = now(), attempts = attempts + 1 WHERE id = :#notification_id)"
+        onConsumeFailed: "RAW(UPDATE notification SET attempts = attempts + 1 WHERE id = :#notification_id)"
+      steps:
+        - setProperty:
+            id: set-notification-order-number
+            name: order-number
+            expression:
+              simple:
+                expression: "${body[order_number]}"
+        - setProperty:
+            id: set-notification-correlation-id
+            name: correlation-id
+            expression:
+              simple:
+                expression: "${body[correlation_id]}"
+        # The Order Number of a Rejected Order may fail the format check; never let it shape the file path.
+        # An unsafe number is replaced by the (unique) notification id, so two notifications never share a file.
+        - setProperty:
+            id: set-file-order-number
+            name: file-order-number
+            expression:
+              groovy:
+                expression: |
+                  def number = exchange.getProperty('order-number', String)
+                  number ==~ /[A-Za-z0-9-]{1,30}/ ? number : 'unsafe-' + request.body['notification_id']
+        - setBody:
+            id: set-body-notification-text
+            expression:
+              simple:
+                expression: |-
+                  To: ${body[recipient_email]}
+                  Subject: Peakmart order ${exchangeProperty.order-number} rejected
+
+                  Order number: ${exchangeProperty.order-number}
+                  ${body[reason_lines]}
+        - to:
+            id: to-order-desk-outbox
+            uri: file:{{orderdesk.outbox-dir}}
+            parameters:
+              fileName: "peakmart-order-${exchangeProperty.file-order-number}-rejected.txt"
+              fileExist: Override
+        - log:
+            id: log-order-desk-notified
+            loggingLevel: INFO
+            message: "Order Desk notified orderNumber=${exchangeProperty.order-number} correlationId=${exchangeProperty.correlation-id}"

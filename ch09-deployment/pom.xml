@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <!-- Design 006 D2 (§3.3): the 4.1 patch release that manages the fixed versions (keep equal to the BOM below) -->
+        <version>4.1.2</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.trailheadgear</groupId>
+    <artifactId>order-integration</artifactId>
+    <version>0.1.0</version>
+
+    <properties>
+        <!-- Design 006 D1, C-003 amended (review 3) -->
+        <java.version>25</java.version>
+        <project.build.outputTimestamp>2026-11-13T18:26:14Z</project.build.outputTimestamp>
+        <!-- Pipeline 004: executable spec tests (Citrus version from .camel-kit/config.properties) -->
+        <citrus.version>5.0.1</citrus.version>
+        <!-- Default for failsafe's skipITs; also passed to SpecMatrix (design 004 §3.9: -DskipITs writes the matrix with every run item not run) -->
+        <skipITs>false</skipITs>
+        <!-- -DskipTests also skips failsafe; passed to SpecMatrix so that it then writes the matrix as not run -->
+        <skipTests>false</skipTests>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Boot BOM. Design 006 D2 (§3.3): 4.1.2 manages tomcat-embed 11.0.27 (CVE-2026-65182, CVE-2026-65637,
+                 CVE-2026-65905, CVE-2026-68525; fixed in 11.0.25), Jackson 2.21.7 (CVE-2026-89407, CVE-2026-89425,
+                 CVE-2026-68497, CVE-2026-91776, CVE-2026-91777) and Jackson 3.1.7 (the same ids), so no version property
+                 overrides them -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>4.1.2</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Camel BOM -->
+            <dependency>
+                <groupId>org.apache.camel.springboot</groupId>
+                <artifactId>camel-spring-boot-bom</artifactId>
+                <version>4.22.2</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Pipeline 004: citrus-validation-json (test) brings json-schema-validator 3.0.4, which Maven would also put into
+                 the jar (nearest wins) and which camel-json-validator 4.22.2 cannot run with (NoSuchMethodError on every
+                 json-validator step, found by TC-001). Held at the version camel-json-validator 4.22.2 declares, so the
+                 shipped classpath is the one of pipeline 003. -->
+            <dependency>
+                <groupId>com.networknt</groupId>
+                <artifactId>json-schema-validator</artifactId>
+                <version>2.0.1</version>
+            </dependency>
+            <!-- Design 006 D2 (§3.3): Kafka's compression libraries, which no imported BOM manages, at their patch releases:
+                 snappy-java 1.1.10.7 -> 1.1.10.9 (CVE-2026-108106, CVE-2026-93451), lz4-java 1.11.1 -> 1.11.4
+                 (CVE-2026-106451) -->
+            <dependency>
+                <groupId>org.xerial.snappy</groupId>
+                <artifactId>snappy-java</artifactId>
+                <version>1.1.10.9</version>
+            </dependency>
+            <dependency>
+                <groupId>at.yawk.lz4</groupId>
+                <artifactId>lz4-java</artifactId>
+                <version>1.11.4</version>
+            </dependency>
+            <!-- Citrus BOM (pipeline 004), imported after the Spring Boot and Camel BOMs so that their versions win -->
+            <dependency>
+                <groupId>org.citrusframework</groupId>
+                <artifactId>citrus-bom</artifactId>
+                <version>${citrus.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <!-- Bundles the partner contract at prepare-package (ContractBundle) -->
+        <dependency>
+            <groupId>io.swagger.parser.v3</groupId>
+            <artifactId>swagger-parser</artifactId>
+            <version>2.1.48</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    </dependencyManagement>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-bean-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-direct-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-groovy-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-http-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-json-validator-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-jsonpath-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-kafka-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-mail-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-sql-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-yaml-dsl-starter</artifactId>
+        </dependency>
+        <!-- Pipeline 003: partner endpoint (contract-first REST on platform-http), pick lists (sftp, csv) -->
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-platform-http-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-rest-openapi-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-ftp-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel.springboot</groupId>
+            <artifactId>camel-csv-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-test-spring-junit6</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Pipeline 004: executable spec tests (Citrus Java DSL, JUnit Jupiter, Testcontainers); versions from the BOMs -->
+        <dependency>
+            <groupId>org.citrusframework</groupId>
+            <artifactId>citrus-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.citrusframework</groupId>
+            <artifactId>citrus-http</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.citrusframework</groupId>
+            <artifactId>citrus-kafka</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.citrusframework</groupId>
+            <artifactId>citrus-mail</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.citrusframework</groupId>
+            <artifactId>citrus-sql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.citrusframework</groupId>
+            <artifactId>citrus-validation-json</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.citrusframework</groupId>
+            <artifactId>citrus-validation-text</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-kafka</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers-postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Design 006 D11 (T7): RouteCatalogTest validates every route endpoint against the catalog of the Camel version
+             in use. Not managed by the Camel Spring Boot BOM, so the version is the project's Camel version. -->
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-catalog</artifactId>
+            <version>4.22.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!-- Design 006 D11 (T7): every *.camel.yaml against the YAML DSL schema of Camel 4.22.2, in every build -->
+            <plugin>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-yaml-dsl-validator-maven-plugin</artifactId>
+                <version>4.22.2</version>
+                <executions>
+                    <execution>
+                        <id>validate-routes</id>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>validate</goal>
+                        </goals>
+                        <configuration>
+                            <failOnError>true</failOnError>
+                            <onlyCamelYamlExt>true</onlyCamelYamlExt>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Pipeline 004: the executable spec tests run against the packaged jar, after package (design 004 §3.1, §3.10).
+                 One fork, no parallel runs: the tests share containers and a mail queue. -->
+            <!-- Pipeline 005 (§3.9): the test-only fault hook in its own jar (only the fault package), never in the
+                 production jar; IntegrationProcess.withFaults puts it on the PropertiesLauncher loader.path. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>fault-hook-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>fault-hook</classifier>
+                            <includes>
+                                <include>com/trailheadgear/orderintegration/fault/**</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Pipeline 005 (P-10): failsafe merges into an existing summary file, so the failure ITs' summary left by an
+                 earlier build (without clean) would keep its failures; it is removed before the ITs run -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>clean-failure-it-summary</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                            <filesets>
+                                <fileset>
+                                    <directory>${project.build.directory}/failsafe-reports</directory>
+                                    <includes>
+                                        <include>failsafe-summary-failure.xml</include>
+                                    </includes>
+                                </fileset>
+                            </filesets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/*$*</exclude>
+                        <exclude>**/spec/*IT.java</exclude>
+                        <exclude>**/failure/*IT.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <!-- Pipeline 005 (P-11): plugin level covers both, so that a direct CLI call (execution default-cli) with
+                         -Dit.test=<Class> finds a failure IT; the executions below narrow it. -->
+                    <includes>
+                        <include>**/spec/*IT.java</include>
+                        <include>**/failure/*IT.java</include>
+                    </includes>
+                    <runOrder>alphabetical</runOrder>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+                    <systemPropertyVariables>
+                        <spec-test.jar>${project.build.directory}/${project.build.finalName}.jar</spec-test.jar>
+                        <spec-test.docs-dir>${project.basedir}/docs</spec-test.docs-dir>
+                        <spec-test.work-dir>${project.build.directory}/spec-tests</spec-test.work-dir>
+                        <spec-test.fault-hook-jar>${project.build.directory}/${project.build.finalName}-fault-hook.jar</spec-test.fault-hook-jar>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <!-- The spec ITs run first (declaration order); the summary file keeps its default name -->
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/spec/*IT.java</include>
+                            </includes>
+                            <!-- verify reads both summaries (listed explicitly, so a spec failure is never dropped) -->
+                            <summaryFiles>
+                                <summaryFile>${project.build.directory}/failsafe-reports/failsafe-summary.xml</summaryFile>
+                                <summaryFile>${project.build.directory}/failsafe-reports/failsafe-summary-failure.xml</summaryFile>
+                            </summaryFiles>
+                        </configuration>
+                    </execution>
+                    <!-- Pipeline 005 (P-10): failure ITs against the packaged jar with the fault hook, after the spec ITs -->
+                    <execution>
+                        <id>failure-tests</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/failure/*IT.java</include>
+                            </includes>
+                            <summaryFile>${project.build.directory}/failsafe-reports/failsafe-summary-failure.xml</summaryFile>
+                            <!-- Keeps the spec ITs' result files for the traceability matrix (SpecEnvironment) -->
+                            <systemPropertyVariables>
+                                <spec-test.keep-results>true</spec-test.keep-results>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Developer review of 003: docs/api/partner-orders.openapi.yaml bundled into one file at prepare-package, its
+                 ../messages/*.schema.json $refs inlined, because the OpenAPI parser can't resolve relative $refs on the
+                 classpath. ContractBundleTest proves the bundle says what docs/ says. -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.1</version>
+                <executions>
+                    <execution>
+                        <id>bundle-partner-contract</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>java</executable>
+                            <classpathScope>test</classpathScope>
+                            <arguments>
+                                <argument>-classpath</argument>
+                                <classpath/>
+                                <argument>com.trailheadgear.orderintegration.ContractBundle</argument>
+                                <argument>${project.basedir}/docs/api/partner-orders.openapi.yaml</argument>
+                                <argument>${project.build.outputDirectory}/contract/api/partner-orders.openapi.yaml</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <!-- Design 004 §3.9: completeness check and traceability matrix, after failsafe:integration-test and before
+                         failsafe:verify. In-process exec:java on the test classpath; SpecMatrix fails by throwing, never System.exit. -->
+                    <execution>
+                        <id>spec-traceability-matrix</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <!-- -Dmaven.test.skip: the test classes are not compiled, so there is nothing to run -->
+                            <skip>${maven.test.skip}</skip>
+                            <mainClass>com.trailheadgear.orderintegration.spec.SpecMatrix</mainClass>
+                            <classpathScope>test</classpathScope>
+                            <arguments>
+                                <argument>${project.basedir}/docs</argument>
+                                <argument>${project.build.directory}/spec-tests</argument>
+                                <argument>${skipITs}</argument>
+                                <argument>${skipTests}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- E6: the JSON schemas the routes and the partner registration validate against are copied from docs/messages/ (the single
+                 source of truth) into the jar at build time; no copy is kept under src/. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-message-schemas</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/schemas</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/docs/messages</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>peakmart-order-placed.schema.json</include>
+                                        <include>product.schema.json</include>
+                                        <include>order.schema.json</include>
+                                        <include>partner-configuration.schema.json</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-partner-contract-messages</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}/contract/messages</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.basedir}/docs/messages</directory>
+                                    <filtering>false</filtering>
+                                    <includes>
+                                        <include>partner-order.schema.json</include>
+                                        <include>order-answer.schema.json</include>
+                                        <include>rejection-reason.schema.json</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>camel.debug</id>
+            <activation>
+                <property>
+                    <name>camel.debug</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <dependencies>
+                <dependency>
+                    <groupId>org.apache.camel.springboot</groupId>
+                    <artifactId>camel-debug-starter</artifactId>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>3.10.0</version>
+                        <executions>
+                            <execution>
+                                <id>copy</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>copy</goal>
+                                </goals>
+                                <configuration>
+                                    <artifactItems>
+                                      <artifactItem>
+                                        <groupId>org.jolokia</groupId>
+                                        <artifactId>jolokia-agent-jvm</artifactId>
+                                        <version>2.5.1</version>
+                                        <type>jar</type>
+                                        <classifier>javaagent</classifier>
+                                      </artifactItem>
+                                    </artifactItems>
+                                    <stripVersion>true</stripVersion>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <configuration>
+                            <jvmArguments>-javaagent:target/dependency/jolokia-agent-jvm-javaagent.jar=port=7878,host=localhost</jvmArguments>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Resubmission Result",
+  "description": "The answer to an Order Event Resubmission (UC-008 step 6, A1 to A3). Trailhead Gear owns it. It allows no other field, so that no Customer name, email address or Shipping Address can get into it (UC-008 BR-004).",
+  "type": "object",
+  "required": ["eventId", "result"],
+  "additionalProperties": false,
+  "properties": {
+    "eventId": { "type": "string", "minLength": 1, "description": "Event id of the resubmitted Order Event." },
+    "result": {
+      "enum": ["taken-in", "already-received", "still-unreadable", "not-found"],
+      "description": "`taken-in`: received as a Peakmart Order (UC-008 step 6); `already-received`: skipped as a Duplicate (A3); `still-unreadable`: kept set aside (A2); `not-found`: no such Set-Aside Order Event is kept (A1)."
+    },
+    "orderNumber": { "type": "string", "pattern": "^PM-\\d+$", "description": "Order Number of the Peakmart Order; only for `taken-in` and `already-received`." },
+    "reason": { "type": "string", "minLength": 1, "description": "What cannot be read, readable by a person; only for `still-unreadable`. Names no personal data." }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "result": { "enum": ["taken-in", "already-received"] } }, "required": ["result"] },
+      "then": { "required": ["orderNumber"], "properties": { "reason": false } }
+    },
+    {
+      "if": { "properties": { "result": { "const": "still-unreadable" } }, "required": ["result"] },
+      "then": { "required": ["reason"], "properties": { "orderNumber": false } }
+    },
+    {
+      "if": { "properties": { "result": { "const": "not-found" } }, "required": ["result"] },
+      "then": { "properties": { "orderNumber": false, "reason": false } }
+    }
+  ]
+}

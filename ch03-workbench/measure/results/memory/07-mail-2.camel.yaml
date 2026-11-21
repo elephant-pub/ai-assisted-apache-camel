@@ -1,0 +1,21 @@
+- route:
+    id: rejection-mail
+    from:
+      uri: direct:rejection-mail
+      steps:
+        # The mail component reads the recipient from the "To" header
+        - setHeader:
+            name: To
+            simple: "${header.partnerEmail}"
+        # Remove it so it isn't copied into the email as a custom MIME header
+        - removeHeader:
+            name: partnerEmail
+        - to:
+            uri: smtp://smtp.trailhead.example:587
+            parameters:
+              username: orders@trailhead.example
+              password: "{{mail.password}}"
+              from: orders@trailhead.example
+              subject: Order rejected
+              mail.smtp.starttls.enable: true
+              mail.smtp.starttls.required: true

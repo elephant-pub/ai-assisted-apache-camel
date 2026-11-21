@@ -1,0 +1,17 @@
+{
+  "orderId": "TG-1060",
+  "partnerId": "summit-outfitters",
+  "orderedAt": "2026-11-02T14:05:12Z",
+  "customerEmail": "lee@example.com",
+  "shipTo": {
+    "name": "Lee Martin",
+    "street": "18 Canyon Road",
+    "city": "Moab",
+    "postalCode": "84532",
+    "country": "US"
+  },
+  "lines": [
+    { "sku": "TENT-2P", "quantity": 1, "unitPrice": 249.00 },
+    { "sku": "LAMP-HD200", "quantity": 2, "unitPrice": 39.95 }
+  ]
+}

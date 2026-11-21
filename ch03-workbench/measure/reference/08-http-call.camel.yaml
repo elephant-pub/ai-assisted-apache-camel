@@ -1,0 +1,12 @@
+- route:
+    id: product-enrich
+    from:
+      uri: direct:enrich
+      steps:
+        - setHeader:
+            name: CamelHttpMethod
+            constant: GET
+        # The timeouts go in the URI's query string: in a toD, HTTP options under parameters
+        # that the catalog lists only for the component are sent to the server instead.
+        - toD:
+            uri: "https://catalog.trailhead.example/products/${header.sku}?connectTimeout=2000&responseTimeout=5000&throwExceptionOnFailure=false"

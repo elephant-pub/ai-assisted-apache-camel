@@ -1,0 +1,294 @@
+Picked up JAVA_TOOL_OPTIONS: -Djavax.net.ssl.trustStore=/etc/trailhead/files/truststore.p12 -Djavax.net.ssl.trustStorePassword=changeit -Djavax.net.ssl.trustStoreType=PKCS12
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.1)
+
+2026-11-16T11:59:51.561Z  INFO 1 --- [           main] c.t.orderintegration.CamelApplication    : Starting CamelApplication v0.1.0 using Java 21.0.13 with PID 1 (/deployments/application.jar started by default in /deployments)
+2026-11-16T11:59:51.564Z  INFO 1 --- [           main] c.t.orderintegration.CamelApplication    : No active profile set, falling back to 1 default profile: "default"
+2026-11-16T11:59:53.829Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8443 (https)
+2026-11-16T11:59:53.844Z  INFO 1 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-16T11:59:53.844Z  INFO 1 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.24]
+2026-11-16T11:59:53.869Z  INFO 1 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 2034 ms
+2026-11-16T11:59:54.570Z  INFO 1 --- [           main] org.flywaydb.core.FlywayExecutor         : Database: jdbc:postgresql://postgres.trailhead-lab.svc:5432/orders?sslmode=verify-full&sslrootcert=/etc/trailhead/files/db-ca.crt (PostgreSQL 16.15)
+2026-11-16T11:59:54.669Z  INFO 1 --- [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Schema history table "public"."flyway_schema_history" does not exist yet
+2026-11-16T11:59:54.671Z  INFO 1 --- [           main] o.f.core.internal.command.DbValidate     : Successfully validated 3 migrations (execution time 00:00.015s)
+2026-11-16T11:59:54.685Z  INFO 1 --- [           main] o.f.c.i.s.JdbcTableSchemaHistory         : Creating Schema History table "public"."flyway_schema_history" ...
+2026-11-16T11:59:54.780Z  INFO 1 --- [           main] o.f.core.internal.command.DbMigrate      : Current version of schema "public": << Empty Schema >>
+2026-11-16T11:59:54.809Z  INFO 1 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "1 - order database"
+2026-11-16T11:59:54.878Z  INFO 1 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "2 - partners and pick lists"
+2026-11-16T11:59:54.934Z  INFO 1 --- [           main] o.f.core.internal.command.DbMigrate      : Migrating schema "public" to version "3 - failure reasons"
+2026-11-16T11:59:54.953Z  INFO 1 --- [           main] o.f.core.internal.command.DbMigrate      : Successfully applied 3 migrations to schema "public", now at version v3 (execution time 00:00.102s)
+2026-11-16T11:59:55.030Z  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-11-16T11:59:55.061Z  INFO 1 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@44e79e9e
+2026-11-16T11:59:55.062Z  INFO 1 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-11-16T11:59:55.095Z  INFO 1 --- [           main] c.t.o.PartnerRegistration                : Partner Configuration registered partners=1
+2026-11-16T11:59:55.162Z  INFO 1 --- [           main] o.s.v.b.OptionalValidatorFactoryBean     : Failed to set up a Bean Validation provider: jakarta.validation.NoProviderFoundException: Unable to create a Configuration, because no Jakarta Validation provider could be found. Add a provider like Hibernate Validator (RI) to your classpath.
+2026-11-16T11:59:55.777Z  INFO 1 --- [           main] o.a.c.m.DefaultConfigurationConfigurer   : Adding custom InterceptStrategy with id: errorContainment and implementation: com.trailheadgear.orderintegration.ErrorContainment@72015156
+2026-11-16T11:59:55.912Z  WARN 1 --- [           main] b.s.CamelSecurityPolicyAutoConfiguration : SECURITY WARNING: [secret] Secret property is configured with plain-text value. Consider using {{vault:...}}, ${env:...}, or {{...}} property placeholders [camel.component.smtp.username]
+2026-11-16T11:59:55.913Z  WARN 1 --- [           main] b.s.CamelSecurityPolicyAutoConfiguration : SECURITY WARNING: [secret] Secret property is configured with plain-text value. Consider using {{vault:...}}, ${env:...}, or {{...}} property placeholders [camel.component.smtp.password]
+2026-11-16T11:59:56.294Z  INFO 1 --- [           main] o.a.t.util.net.NioEndpoint.certificate   : Connector [https-jsse-nio-8443], TLS virtual host [_default_], certificate type [UNDEFINED] configured from keystore [Set directly - location unknown] using alias [tomcat] with trust store [/etc/trailhead/files/truststore.p12]
+2026-11-16T11:59:56.307Z  INFO 1 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8443 (https) with context path '/'
+2026-11-16T11:59:56.586Z  INFO 1 --- [           main] o.a.c.support.LifecycleStrategySupport   : Autowired property: dataSource on component: sql as exactly one instance of type: javax.sql.DataSource (com.zaxxer.hikari.HikariDataSource) found in the registry
+2026-11-16T11:59:56.925Z  WARN 1 --- [           main] o.a.c.component.file.remote.FtpUtils     : SftpComponent doesn't support absolute paths, "/inbound/picklists" will be converted to "inbound/picklists". After Camel 2.16, absolute paths will be invalid.
+2026-11-16T11:59:57.318Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   : Apache Camel 4.22.2 (trailhead-order-integration) is starting
+2026-11-16T11:59:57.383Z  INFO 1 --- [           main] c.s.b.CamelSpringBootApplicationListener : Starting CamelMainRunController to ensure the main thread keeps running
+2026-11-16T11:59:57.384Z  INFO 1 --- [inRunController] org.apache.camel.main.MainSupport        : Apache Camel (Main) 4.22.2 is starting
+2026-11-16T11:59:57.387Z  INFO 1 --- [           main] o.a.camel.component.kafka.KafkaConsumer  : Starting Kafka consumer on topic: peakmart.orders.v2 with breakOnFirstError: true
+2026-11-16T11:59:57.391Z  INFO 1 --- [nio-8443-exec-5] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-16T11:59:57.392Z  INFO 1 --- [nio-8443-exec-5] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-16T11:59:57.393Z  INFO 1 --- [nio-8443-exec-5] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-11-16T11:59:57.408Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   : Routes startup (total:19 rest-dsl:1)
+2026-11-16T11:59:57.408Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-rejection-email-send (sql://classpath:sql/rejection-email-select.sql)
+2026-11-16T11:59:57.408Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-order-intake (kafka://peakmart.orders.v2)
+2026-11-16T11:59:57.408Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-event-read (direct://peakmart-event-read)
+2026-11-16T11:59:57.408Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-event-set-aside (direct://peakmart-event-set-aside)
+2026-11-16T11:59:57.408Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-order-receive (direct://peakmart-order-receive)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-event-read-json (direct://peakmart-event-read-json)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started peakmart-order-check-poll (sql://classpath:sql/waiting-select.sql)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started order-check (direct://order-check)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started product-lookup (direct://product-lookup)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started order-reject (direct://order-reject)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started order-record (direct://order-record)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started pick-list-delivery (sql://classpath:sql/pick-list-select.sql)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started order-desk-notification-send (sql://classpath:sql/notification-select.sql)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-order-submit (direct://submitPartnerOrder)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-order-receive (direct://partner-order-receive)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-order-check (direct://partner-order-check)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-order-answer (direct://partner-order-answer)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-order-read (direct://partner-order-read)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   :     Started partner-orders-rest-route (rest-openapi://classpath:contract/api/partner-orders.openapi.yaml)
+2026-11-16T11:59:57.409Z  INFO 1 --- [           main] o.a.c.impl.engine.AbstractCamelContext   : Apache Camel 4.22.2 (trailhead-order-integration) started in 90ms (build:0ms init:0ms start:90ms)
+2026-11-16T11:59:57.410Z  INFO 1 --- [           main] o.a.c.component.kafka.KafkaComponent     : Starting 1 pending Kafka consumers as CamelContext is fully started
+2026-11-16T11:59:57.411Z  INFO 1 --- [           main] c.t.orderintegration.CamelApplication    : Started CamelApplication in 6.201 seconds (process running for 6.512)
+2026-11-16T11:59:57.417Z  INFO 1 --- [ KafkaReconnect] o.a.c.component.kafka.KafkaFetchRecords  : Connecting Kafka consumer thread ID peakmart.orders.v2-Thread 0 with poll timeout of 5000 ms
+2026-11-16T11:59:57.440Z  INFO 1 --- [ KafkaReconnect] o.a.kafka.common.config.AbstractConfig   : ConsumerConfig values: 
+	allow.auto.create.topics = true
+	auto.commit.interval.ms = 5000
+	auto.offset.reset = earliest
+	bootstrap.servers = [kafka:9092]
+	check.crcs = true
+	client.dns.lookup = use_all_dns_ips
+	client.id = consumer-trailhead-order-integration-1
+	client.rack = 
+	config.providers = []
+	connections.max.idle.ms = 540000
+	default.api.timeout.ms = 60000
+	enable.auto.commit = false
+	enable.metrics.push = true
+	exclude.internal.topics = true
+	fetch.max.bytes = 52428800
+	fetch.max.wait.ms = 500
+	fetch.min.bytes = 1
+	group.id = trailhead-order-integration
+	group.instance.id = null
+	group.protocol = classic
+	group.remote.assignor = null
+	heartbeat.interval.ms = 3000
+	interceptor.classes = []
+	internal.throw.on.fetch.stable.offset.unsupported = false
+	isolation.level = read_uncommitted
+	key.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+	max.partition.fetch.bytes = 1048576
+	max.poll.interval.ms = 300000
+	max.poll.records = 500
+	metadata.max.age.ms = 300000
+	metadata.recovery.rebootstrap.trigger.ms = 300000
+	metadata.recovery.strategy = rebootstrap
+	metric.reporters = [org.apache.kafka.common.metrics.JmxReporter]
+	metrics.num.samples = 2
+	metrics.recording.level = INFO
+	metrics.sample.window.ms = 30000
+	partition.assignment.strategy = [org.apache.kafka.clients.consumer.RangeAssignor]
+	receive.buffer.bytes = 65536
+	reconnect.backoff.max.ms = 1000
+	reconnect.backoff.ms = 50
+	request.timeout.ms = 30000
+	retry.backoff.max.ms = 1000
+	retry.backoff.ms = 100
+	sasl.client.callback.handler.class = null
+	sasl.jaas.config = null
+	sasl.kerberos.kinit.cmd = /usr/bin/kinit
+	sasl.kerberos.min.time.before.relogin = 60000
+	sasl.kerberos.service.name = null
+	sasl.kerberos.ticket.renew.jitter = 0.05
+	sasl.kerberos.ticket.renew.window.factor = 0.8
+	sasl.login.callback.handler.class = null
+	sasl.login.class = null
+	sasl.login.connect.timeout.ms = null
+	sasl.login.read.timeout.ms = null
+	sasl.login.refresh.buffer.seconds = 300
+	sasl.login.refresh.min.period.seconds = 60
+	sasl.login.refresh.window.factor = 0.8
+	sasl.login.refresh.window.jitter = 0.05
+	sasl.login.retry.backoff.max.ms = 10000
+	sasl.login.retry.backoff.ms = 100
+	sasl.mechanism = GSSAPI
+	sasl.oauthbearer.assertion.algorithm = RS256
+	sasl.oauthbearer.assertion.claim.aud = null
+	sasl.oauthbearer.assertion.claim.exp.seconds = 300
+	sasl.oauthbearer.assertion.claim.iss = null
+	sasl.oauthbearer.assertion.claim.jti.include = false
+	sasl.oauthbearer.assertion.claim.nbf.seconds = 60
+	sasl.oauthbearer.assertion.claim.sub = null
+	sasl.oauthbearer.assertion.file = null
+	sasl.oauthbearer.assertion.private.key.file = null
+	sasl.oauthbearer.assertion.private.key.passphrase = null
+	sasl.oauthbearer.assertion.template.file = null
+	sasl.oauthbearer.client.credentials.client.id = null
+	sasl.oauthbearer.client.credentials.client.secret = null
+	sasl.oauthbearer.clock.skew.seconds = 30
+	sasl.oauthbearer.expected.audience = []
+	sasl.oauthbearer.expected.issuer = null
+	sasl.oauthbearer.header.urlencode = false
+	sasl.oauthbearer.jwks.endpoint.refresh.ms = 3600000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.max.ms = 10000
+	sasl.oauthbearer.jwks.endpoint.retry.backoff.ms = 100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.jwt.retriever.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtRetriever
+	sasl.oauthbearer.jwt.validator.class = class org.apache.kafka.common.security.oauthbearer.DefaultJwtValidator
+	sasl.oauthbearer.scope = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	session.timeout.ms = 45000
+	share.acknowledgement.mode = implicit
+	share.acquire.mode = BATCH_OPTIMIZED
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = []
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+	value.deserializer = class org.apache.kafka.common.serialization.StringDeserializer
+
+2026-11-16T11:59:57.485Z  INFO 1 --- [ KafkaReconnect] o.a.k.c.t.i.KafkaMetricsCollector        : initializing Kafka metrics collector
+2026-11-16T11:59:57.609Z  INFO 1 --- [ KafkaReconnect] o.a.kafka.common.utils.AppInfoParser     : Kafka version: 4.2.1
+2026-11-16T11:59:57.609Z  INFO 1 --- [ KafkaReconnect] o.a.kafka.common.utils.AppInfoParser     : Kafka commitId: 92f61c44867f39dc
+2026-11-16T11:59:57.609Z  INFO 1 --- [ KafkaReconnect] o.a.kafka.common.utils.AppInfoParser     : Kafka startTimeMs: 1794830397602
+2026-11-16T11:59:57.617Z  INFO 1 --- [ KafkaReconnect] o.a.c.c.k.c.s.c.AssignmentAdapterHelper  : Using NO-OP resume strategy
+2026-11-16T11:59:57.617Z  INFO 1 --- [ KafkaReconnect] o.a.c.component.kafka.KafkaFetchRecords  : Searching for a custom subscribe adapter on the registry
+2026-11-16T11:59:57.618Z  INFO 1 --- [ KafkaReconnect] o.a.c.c.k.c.s.s.DefaultSubscribeAdapter  : Subscribing to topic(s) peakmart.orders.v2
+2026-11-16T11:59:57.618Z  INFO 1 --- [ KafkaReconnect] o.a.k.c.c.i.ClassicKafkaConsumer         : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Subscribed to topic(s): peakmart.orders.v2
+2026-11-16T11:59:58.138Z  INFO 1 --- [mart.orders.v2]] org.apache.kafka.clients.Metadata        : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Cluster ID: 5L6g3nShT-eMCtK--X86sw
+2026-11-16T11:59:58.259Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Discovered group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.261Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] (Re-)joining group
+2026-11-16T11:59:58.282Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false) is unavailable or invalid due to cause: error response NOT_COORDINATOR. isDisconnected: false. Rediscovery will be attempted.
+2026-11-16T11:59:58.282Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Requesting disconnect from last known coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.283Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] JoinGroup failed: This is not the correct coordinator. Marking coordinator unknown. Sent generation was Generation{generationId=-1, memberId='', protocol='null'}
+2026-11-16T11:59:58.283Z  INFO 1 --- [mart.orders.v2]] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Client requested disconnect from node 2147483646
+2026-11-16T11:59:58.287Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Discovered group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.289Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false) is unavailable or invalid due to cause: coordinator unavailable. isDisconnected: false. Rediscovery will be attempted.
+2026-11-16T11:59:58.289Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Requesting disconnect from last known coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.375Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Discovered group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.377Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Request joining group due to: rebalance failed due to 'This is not the correct coordinator.' (NotCoordinatorException)
+2026-11-16T11:59:58.377Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] (Re-)joining group
+2026-11-16T11:59:58.384Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false) is unavailable or invalid due to cause: error response NOT_COORDINATOR. isDisconnected: false. Rediscovery will be attempted.
+2026-11-16T11:59:58.385Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Requesting disconnect from last known coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.385Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] JoinGroup failed: This is not the correct coordinator. Marking coordinator unknown. Sent generation was Generation{generationId=-1, memberId='', protocol='null'}
+2026-11-16T11:59:58.385Z  INFO 1 --- [mart.orders.v2]] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Client requested disconnect from node 2147483646
+2026-11-16T11:59:58.389Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Discovered group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.389Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false) is unavailable or invalid due to cause: coordinator unavailable. isDisconnected: false. Rediscovery will be attempted.
+2026-11-16T11:59:58.389Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Requesting disconnect from last known coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.488Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Discovered group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.489Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Request joining group due to: rebalance failed due to 'This is not the correct coordinator.' (NotCoordinatorException)
+2026-11-16T11:59:58.490Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] (Re-)joining group
+2026-11-16T11:59:58.498Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false) is unavailable or invalid due to cause: error response NOT_COORDINATOR. isDisconnected: false. Rediscovery will be attempted.
+2026-11-16T11:59:58.498Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Requesting disconnect from last known coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.498Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] JoinGroup failed: This is not the correct coordinator. Marking coordinator unknown. Sent generation was Generation{generationId=-1, memberId='', protocol='null'}
+2026-11-16T11:59:58.498Z  INFO 1 --- [mart.orders.v2]] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Client requested disconnect from node 2147483646
+2026-11-16T11:59:58.500Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Discovered group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.501Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false) is unavailable or invalid due to cause: coordinator unavailable. isDisconnected: false. Rediscovery will be attempted.
+2026-11-16T11:59:58.501Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Requesting disconnect from last known coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.567Z  INFO 1 --- [atalog-lookup-2] partner-order-check                      : Partner order recorded orderNumber=TG-1100 lines=2 correlationId=0744830A0059BBF-0000000000000000
+2026-11-16T11:59:58.630Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Discovered group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.632Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Request joining group due to: rebalance failed due to 'This is not the correct coordinator.' (NotCoordinatorException)
+2026-11-16T11:59:58.635Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] (Re-)joining group
+2026-11-16T11:59:58.639Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false) is unavailable or invalid due to cause: error response NOT_COORDINATOR. isDisconnected: false. Rediscovery will be attempted.
+2026-11-16T11:59:58.639Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Requesting disconnect from last known coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.639Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] JoinGroup failed: This is not the correct coordinator. Marking coordinator unknown. Sent generation was Generation{generationId=-1, memberId='', protocol='null'}
+2026-11-16T11:59:58.640Z  INFO 1 --- [mart.orders.v2]] org.apache.kafka.clients.NetworkClient   : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Client requested disconnect from node 2147483646
+2026-11-16T11:59:58.645Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Discovered group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.645Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false) is unavailable or invalid due to cause: coordinator unavailable. isDisconnected: false. Rediscovery will be attempted.
+2026-11-16T11:59:58.645Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Requesting disconnect from last known coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.728Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Discovered group coordinator kafka:9092 (id: 2147483646 rack: null isFenced: false)
+2026-11-16T11:59:58.729Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Request joining group due to: rebalance failed due to 'This is not the correct coordinator.' (NotCoordinatorException)
+2026-11-16T11:59:58.729Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] (Re-)joining group
+2026-11-16T11:59:58.734Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Request joining group due to: need to re-join with the given member-id: consumer-trailhead-order-integration-1-fd7f0997-11c7-4531-996f-ea91d55422cb
+2026-11-16T11:59:58.734Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] (Re-)joining group
+2026-11-16T11:59:58.746Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Successfully joined group with generation Generation{generationId=1, memberId='consumer-trailhead-order-integration-1-fd7f0997-11c7-4531-996f-ea91d55422cb', protocol='range'}
+2026-11-16T11:59:58.754Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Finished assignment for group at generation 1: {consumer-trailhead-order-integration-1-fd7f0997-11c7-4531-996f-ea91d55422cb=Assignment(partitions=[peakmart.orders.v2-0, peakmart.orders.v2-1])}
+2026-11-16T11:59:58.763Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Successfully synced group in generation Generation{generationId=1, memberId='consumer-trailhead-order-integration-1-fd7f0997-11c7-4531-996f-ea91d55422cb', protocol='range'}
+2026-11-16T11:59:58.765Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Notifying assignor about the new Assignment(partitions=[peakmart.orders.v2-0, peakmart.orders.v2-1])
+2026-11-16T11:59:58.766Z  INFO 1 --- [mart.orders.v2]] k.c.c.i.ConsumerRebalanceListenerInvoker : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Adding newly assigned partitions: [peakmart.orders.v2-0, peakmart.orders.v2-1]
+2026-11-16T11:59:58.774Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Found no committed offset for partition peakmart.orders.v2-0
+2026-11-16T11:59:58.774Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.ConsumerCoordinator  : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Found no committed offset for partition peakmart.orders.v2-1
+2026-11-16T11:59:58.790Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Resetting offset for partition peakmart.orders.v2-0 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[kafka:9092 (id: 1 rack: null isFenced: false)], epoch=0}}.
+2026-11-16T11:59:58.790Z  INFO 1 --- [mart.orders.v2]] o.a.k.c.c.internals.SubscriptionState    : [Consumer clientId=consumer-trailhead-order-integration-1, groupId=trailhead-order-integration] Resetting offset for partition peakmart.orders.v2-1 to position FetchPosition{offset=0, offsetEpoch=Optional.empty, currentLeader=LeaderAndEpoch{leader=Optional[kafka:9092 (id: 1 rack: null isFenced: false)], epoch=0}}.
+2026-11-16T11:59:59.886Z  INFO 1 --- [         task-2] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000001
+2026-11-16T12:00:01.571Z  INFO 1 --- [         task-3] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000002
+2026-11-16T12:00:02.780Z  INFO 1 --- [         task-4] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000003
+2026-11-16T12:00:04.035Z  INFO 1 --- [         task-5] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000004
+2026-11-16T12:00:05.267Z  INFO 1 --- [         task-6] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000005
+2026-11-16T12:00:06.528Z  INFO 1 --- [         task-7] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000006
+2026-11-16T12:00:07.779Z  INFO 1 --- [         task-8] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000007
+2026-11-16T12:00:08.997Z  INFO 1 --- [         task-1] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000008
+2026-11-16T12:00:10.225Z  INFO 1 --- [         task-2] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000009
+2026-11-16T12:00:11.417Z  INFO 1 --- [         task-3] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000000A
+2026-11-16T12:00:12.628Z  INFO 1 --- [         task-4] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000000B
+2026-11-16T12:00:13.840Z  INFO 1 --- [         task-5] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000000C
+2026-11-16T12:00:15.081Z  INFO 1 --- [         task-6] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000000D
+2026-11-16T12:00:16.363Z  INFO 1 --- [         task-7] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000000E
+2026-11-16T12:00:17.585Z  INFO 1 --- [         task-8] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000000F
+2026-11-16T12:00:18.992Z  INFO 1 --- [         task-1] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000010
+2026-11-16T12:00:20.242Z  INFO 1 --- [         task-2] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000011
+2026-11-16T12:00:21.438Z  INFO 1 --- [         task-3] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000012
+2026-11-16T12:00:22.650Z  INFO 1 --- [         task-4] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000013
+2026-11-16T12:00:23.840Z  INFO 1 --- [         task-5] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000014
+2026-11-16T12:00:25.066Z  INFO 1 --- [         task-6] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000015
+2026-11-16T12:00:26.260Z  INFO 1 --- [         task-7] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000016
+2026-11-16T12:00:27.455Z  INFO 1 --- [         task-8] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000017
+2026-11-16T12:00:28.723Z  INFO 1 --- [         task-1] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000018
+2026-11-16T12:00:29.931Z  INFO 1 --- [         task-2] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000019
+2026-11-16T12:00:31.143Z  INFO 1 --- [         task-3] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000001A
+2026-11-16T12:00:32.325Z  INFO 1 --- [         task-4] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000001B
+2026-11-16T12:00:33.569Z  INFO 1 --- [         task-5] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000001C
+2026-11-16T12:00:34.799Z  INFO 1 --- [         task-6] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000001D
+2026-11-16T12:00:36.008Z  INFO 1 --- [         task-7] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000001E
+2026-11-16T12:00:37.194Z  INFO 1 --- [         task-8] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000001F
+2026-11-16T12:00:38.376Z  INFO 1 --- [         task-1] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000020
+2026-11-16T12:00:39.604Z  INFO 1 --- [         task-2] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000021
+2026-11-16T12:00:40.792Z  INFO 1 --- [         task-3] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000022
+2026-11-16T12:00:42.011Z  INFO 1 --- [         task-4] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000023
+2026-11-16T12:00:43.200Z  INFO 1 --- [         task-5] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000024
+2026-11-16T12:00:44.391Z  INFO 1 --- [         task-6] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000025
+2026-11-16T12:00:45.583Z  INFO 1 --- [         task-7] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000026
+2026-11-16T12:00:46.781Z  INFO 1 --- [         task-8] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000027
+2026-11-16T12:00:47.968Z  INFO 1 --- [         task-1] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000028
+2026-11-16T12:00:49.156Z  INFO 1 --- [         task-2] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-0000000000000029
+2026-11-16T12:00:50.373Z  INFO 1 --- [         task-3] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000002A
+2026-11-16T12:00:51.569Z  INFO 1 --- [         task-4] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000002B
+2026-11-16T12:00:52.772Z  INFO 1 --- [         task-5] partner-order-receive                    : Partner order resend answered as before: accepted orderNumber=TG-1100 correlationId=0744830A0059BBF-000000000000002C

@@ -1,0 +1,18 @@
+- route:
+    id: order-db-schema-init
+    description: Create the Order Database tables once, before the integration starts (safe to repeat)
+    from:
+      id: from-order-db-schema-init
+      uri: timer:order-db-schema-init
+      parameters:
+        repeatCount: 1
+      steps:
+        - to:
+            id: to-order-db-schema
+            uri: sql:file:{{sql.dir}}/schema.sql
+            parameters:
+              dataSource: "#orderDb"
+        - log:
+            id: log-order-db-schema-ready
+            loggingLevel: INFO
+            message: Order Database schema is ready

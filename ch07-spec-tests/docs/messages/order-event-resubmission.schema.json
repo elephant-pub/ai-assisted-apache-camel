@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Order Event Resubmission",
+  "description": "The request with which an Integration Team member resubmits a Set-Aside Order Event (UC-008 step 1). Trailhead Gear owns it, so it allows no other field.",
+  "type": "object",
+  "required": ["eventId"],
+  "additionalProperties": false,
+  "properties": {
+    "eventId": { "type": "string", "minLength": 1, "description": "Event id of the Set-Aside Order Event; it must still be kept (UC-008 A1, BR-003)." },
+    "correctedEvent": {
+      "$ref": "peakmart-order-placed.schema.json",
+      "description": "The Order Event with the content that could not be read corrected (UC-008 BR-002); absent when the Order Event is resubmitted unchanged. Its `event_id` must be the `eventId` of the request, which is checked when it is resubmitted. Holds personal data (C-021)."
+    }
+  }
+}

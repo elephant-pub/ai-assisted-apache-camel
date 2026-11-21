@@ -1,0 +1,24 @@
+# ./mvnw verify per fault on a clean copy; "failed" lists the test classes with a failure or error.
+# exit is 0 throughout because the runs use -Dmaven.test.failure.ignore=true. "caught": a test failed or the build did.
+# Round 1: the code after execute (Session 04-execute plus the developer checks), before validation.
+
+F5-processed-check {"caught": true, "exit": 0, "failed": ["KillIT", "WarehouseSftpLookupTest"], "seconds": 935}
+F6-reason-order {"caught": true, "exit": 0, "failed": ["NotificationTextIT"], "seconds": 964}
+F7-commit-first {"caught": true, "exit": 0, "failed": ["KillIT", "UnexpectedErrorIT"], "seconds": 1255}
+F8-dependency-pin {"caught": true, "exit": 0, "failed": ["DatabaseFrozenIT", "DeliveryFailureIT", "FailureKindsTest", "JsonValidatorPinTest", "KillIT", "Tc001PartnerOrderToWarehouseIT", "Tc002PeakmartRedeliveryShippedOnceIT", "Tc003PeakmartOrderRejectedIT", "Tc004SetAsideOrderEventReachesWarehouseIT", "Tc005PickListOnceAfterRestartIT", "UnexpectedErrorIT", "UnstorableOrderIT"], "seconds": 2107}
+F9-intake-db-handled {"caught": true, "exit": 0, "failed": ["WaitingSelectIT"], "seconds": 957}   # environment: Flyway could not connect in WaitingSelectIT; not caused by the fault (a miss)
+F10-sftp-override {"caught": false, "exit": 0, "failed": [], "seconds": 884}
+F11-catalog-timeout {"caught": false, "exit": 0, "failed": [], "seconds": 845}
+F12-throttle-removed {"caught": false, "exit": 0, "failed": [], "seconds": 847}
+F13-outage-400 {"caught": true, "exit": 0, "failed": ["UnexpectedErrorIT"], "seconds": 847}
+F14-no-containment {"caught": true, "exit": 0, "failed": ["UnexpectedErrorIT"], "seconds": 1270}
+F15-park-not-written {"caught": true, "exit": 0, "failed": ["UnstorableOrderIT"], "seconds": 878}
+F16-smtp-retry {"caught": true, "exit": 0, "failed": ["UnexpectedErrorIT"], "seconds": 835}
+R9-no-db-time-limits {"caught": true, "exit": 0, "failed": ["ConnectionSettingsIT"], "seconds": 839}
+R11-no-last-failure {"caught": true, "exit": 0, "failed": ["DeliveryFailureIT", "UnexpectedErrorIT"], "seconds": 884}
+
+# DatabaseFrozenIT alone with MINIMUM_FREEZE 60 s (developer check 7b): fails with F9, passes without it (96 s).
+
+# Round 2: after session 07 (validation decisions 2, 3 and 5). F8: every Error contained, no stack trace in the logs.
+F8-dependency-pin {"caught": true, "exit": 0, "failed": ["DatabaseFrozenIT", "DeliveryFailureIT", "FailureKindsTest", "JsonValidatorPinTest", "KillIT", "Tc001PartnerOrderToWarehouseIT", "Tc002PeakmartRedeliveryShippedOnceIT", "Tc003PeakmartOrderRejectedIT", "Tc004SetAsideOrderEventReachesWarehouseIT", "Tc005PickListOnceAfterRestartIT", "UnexpectedErrorIT", "UnstorableOrderIT"], "seconds": 1101}
+F9-intake-db-handled {"caught": true, "exit": 0, "failed": ["DatabaseFrozenIT"], "seconds": 1052}

@@ -1,0 +1,121 @@
+# Design 006 D3-D9: the integration as exactly one pod, order-integration-0. Checked by ManifestPolicyTest (T4).
+# - D4: a StatefulSet with one replica. Stop-then-start on every release; never a second pod (two pods send emails
+#   twice and race for pick lists, L7). Never scale above 1.
+# - D3: probes on the management port 9090, on the health groups only (an outside outage never restarts the pod or
+#   takes it out of the Service).
+# - D5: 90 s grace >= Spring's 30 s web phase + camel.main.shutdown-timeout 45 s. No preStop: no other pod to drain to.
+# - D6: memory request = limit, so the pod is never evicted for using more memory than it asked for; the image sets
+#   the heap to 50 % of it. No CPU limit (throttling would stretch NFR-002), so the QoS class is Burstable, not
+#   Guaranteed (a CPU request without a CPU limit).
+# - D8: restricted security context; /tmp is the only writable path.
+# - D9: settings and secrets from objects the person deploying creates (order-integration-settings,
+#   order-integration-secrets, order-integration-files, order-integration-partner-api-keys; keys in deploy/README.md);
+#   the Partner Configuration from the released file (configMapGenerator, content hash).
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: order-integration
+spec:
+  serviceName: order-integration-headless
+  replicas: 1
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: order-integration
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: order-integration
+    spec:
+      serviceAccountName: order-integration
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 90
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: order-integration
+          image: order-integration   # set by the overlays: by digest in the release, the local build in ci and the lab
+          ports:
+            - name: partner
+              containerPort: 8443
+            - name: management
+              containerPort: 9090
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: management
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: management
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: management
+            periodSeconds: 5
+            failureThreshold: 2
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              memory: 1Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          envFrom:
+            - configMapRef:
+                name: order-integration-settings
+            - secretRef:
+                name: order-integration-secrets
+          env:
+            - name: SECRET_STORE_DIR
+              value: /etc/trailhead/secret-store
+            - name: PARTNER_CONFIGURATION
+              value: /etc/trailhead/partners/partner-configuration.json
+            - name: PARTNER_TLS_CERTIFICATE
+              value: file:/etc/trailhead/files/partner-tls.crt
+            - name: PARTNER_TLS_PRIVATE_KEY
+              value: file:/etc/trailhead/files/partner-tls.key
+            - name: DB_SSL_ROOT_CERT
+              value: /etc/trailhead/files/db-ca.crt
+            - name: WAREHOUSE_SFTP_KNOWN_HOSTS
+              value: /etc/trailhead/files/warehouse_known_hosts
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            - name: files
+              mountPath: /etc/trailhead/files
+              readOnly: true
+            - name: secret-store
+              mountPath: /etc/trailhead/secret-store
+              readOnly: true
+            - name: partners
+              mountPath: /etc/trailhead/partners
+              readOnly: true
+      volumes:
+        - name: tmp
+          emptyDir:
+            sizeLimit: 256Mi
+        - name: files
+          secret:
+            secretName: order-integration-files
+        - name: secret-store
+          secret:
+            secretName: order-integration-partner-api-keys
+        - name: partners
+          configMap:
+            name: order-integration-partners

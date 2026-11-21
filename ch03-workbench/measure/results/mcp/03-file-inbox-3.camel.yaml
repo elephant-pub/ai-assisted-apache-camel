@@ -1,0 +1,19 @@
+- route:
+    id: order-file-intake
+    from:
+      uri: file:work/inbox
+      parameters:
+        # only pick up *.json files
+        includeExt: json
+        # wait until the file has stopped changing (slow writer)
+        readLock: changed
+        readLockCheckInterval: 5000
+        readLockTimeout: 60000
+        readLockMinAge: 5000
+        # on success: .done/<yyyy-MM-dd>/<filename>
+        move: ".done/${date:now:yyyy-MM-dd}/${file:name}"
+        # on failure: .error/<filename>
+        moveFailed: .error
+      steps:
+        - to:
+            uri: direct:intake
